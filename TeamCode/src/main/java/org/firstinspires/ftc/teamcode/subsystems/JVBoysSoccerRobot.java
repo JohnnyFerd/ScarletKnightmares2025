@@ -2,10 +2,13 @@ package org.firstinspires.ftc.teamcode.subsystems;
 
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
+import com.qualcomm.robotcore.hardware.CRServo;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.teamcode.util.RobotSettings;
 
 import java.util.Arrays;
 import java.util.List;
@@ -24,8 +27,11 @@ public class JVBoysSoccerRobot {
     public IMU imu;
 
     // Subsystems
+    public Drivetrain drivetrainSubsystem;
 
     // Hardware
+    public DcMotorEx SwerveMotorLeft, SwerveMotorRight;
+    public CRServo SwerveServoLeft, SwerveServoRight;
 
     public JVBoysSoccerRobot(HardwareMap hwMap, Telemetry telemetry) {
         this.hwMap = hwMap;
@@ -34,19 +40,19 @@ public class JVBoysSoccerRobot {
         // Configuring Hubs to auto mode for bulk reads
         allHubs = hwMap.getAll(LynxModule.class);
         for (LynxModule hub : allHubs) {
-//            hub.setBulkCachingMode(LynxModule.BulkCachingMode.OFF);
-            hub.setBulkCachingMode(LynxModule.BulkCachingMode.AUTO);
+            hub.setBulkCachingMode(LynxModule.BulkCachingMode.OFF);
+//            hub.setBulkCachingMode(LynxModule.BulkCachingMode.AUTO);
         }
 
         initIMU();
         initHardware();
         drivetrainSubsystem = new Drivetrain(hwMap, telemetry, this);
-        clawSubsystem = new Claw(hwMap, telemetry, this);
-        armSubsystem = new Arm(hwMap, telemetry, this);
-        riggingSubsystem = new Rigging(hwMap, telemetry, this);
-        launcherSubsystem = new AirplaneLauncher(hwMap, telemetry, this);
+//        clawSubsystem = new Claw(hwMap, telemetry, this);
+//        armSubsystem = new Arm(hwMap, telemetry, this);
+//        riggingSubsystem = new Rigging(hwMap, telemetry, this);
+//        launcherSubsystem = new AirplaneLauncher(hwMap, telemetry, this);
 
-        subsystems = Arrays.asList(drivetrainSubsystem, clawSubsystem, armSubsystem, riggingSubsystem, launcherSubsystem);
+//        subsystems = Arrays.asList(drivetrainSubsystem, clawSubsystem, armSubsystem, riggingSubsystem, launcherSubsystem);
     }
 
     public void initIMU() {
@@ -57,6 +63,9 @@ public class JVBoysSoccerRobot {
     }
 
     public void initHardware() {
+
+        SwerveServoRight = hwMap.get(CRServo.class, "");
+        SwerveServoLeft = hwMap.get(CRServo.class, "");
 
     }
 

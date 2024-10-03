@@ -116,7 +116,30 @@ public class TestingOpmode extends LinearOpMode {
                     }
                 }
                 if (currentGamepad1.dpad_up && !previousGamepad1.dpad_up) {
+                    motorsOn = !motorsOn;
+                }
+                if (currentGamepad1.dpad_down && !previousGamepad1.dpad_down) {
+                    motorsOn = !motorsOn;
+                }
 
+                if (motorsOn) {
+                    for (int i = 0; i < 8; i++) {
+                        motors[i].setPower(motorPowers[i]);
+                    }
+                }else if (!motorsOn) {
+                    for (int i = 0; i < 8; i++) {
+                        motors[i].setPower(0);
+                    }
+                }
+
+                if (servosOn) {
+                    for (int i = 0; i < 12; i++) {
+                        servos[i].setPosition(servoPositions1[i]);
+                    }
+                }else if (!servosOn) {
+                    for (int i = 0; i < 12; i++) {
+                        servos[i].setPosition(servoPosition2[i]);
+                    }
                 }
 
 
