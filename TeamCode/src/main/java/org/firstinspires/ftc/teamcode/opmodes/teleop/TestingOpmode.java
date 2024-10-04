@@ -166,10 +166,12 @@ public class TestingOpmode extends LinearOpMode {
                 }
                 telemetry.addLine("----------SERVOS----------");
                 for (int i = 0; i < 12; i++) {
-                    if (motors[i] != null) {
+                    if (servos[i] != null) {
                         telemetry.addData("Servo " + i + " Position: ", servos[i].getPosition());
                     }
                 }
+
+                telemetry.update();
 
             }
         }
