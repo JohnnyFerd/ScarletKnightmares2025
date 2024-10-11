@@ -9,14 +9,19 @@ public class RobotSettings {
 
     // DRIVETRAIN
 
-    public static String FL_NAME = "";
-    public static String FR_NAME = "";
-    public static String BL_NAME = "";
-    public static String BR_NAME = "";
+    public static String FL_NAME = "FL";
+    public static String FR_NAME = "FR";
+    public static String BL_NAME = "BL";
+    public static String BR_NAME = "BR";
 
-    public static boolean FL_REVERSED = false;
+    public static boolean FL_REVERSED = true;
     public static boolean FR_REVERSED = false;
-    public static boolean BL_REVERSED = false;
+    public static boolean BL_REVERSED = true;
     public static boolean BR_REVERSED = false;
+
+    public static String ARM_LMOTOR_NAME = "ArmLeft";
+    public static String ARM_RMOTOR_NAME = "ArmRight";
+    public static boolean ARM_LMOTOR_REVERSED = true;
+    public static boolean ARM_RMOTOR_REVERSED = false;
 
 }
