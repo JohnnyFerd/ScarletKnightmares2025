@@ -66,6 +66,8 @@ public class ArmTest extends LinearOpMode {
                 telemetry.addLine("    A: Toggle Orthogonal Mode ");
                 telemetry.addLine("    TRIGGERS: Slowdown the robot by factor of 3 ");
 
+
+
                 robot.addTelemetry();
                 telemetry.update();
                 robot.BR.readAll();

@@ -32,12 +32,14 @@ public class JVBoysSoccerRobot {
 
     // Subsystems
     public Drivetrain drivetrainSubsystem;
+    public Arm armSubsystem;
 
     // Hardware
     public DcMotorEx SwerveMotorLeft, SwerveMotorRight;
     public CRServo SwerveServoLeft, SwerveServoRight;
 
     public DcMotorEx motorFL, motorFR, motorBL, motorBR; // mecanum motors when swerve doesn't work
+    public DcMotorEx motorArmL, motorArmR;
 
     public JVBoysSoccerRobot(HardwareMap hwMap, Telemetry telemetry) {
         this.hwMap = hwMap;
@@ -54,11 +56,11 @@ public class JVBoysSoccerRobot {
         initHardware();
         drivetrainSubsystem = new Drivetrain(hwMap, telemetry, this);
 //        clawSubsystem = new Claw(hwMap, telemetry, this);
-//        armSubsystem = new Arm(hwMap, telemetry, this);
+        armSubsystem = new Arm(hwMap, telemetry, this);
 //        riggingSubsystem = new Rigging(hwMap, telemetry, this);
 //        launcherSubsystem = new AirplaneLauncher(hwMap, telemetry, this);
 
-        subsystems = Arrays.asList(drivetrainSubsystem
+        subsystems = Arrays.asList(drivetrainSubsystem, armSubsystem
 //                , clawSubsystem, armSubsystem, riggingSubsystem, launcherSubsystem
         );
         BR = new BulkReading(this);
@@ -76,6 +78,7 @@ public class JVBoysSoccerRobot {
         SwerveServoLeft = hwMap.get(CRServo.class, "");
 
         initDrivetrainHardware();
+        initArmHardware();
     }
 
     public void initDrivetrainHardware() {
@@ -98,6 +101,17 @@ public class JVBoysSoccerRobot {
         motorBL.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         motorFR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         motorBR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+    }
+
+    public void initArmHardware() {
+        motorArmL = hwMap.get(DcMotorEx.class, RobotSettings.ARM_LMOTOR_NAME);
+        motorArmR = hwMap.get(DcMotorEx.class, RobotSettings.ARM_RMOTOR_NAME);
+
+        motorArmL.setDirection(RobotSettings.ARM_LMOTOR_REVERSED ? DcMotor.Direction.REVERSE : DcMotor.Direction.FORWARD);
+        motorArmR.setDirection(RobotSettings.ARM_RMOTOR_REVERSED ? DcMotor.Direction.REVERSE : DcMotor.Direction.FORWARD);
+
+        motorArmL.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        motorArmR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     }
 
     public void addTelemetry() {
