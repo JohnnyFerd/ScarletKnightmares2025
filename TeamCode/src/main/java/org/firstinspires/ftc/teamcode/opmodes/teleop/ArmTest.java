@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.opmodes.teleop;
 
 import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -9,8 +10,11 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.teamcode.subsystems.Arm;
 import org.firstinspires.ftc.teamcode.subsystems.JVBoysSoccerRobot;
 
+@Config
+@TeleOp (name = "Arm Test", group = "Testing")
 public class ArmTest extends LinearOpMode {
 
     private HardwareMap hwMap;
@@ -23,19 +27,15 @@ public class ArmTest extends LinearOpMode {
     private Gamepad currentGamepad2;
     private Gamepad previousGamepad2;
 
+    public static int GOAL_POSITION = 0;
+
     private enum ArmTestState {
-        CLOSED,
-        DELAY,
-        GO_BACK_DOWN,
-        DOUBLE_CHECK,
-        INTAKING,
-        INTAKING_AUTO,
         DROP_POS,
-        RESET,
+        OFF,
         NOTHING
     }
 
-    private ArmTestState armTestState = ArmTestState.CLOSED;
+    private ArmTestState armTestState = ArmTestState.OFF;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -61,17 +61,35 @@ public class ArmTest extends LinearOpMode {
                 currentGamepad2.copy(gamepad2);
 
                 telemetry.addLine("CONTROLS: ");
-                telemetry.addLine("    DPAD UP: Reset Init Yaw ");
-                telemetry.addLine("    B: Swap from field centric to robot centric ");
-                telemetry.addLine("    A: Toggle Orthogonal Mode ");
-                telemetry.addLine("    TRIGGERS: Slowdown the robot by factor of 3 ");
+                telemetry.addLine("    DPAD UP: Turn motors on / off ");
 
-
+                armControls();
 
                 robot.addTelemetry();
                 telemetry.update();
+                robot.armSubsystem.update();
                 robot.BR.readAll();
             }
         }
+    }
+
+    public void armControls() {
+
+        switch (armTestState) {
+            case NOTHING:
+                break;
+            case OFF:
+                telemetry.addLine("MOTORS: OFF");
+                robot.armSubsystem.armState = Arm.ArmState.AT_REST;
+
+                break;
+            case DROP_POS:
+                telemetry.addLine("MOTORS: ON");
+                robot.armSubsystem.armState = Arm.ArmState.BASIC_PID;
+                robot.armSubsystem.referencePos = GOAL_POSITION;
+
+                break;
+        }
+
     }
 }

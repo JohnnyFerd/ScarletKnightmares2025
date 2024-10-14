@@ -9,5 +9,7 @@ public class UseTelemetry {
 
     public static boolean DRIVETRAIN_TELEMETRY = false;
     public static boolean ARM_TELEMETRY = false;
+    public static boolean RIGGING_TELEMETRY = false;
+    public static boolean CLAW_TELEMETRY = false;
 
 }

@@ -24,4 +24,14 @@ public class RobotSettings {
     public static boolean ARM_LMOTOR_REVERSED = true;
     public static boolean ARM_RMOTOR_REVERSED = false;
 
+    public static boolean RIGGING_LMOTOR_REVERSED = true;
+    public static boolean RIGGING_RMOTOR_REVERSED = false;
+    public static String RIGGING_LMOTOR_NAME = "";
+    public static String RIGGING_RMOTOR_NAME = "";
+    public static boolean RIGGING_LSERVO_REVERSED = true;
+    public static boolean RIGGING_RSERVO_REVERSED = false;
+    public static String RIGGING_LSERVO_NAME = "";
+    public static String RIGGING_RSERVO_NAME = "";
+    public static double RIGGING_MOTOR_SPEED = 0.5;
+
 }

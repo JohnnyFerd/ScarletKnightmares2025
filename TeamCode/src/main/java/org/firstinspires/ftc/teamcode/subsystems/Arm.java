@@ -32,8 +32,11 @@ public class Arm extends Subsystem {
     private double previousRefPos = 100000;
     private double previousCurrentPos = 100000;
 
+    public double referencePos = 0; // for the basic_pid state
+
     public enum ArmState {
         MOTION_PROFILE,
+        BASIC_PID,
         AT_REST,
         NOTHING
     }
@@ -121,7 +124,19 @@ public class Arm extends Subsystem {
                 previousCurrentPos = BulkReading.pMotorArmL;
                 previousRefPos = refPos;
                 break;
+            case BASIC_PID:
+                if ( !(previousCurrentPos == BulkReading.pMotorArmL && previousRefPos == referencePos) ) {
+                    double power = pid.calculatePID(referencePos, BulkReading.pMotorArmL);
+                    setArmPower(power);
+                }
+
+                previousCurrentPos = BulkReading.pMotorArmL;
+                previousRefPos = referencePos;
+                break;
             case NOTHING:
+                break;
+            case AT_REST:
+                setArmPower(0);
                 break;
         }
 

@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
+import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.settings.UseTelemetry;
@@ -33,6 +34,7 @@ public class JVBoysSoccerRobot {
     // Subsystems
     public Drivetrain drivetrainSubsystem;
     public Arm armSubsystem;
+    public Rigging riggingSubsystem;
 
     // Hardware
     public DcMotorEx SwerveMotorLeft, SwerveMotorRight;
@@ -40,6 +42,9 @@ public class JVBoysSoccerRobot {
 
     public DcMotorEx motorFL, motorFR, motorBL, motorBR; // mecanum motors when swerve doesn't work
     public DcMotorEx motorArmL, motorArmR;
+
+    public Servo servoRigL, servoRigR;
+    public DcMotorEx motorRigL, motorRigR;
 
     public JVBoysSoccerRobot(HardwareMap hwMap, Telemetry telemetry) {
         this.hwMap = hwMap;
@@ -57,10 +62,10 @@ public class JVBoysSoccerRobot {
         drivetrainSubsystem = new Drivetrain(hwMap, telemetry, this);
 //        clawSubsystem = new Claw(hwMap, telemetry, this);
         armSubsystem = new Arm(hwMap, telemetry, this);
-//        riggingSubsystem = new Rigging(hwMap, telemetry, this);
+        riggingSubsystem = new Rigging(hwMap, telemetry, this);
 //        launcherSubsystem = new AirplaneLauncher(hwMap, telemetry, this);
 
-        subsystems = Arrays.asList(drivetrainSubsystem, armSubsystem
+        subsystems = Arrays.asList(drivetrainSubsystem, armSubsystem, riggingSubsystem
 //                , clawSubsystem, armSubsystem, riggingSubsystem, launcherSubsystem
         );
         BR = new BulkReading(this);
@@ -74,11 +79,12 @@ public class JVBoysSoccerRobot {
     }
 
     public void initHardware() {
-        SwerveServoRight = hwMap.get(CRServo.class, "");
-        SwerveServoLeft = hwMap.get(CRServo.class, "");
+//        SwerveServoRight = hwMap.get(CRServo.class, "");
+//        SwerveServoLeft = hwMap.get(CRServo.class, "");
 
         initDrivetrainHardware();
         initArmHardware();
+        initRiggingHardware();
     }
 
     public void initDrivetrainHardware() {
@@ -112,6 +118,18 @@ public class JVBoysSoccerRobot {
 
         motorArmL.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         motorArmR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+    }
+
+    public void initRiggingHardware() {
+        motorRigL = hwMap.get(DcMotorEx.class, RobotSettings.RIGGING_LMOTOR_NAME);
+        motorRigR = hwMap.get(DcMotorEx.class, RobotSettings.RIGGING_RMOTOR_NAME);
+        motorRigL.setDirection(RobotSettings.RIGGING_LMOTOR_REVERSED ? DcMotor.Direction.REVERSE : DcMotor.Direction.FORWARD);
+        motorRigR.setDirection(RobotSettings.RIGGING_RMOTOR_REVERSED ? DcMotor.Direction.REVERSE : DcMotor.Direction.FORWARD);
+
+        servoRigL = hwMap.servo.get(RobotSettings.RIGGING_LSERVO_NAME);
+        servoRigR = hwMap.servo.get(RobotSettings.RIGGING_RSERVO_NAME);
+        servoRigL.setDirection(RobotSettings.RIGGING_LSERVO_REVERSED ? Servo.Direction.REVERSE : Servo.Direction.FORWARD);
+        servoRigR.setDirection(RobotSettings.RIGGING_RSERVO_REVERSED ? Servo.Direction.REVERSE : Servo.Direction.FORWARD);
     }
 
     public void addTelemetry() {
