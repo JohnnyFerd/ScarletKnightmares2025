@@ -14,10 +14,10 @@ public class Rigging extends Subsystem {
     private JVBoysSoccerRobot robot;
     private double previousPower = -2;
 
-    public static double RIG_LBOTTOM = 0;
-    public static double RIG_RBOTTOM = 0;
-    public static double RIG_LTOP = 0.5;
-    public static double RIG_RTOP = 0.5;
+    public static double RIG_LBOTTOM = 0.005;
+    public static double RIG_RBOTTOM = 0.005;
+    public static double RIG_LTOP = 0.25;
+    public static double RIG_RTOP = 0.25;
 
     public enum RiggingState {
         ARMS_RESTING,
@@ -36,9 +36,10 @@ public class Rigging extends Subsystem {
 
     @Override
     public void addTelemetry() {
-        if (UseTelemetry.ARM_TELEMETRY) {
+        if (UseTelemetry.RIGGING_TELEMETRY) {
             telemetry.addLine("RIGGING TELEMETRY: ON");
-//            telemetry.addLine("ARM TELEMETRY: ON");
+            telemetry.addData("    Rig Left Servo Position", robot.servoRigL.getPosition());
+            telemetry.addData("    Rig Right Servo Position", robot.servoRigR.getPosition());
 
         }else {
             telemetry.addLine("RIGGING TELEMETRY: OFF");

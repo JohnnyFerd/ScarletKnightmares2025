@@ -35,6 +35,7 @@ public class JVBoysSoccerRobot {
     public Drivetrain drivetrainSubsystem;
     public Arm armSubsystem;
     public Rigging riggingSubsystem;
+    public Claw clawSubsystem;
 
     // Hardware
     public DcMotorEx SwerveMotorLeft, SwerveMotorRight;
@@ -42,6 +43,8 @@ public class JVBoysSoccerRobot {
 
     public DcMotorEx motorFL, motorFR, motorBL, motorBR; // mecanum motors when swerve doesn't work
     public DcMotorEx motorArmL, motorArmR;
+    public Servo servoPivotL, servoPivotR;
+    public Servo servoClaw;
 
     public Servo servoRigL, servoRigR;
     public DcMotorEx motorRigL, motorRigR;
@@ -60,12 +63,12 @@ public class JVBoysSoccerRobot {
         initIMU();
         initHardware();
         drivetrainSubsystem = new Drivetrain(hwMap, telemetry, this);
-//        clawSubsystem = new Claw(hwMap, telemetry, this);
+        clawSubsystem = new Claw(hwMap, telemetry, this);
         armSubsystem = new Arm(hwMap, telemetry, this);
         riggingSubsystem = new Rigging(hwMap, telemetry, this);
 //        launcherSubsystem = new AirplaneLauncher(hwMap, telemetry, this);
 
-        subsystems = Arrays.asList(drivetrainSubsystem, armSubsystem, riggingSubsystem
+        subsystems = Arrays.asList(drivetrainSubsystem, armSubsystem, riggingSubsystem, clawSubsystem
 //                , clawSubsystem, armSubsystem, riggingSubsystem, launcherSubsystem
         );
         BR = new BulkReading(this);
@@ -85,6 +88,7 @@ public class JVBoysSoccerRobot {
         initDrivetrainHardware();
         initArmHardware();
         initRiggingHardware();
+        initClawHardware();
     }
 
     public void initDrivetrainHardware() {
@@ -130,6 +134,16 @@ public class JVBoysSoccerRobot {
         servoRigR = hwMap.servo.get(RobotSettings.RIGGING_RSERVO_NAME);
         servoRigL.setDirection(RobotSettings.RIGGING_LSERVO_REVERSED ? Servo.Direction.REVERSE : Servo.Direction.FORWARD);
         servoRigR.setDirection(RobotSettings.RIGGING_RSERVO_REVERSED ? Servo.Direction.REVERSE : Servo.Direction.FORWARD);
+    }
+
+    public void initClawHardware() {
+        servoPivotL = hwMap.servo.get(RobotSettings.ARM_LPIVOT_NAME);
+        servoPivotR = hwMap.servo.get(RobotSettings.ARM_RPIVOT_NAME);
+        servoPivotL.setDirection(RobotSettings.ARM_LPIVOT_REVERSED ? Servo.Direction.REVERSE : Servo.Direction.FORWARD);
+        servoPivotR.setDirection(RobotSettings.ARM_RPIVOT_REVERSED ? Servo.Direction.REVERSE : Servo.Direction.FORWARD);
+
+        servoClaw = hwMap.servo.get(RobotSettings.CLAW_SERVO_NAME);
+        servoClaw.setDirection(RobotSettings.CLAW_SERVO_REVERSED ? Servo.Direction.REVERSE : Servo.Direction.FORWARD);
     }
 
     public void addTelemetry() {

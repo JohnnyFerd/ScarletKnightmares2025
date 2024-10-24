@@ -50,7 +50,7 @@ public class RiggingTest extends LinearOpMode {
             while (opModeIsActive()) {
 
                 telemetry.addLine("DPAD BUTTONS = undo string");
-                telemetry.addLine("No motor code yet");
+                telemetry.addLine("Standard rigging controls (x to bring up arms, triggers to pull string)");
 
                 previousGamepad1.copy(currentGamepad1);
                 currentGamepad1.copy(gamepad1);
@@ -98,19 +98,13 @@ public class RiggingTest extends LinearOpMode {
                 }
                 if (currentGamepad1.x && !previousGamepad1.x) {
                     rigWaitTime = runtime.seconds();
-                    hangState = RiggingControlsState.DOWN_WAIT;
+                    hangState = RiggingControlsState.DOWN;
                 }
                 break;
             case DOWN:
-                robot.riggingSubsystem.riggingState = Rigging.RiggingState.SERVOS_OFF;
+                robot.riggingSubsystem.riggingState = Rigging.RiggingState.ARMS_RESTING;
                 if (currentGamepad1.x && !previousGamepad1.x) {
                     hangState = RiggingControlsState.UP;
-                }
-                break;
-            case DOWN_WAIT:
-                robot.riggingSubsystem.riggingState = Rigging.RiggingState.ARMS_RESTING;
-                if (runtime.seconds() - rigWaitTime > 1.0) {
-                    hangState = RiggingControlsState.DOWN;
                 }
                 break;
             case HANGING:

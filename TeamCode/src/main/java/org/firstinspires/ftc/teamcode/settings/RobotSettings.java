@@ -1,11 +1,13 @@
 package org.firstinspires.ftc.teamcode.settings;
 
+import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 
+@Config
 public class RobotSettings {
 
-    public static RevHubOrientationOnRobot.LogoFacingDirection LOGO_FACING_DIR = RevHubOrientationOnRobot.LogoFacingDirection.UP;
-    public static RevHubOrientationOnRobot.UsbFacingDirection USB_FACING_DIR = RevHubOrientationOnRobot.UsbFacingDirection.DOWN;
+    public static RevHubOrientationOnRobot.LogoFacingDirection LOGO_FACING_DIR = RevHubOrientationOnRobot.LogoFacingDirection.RIGHT;
+    public static RevHubOrientationOnRobot.UsbFacingDirection USB_FACING_DIR = RevHubOrientationOnRobot.UsbFacingDirection.BACKWARD;
 
     // DRIVETRAIN
 
@@ -24,14 +26,25 @@ public class RobotSettings {
     public static boolean ARM_LMOTOR_REVERSED = true;
     public static boolean ARM_RMOTOR_REVERSED = false;
 
+    public static String ARM_LPIVOT_NAME = "ArmPivotLeft";
+    public static String ARM_RPIVOT_NAME = "ArmPivotRight";
+    public static boolean ARM_LPIVOT_REVERSED = true;
+    public static boolean ARM_RPIVOT_REVERSED = false;
+
     public static boolean RIGGING_LMOTOR_REVERSED = true;
     public static boolean RIGGING_RMOTOR_REVERSED = false;
-    public static String RIGGING_LMOTOR_NAME = "";
-    public static String RIGGING_RMOTOR_NAME = "";
+    public static String RIGGING_LMOTOR_NAME = "RigLeft";
+    public static String RIGGING_RMOTOR_NAME = "RigRight";
     public static boolean RIGGING_LSERVO_REVERSED = true;
-    public static boolean RIGGING_RSERVO_REVERSED = false;
-    public static String RIGGING_LSERVO_NAME = "";
-    public static String RIGGING_RSERVO_NAME = "";
+    public static boolean RIGGING_RSERVO_REVERSED = true;
+    public static String RIGGING_LSERVO_NAME = "RigLeftS";
+    public static String RIGGING_RSERVO_NAME = "RigRightS";
     public static double RIGGING_MOTOR_SPEED = 0.5;
+
+    public static String CLAW_SERVO_NAME = "ClawServo";
+    public static boolean CLAW_SERVO_REVERSED = false;
+
+    public static double CLAW_CLOSED_POSITION = 0;
+    public static double CLAW_OPENED_POSITION = 0.1;
 
 }
