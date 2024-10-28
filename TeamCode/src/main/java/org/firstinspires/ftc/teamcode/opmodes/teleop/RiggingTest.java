@@ -50,6 +50,8 @@ public class RiggingTest extends LinearOpMode {
             while (opModeIsActive()) {
 
                 telemetry.addLine("DPAD BUTTONS = undo string");
+                telemetry.addLine("DPAD left and up = affect left motor");
+                telemetry.addLine("DPAD right and down = affect right motor");
                 telemetry.addLine("Standard rigging controls (x to bring up arms, triggers to pull string)");
 
                 previousGamepad1.copy(currentGamepad1);

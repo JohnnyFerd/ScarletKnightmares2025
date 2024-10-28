@@ -5,6 +5,7 @@ import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -39,7 +40,7 @@ public class JVBoysSoccerRobot {
 
     // Hardware
     public DcMotorEx SwerveMotorLeft, SwerveMotorRight;
-    public CRServo SwerveServoLeft, SwerveServoRight;
+    public DcMotorSimple SwerveServoLeft, SwerveServoRight;
 
     public DcMotorEx motorFL, motorFR, motorBL, motorBR; // mecanum motors when swerve doesn't work
     public DcMotorEx motorArmL, motorArmR;
@@ -82,8 +83,8 @@ public class JVBoysSoccerRobot {
     }
 
     public void initHardware() {
-//        SwerveServoRight = hwMap.get(CRServo.class, "");
-//        SwerveServoLeft = hwMap.get(CRServo.class, "");
+//        SwerveServoRight = hwMap.get(DcMotorSimple.class, "");
+//        SwerveServoLeft = hwMap.get(DcMotorSimple.class, "");
 
         initDrivetrainHardware();
         initArmHardware();

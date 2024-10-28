@@ -14,10 +14,10 @@ public class Rigging extends Subsystem {
     private JVBoysSoccerRobot robot;
     private double previousPower = -2;
 
-    public static double RIG_LBOTTOM = 0.005;
-    public static double RIG_RBOTTOM = 0.005;
-    public static double RIG_LTOP = 0.25;
-    public static double RIG_RTOP = 0.25;
+    public static double RIG_LBOTTOM = 0.93;
+    public static double RIG_RBOTTOM = 0.43;
+    public static double RIG_LTOP = 0.68;
+    public static double RIG_RTOP = 0.69;
 
     public enum RiggingState {
         ARMS_RESTING,

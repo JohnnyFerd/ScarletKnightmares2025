@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -32,7 +33,7 @@ public class TestingOpmode extends LinearOpMode {
 
     // SERVOS
     public static Servo[] servos = new Servo[12];
-    public static CRServo servo;
+    public static DcMotorSimple[] crservos = new DcMotorSimple[6];
     public static double[] servoPositions1 = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
     public static double[] servoPosition2 = {1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0};
 
@@ -125,18 +126,12 @@ public class TestingOpmode extends LinearOpMode {
                 }
 
                 if (motorsOn) {
-                    if (servo != null) {
-                        servo.setPower(1);
-                    }
                     for (int i = 0; i < 8; i++) {
                         if (motors[i] != null) {
                             motors[i].setPower(motorPowers[i]);
                         }
                     }
                 }else if (!motorsOn) {
-                    if (servo != null) {
-                        servo.setPower(0);
-                    }
                     for (int i = 0; i < 8; i++) {
                         if (motors[i] != null) {
                             motors[i].setPower(0);
@@ -150,10 +145,20 @@ public class TestingOpmode extends LinearOpMode {
                             servos[i].setPosition(servoPositions1[i]);
                         }
                     }
+                    for (int i = 0; i < 6; i++) {
+                        if (crservos[i] != null) {
+                            crservos[i].setPower(servoPositions1[i]);
+                        }
+                    }
                 }else if (servosOn) {
                     for (int i = 0; i < 12; i++) {
                         if (servos[i] != null) {
                             servos[i].setPosition(servoPosition2[i]);
+                        }
+                    }
+                    for (int i = 0; i < 6; i++) {
+                        if (crservos[i] != null) {
+                            crservos[i].setPower(servoPosition2[i]);
                         }
                     }
                 }
@@ -211,11 +216,17 @@ public class TestingOpmode extends LinearOpMode {
         }
 
 //        servos[0] = hwMap.get(Servo.class, "servo1");
+//        crservos[0] = hwMap.get(DcMotorSimple.class, "servo1");
+
         servos[1] = hwMap.get(Servo.class, "servo2");
-//        servo = hwMap.get(CRServo.class, "servo2");
+//        crservos[1] = hwMap.get(DcMotorSimple.class, "servo2");
 
 //        servos[2] = hwMap.get(Servo.class, "servo1");
+//        crservos[2] = hwMap.get(DcMotorSimple.class, "servo3");
+
 //        servos[3] = hwMap.get(Servo.class, "servo1");
+//        crservos[3] = hwMap.get(DcMotorSimple.class, "servo4");
+
 //        servos[4] = hwMap.get(Servo.class, "servo1");
 //        servos[5] = hwMap.get(Servo.class, "servo1");
 //        servos[6] = hwMap.get(Servo.class, "servo1");

@@ -38,6 +38,7 @@ public class MecanumDrivetrainTest extends LinearOpMode {
 
         telemetry.addData("Status", "Initialized");
         telemetry.addData("Elapsed time", runtime.toString());
+        telemetry.update();
 
         waitForStart();
 
