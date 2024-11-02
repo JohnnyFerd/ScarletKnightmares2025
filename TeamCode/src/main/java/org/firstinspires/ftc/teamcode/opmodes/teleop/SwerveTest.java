@@ -39,14 +39,18 @@ public class SwerveTest extends LinearOpMode {
                 previousGamepad1.copy(currentGamepad1);
                 currentGamepad1.copy(gamepad1);
 
-                if (gamepad1.left_stick_x > 0 || gamepad1.left_stick_y > 0) {
-                    drive_motor.setPower(Math.max(gamepad1.left_stick_x, gamepad1.left_stick_y));
+                if (gamepad1.left_stick_y > 0) {
+                    drive_motor.setPower(gamepad1.left_stick_y);
+                }else if (gamepad1.left_stick_y < 0) {
+                    drive_motor.setPower(gamepad1.left_stick_y);
                 }else {
                     drive_motor.setPower(MOTOR_POWER);
                 }
 
-                if (gamepad1.right_stick_x > 0 || gamepad1.right_stick_y > 0) {
-                    servo.setPower(Math.max(gamepad1.right_stick_x, gamepad1.right_stick_y));
+                if (gamepad1.right_stick_x > 0) {
+                    servo.setPower(gamepad1.right_stick_x);
+                }else if (gamepad1.right_stick_x < 0) {
+                    servo.setPower(gamepad1.right_stick_x);
                 }else {
                     servo.setPower(SERVO_ENCODER);
                 }

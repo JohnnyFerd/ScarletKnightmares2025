@@ -15,7 +15,7 @@ import org.firstinspires.ftc.teamcode.subsystems.JVBoysSoccerRobot;
 public class MecanumDrivetrainTest extends LinearOpMode {
 
     private HardwareMap hwMap;
-    private Telemetry telemetry;
+    private Telemetry telem;
     private JVBoysSoccerRobot robot;
     private ElapsedTime runtime = new ElapsedTime();
 

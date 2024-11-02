@@ -16,8 +16,8 @@ public class Rigging extends Subsystem {
 
     public static double RIG_LBOTTOM = 0.93;
     public static double RIG_RBOTTOM = 0.43;
-    public static double RIG_LTOP = 0.68;
-    public static double RIG_RTOP = 0.69;
+    public static double RIG_LTOP = 0.7;
+    public static double RIG_RTOP = 0.705;
 
     public enum RiggingState {
         ARMS_RESTING,
