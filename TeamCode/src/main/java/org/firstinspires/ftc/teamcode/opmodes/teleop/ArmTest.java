@@ -12,13 +12,13 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.subsystems.Arm;
 import org.firstinspires.ftc.teamcode.subsystems.JVBoysSoccerRobot;
+import org.firstinspires.ftc.teamcode.util.BulkReading;
 
 @Config
 @TeleOp (name = "Arm Test", group = "Testing")
 public class ArmTest extends LinearOpMode {
 
     private HardwareMap hwMap;
-    private Telemetry telemetry;
     private JVBoysSoccerRobot robot;
     private ElapsedTime runtime = new ElapsedTime();
 
@@ -50,6 +50,7 @@ public class ArmTest extends LinearOpMode {
 
         telemetry.addData("Status", "Initialized");
         telemetry.addData("Elapsed time", runtime.toString());
+        telemetry.update();
 
         waitForStart();
 
@@ -62,7 +63,8 @@ public class ArmTest extends LinearOpMode {
 
                 telemetry.addLine("CONTROLS: ");
                 telemetry.addLine("    DPAD UP: Turn motors on / off ");
-
+                telemetry.addData("GOAL POSITION", GOAL_POSITION);
+                telemetry.addData("CURRENT POSITION", BulkReading.pMotorArmR);
                 armControls();
 
                 robot.addTelemetry();
@@ -81,13 +83,17 @@ public class ArmTest extends LinearOpMode {
             case OFF:
                 telemetry.addLine("MOTORS: OFF");
                 robot.armSubsystem.armState = Arm.ArmState.AT_REST;
-
+                if (currentGamepad1.dpad_up && !previousGamepad1.dpad_up) {
+                    armTestState = ArmTestState.DROP_POS;
+                }
                 break;
             case DROP_POS:
                 telemetry.addLine("MOTORS: ON");
                 robot.armSubsystem.armState = Arm.ArmState.BASIC_PID;
                 robot.armSubsystem.referencePos = GOAL_POSITION;
-
+                if (currentGamepad1.dpad_up && !previousGamepad1.dpad_up) {
+                    armTestState = ArmTestState.OFF;
+                }
                 break;
         }
 

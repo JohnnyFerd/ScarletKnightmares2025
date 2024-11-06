@@ -16,7 +16,7 @@ public class Drivetrain extends Subsystem {
     private JVBoysSoccerRobot robot;
 
     private  double  power, theta, sin, cos, max;
-    private Orientation lastAngle;
+    public Orientation lastAngle;
     private double initYaw;
     private double powerFL, powerFR, powerBL, powerBR;
 

@@ -1,11 +1,13 @@
 package org.firstinspires.ftc.teamcode.subsystems;
 
+import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.settings.RobotSettings;
 import org.firstinspires.ftc.teamcode.settings.UseTelemetry;
 
+@Config
 public class Claw extends Subsystem {
 
     private HardwareMap hwMap;
@@ -13,13 +15,8 @@ public class Claw extends Subsystem {
     private JVBoysSoccerRobot robot;
     public boolean opened = false;
 
-    public enum ClawState {
-        NOTHING,
-        CLOSED,
-        OPEN
-    }
-
-    public ClawState clawState = ClawState.CLOSED;
+    public static double CLAW_CLOSED_POSITION = 0.57;
+    public static double CLAW_OPENED_POSITION = 1;
 
     public Claw(HardwareMap hwMap, Telemetry telemetry, JVBoysSoccerRobot robot) {
         this.hwMap = hwMap;
@@ -29,11 +26,11 @@ public class Claw extends Subsystem {
 
     public void openClaw() {
         opened = true;
-        robot.servoClaw.setPosition(RobotSettings.CLAW_OPENED_POSITION);
+        robot.servoClaw.setPosition(CLAW_OPENED_POSITION);
     }
     public void closeClaw() {
         opened = false;
-        robot.servoClaw.setPosition(RobotSettings.CLAW_CLOSED_POSITION);
+        robot.servoClaw.setPosition(CLAW_CLOSED_POSITION);
     }
 
     @Override
@@ -49,16 +46,7 @@ public class Claw extends Subsystem {
 
     @Override
     public void update() {
-        switch (clawState) {
-            case NOTHING:
-                break;
-            case CLOSED:
-                closeClaw();
-                break;
-            case OPEN:
-                openClaw();
-                break;
-        }
+
     }
 
     @Override

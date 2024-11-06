@@ -65,13 +65,13 @@ public class ClawTest extends LinearOpMode {
     public void clawControls() {
         switch (clawState) {
             case OPEN:
-                robot.clawSubsystem.clawState = Claw.ClawState.OPEN;
+                robot.clawSubsystem.openClaw();
                 if (currentGamepad1.x && !previousGamepad1.x) {
                     clawState = ClawControlsState.CLOSED;
                 }
                 break;
             case CLOSED:
-                robot.clawSubsystem.clawState = Claw.ClawState.CLOSED;
+                robot.clawSubsystem.closeClaw();
                 if (currentGamepad1.x && !previousGamepad1.x) {
                     clawState = ClawControlsState.OPEN;
                 }

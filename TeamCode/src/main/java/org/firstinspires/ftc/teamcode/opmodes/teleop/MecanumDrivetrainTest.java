@@ -71,7 +71,7 @@ public class MecanumDrivetrainTest extends LinearOpMode {
 
     // MECANUM DRIVE
     public void drivetrainControls() {
-        double x = gamepad1.left_stick_x * 1.05;
+        double x = gamepad1.left_stick_x;
         double y = gamepad1.left_stick_y * -1;
         double r = gamepad1.right_stick_x;
 
@@ -88,6 +88,13 @@ public class MecanumDrivetrainTest extends LinearOpMode {
             y /= 3;
             r /= 3;
         }
+
+        if (robot.drivetrainSubsystem.lastAngle != null) {
+            telemetry.addData("LAST ANGLE", robot.drivetrainSubsystem.lastAngle.firstAngle);
+        }
+        telemetry.addData("X", x);
+        telemetry.addData("Y", y);
+        telemetry.addData("R", r);
 
         // attempting to save motor calls == faster frequency of command calls
         if ( !(previousX == x && previousY == y && previousR == r) ) {

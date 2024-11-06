@@ -1,16 +1,21 @@
 package org.firstinspires.ftc.teamcode.opmodes.teleop;
 
 import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.teamcode.subsystems.Arm;
 import org.firstinspires.ftc.teamcode.subsystems.JVBoysSoccerRobot;
 
-public class TwoDriver extends LinearOpMode {
+@Config
+@TeleOp (name = "Arm Pivot Test", group = "Testing")
+public class ArmPivotTest extends LinearOpMode {
 
     private HardwareMap hwMap;
     private JVBoysSoccerRobot robot;
@@ -21,14 +26,18 @@ public class TwoDriver extends LinearOpMode {
     private Gamepad currentGamepad2;
     private Gamepad previousGamepad2;
 
-    private double previousX = 0, previousY = 0, previousR = 0;
+    public static int GOAL_POSITION = 0;
+
+    private enum ArmTestState {
+        PRESET1,
+        PRESET2,
+        NOTHING
+    }
+
+    private ArmTestState armTestState = ArmTestState.PRESET1;
 
     @Override
     public void runOpMode() throws InterruptedException {
-
-        telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
-        robot = new JVBoysSoccerRobot(hardwareMap, telemetry);
-
         currentGamepad1 = new Gamepad();
         previousGamepad1 = new Gamepad();
         currentGamepad2 = new Gamepad();
@@ -52,54 +61,38 @@ public class TwoDriver extends LinearOpMode {
                 currentGamepad2.copy(gamepad2);
 
                 telemetry.addLine("CONTROLS: ");
-                telemetry.addLine("    TO DO: THIS ");
+                telemetry.addLine("    DPAD UP: Turn servo preset 1, servo preset 2 ");
 
-//                armControls();
+                armControls();
 
                 robot.addTelemetry();
                 telemetry.update();
-                robot.update();
+                robot.armSubsystem.update();
                 robot.BR.readAll();
             }
         }
-
     }
 
-    public void riggingControls() {
-        // NOTHING BECAUSE WERE STUPID
-    }
-    public void clawControls() {
-
-    }
     public void armControls() {
 
-    }
-    public void drivetrainControls() {
-        double x = gamepad1.left_stick_x * 1.05;
-        double y = gamepad1.left_stick_y * -1;
-        double r = gamepad1.right_stick_x;
-
-        if (currentGamepad1.b && !previousGamepad1.b) {
-            robot.drivetrainSubsystem.isFieldCentric = !robot.drivetrainSubsystem.isFieldCentric;
+        switch (armTestState) {
+            case NOTHING:
+                break;
+            case PRESET1:
+                telemetry.addLine("PRESET 1");
+//                robot.armSubsystem.armPivotState = Arm.ArmPivotState.PRESET1;
+                if (currentGamepad1.dpad_up && !previousGamepad1.dpad_up) {
+                    armTestState = ArmTestState.PRESET2;
+                }
+                break;
+            case PRESET2:
+                telemetry.addLine("PRESET 2");
+//                robot.armSubsystem.armPivotState = Arm.ArmPivotState.PRESET2;
+                if (currentGamepad1.dpad_up && !previousGamepad1.dpad_up) {
+                    armTestState = ArmTestState.PRESET1;
+                }
+                break;
         }
 
-        if (currentGamepad1.a && !previousGamepad1.a) {
-            robot.drivetrainSubsystem.orthogonalMode = !robot.drivetrainSubsystem.orthogonalMode;
-        }
-
-        if (currentGamepad1.right_trigger > 0.01 || currentGamepad1.left_trigger > 0.01) {
-            x /= 3;
-            y /= 3;
-            r /= 3;
-        }
-
-        // attempting to save motor calls == faster frequency of command calls
-        if ( !(previousX == x && previousY == y && previousR == r) ) {
-            robot.drivetrainSubsystem.moveXYR(x, y, r);
-        }
-
-        previousX = x;
-        previousY = y;
-        previousR = r;
     }
 }

@@ -20,9 +20,21 @@ public class Arm extends Subsystem {
     private MotionProfile mp;
     private PIDController pid;
 
-    public static double Kp = 0, Ki = 0, Kd = 0;
+    public static int armPresetRest = -50;
+    public static int armPresetIntakeSpecimen = 300;
+    public static int armPresetIntakeSample = 0;
+    public static int armPresetDepositSpecimen = 650;
+    public static int armPreset1DepositSample = 500;
 
-    public static double MAX_POWER = 0.5;
+    public static double pivotPresetRest = 1;
+    public static double pivotPresetIntakeSpecimen = 0;
+    public static double pivotPresetIntakeSample = 0;
+    public static double pivotPresetDepositSpecimen = 0;
+    public static double pivotPresetDepositSample = 0.7;
+
+    public static double Kp = 0.027, Ki = 0, Kd = 0, Kg = 0;
+
+    public static double MAX_POWER = 1;
     public ElapsedTime motionProfileTime = new ElapsedTime();
 
     private double maxVelocity = 0;
@@ -40,7 +52,6 @@ public class Arm extends Subsystem {
         AT_REST,
         NOTHING
     }
-
     public ArmState armState = ArmState.NOTHING;
 
     public Arm(HardwareMap hwMap, Telemetry telemetry, JVBoysSoccerRobot robot) {
@@ -48,7 +59,7 @@ public class Arm extends Subsystem {
         this.telemetry = telemetry;
         this.robot = robot;
         this.mp = new MotionProfile();
-        pid = new PIDController(Kp, Ki, Kd);
+        pid = new PIDController(Kp, Ki, Kd, Kg);
     }
 
     public void setMotionProfile(int targetPosition) {
@@ -56,10 +67,12 @@ public class Arm extends Subsystem {
         motionProfileTime.reset();
         mp.setStartingTime(motionProfileTime.seconds());
 
-        STARTING_POS = BulkReading.pMotorArmL;
+        STARTING_POS = BulkReading.pMotorArmR;
         ENDING_POS = targetPosition;
 
         mp.setProfile(STARTING_POS, ENDING_POS);
+
+//        armState = ArmState.MOTION_PROFILE;
     }
 
     public void noEncoders() {
@@ -78,12 +91,10 @@ public class Arm extends Subsystem {
         if (power < -MAX_POWER) {
             power = -MAX_POWER;
         }
-
         if (power != previousPower) {
             robot.motorArmL.setPower(power);
             robot.motorArmR.setPower(power);
         }
-
         previousPower = power;
     }
 
@@ -91,8 +102,9 @@ public class Arm extends Subsystem {
     public void addTelemetry() {
         if (UseTelemetry.ARM_TELEMETRY) {
             telemetry.addLine("ARM TELEMETRY: ON");
-//            telemetry.addLine("ARM TELEMETRY: ON");
-
+            telemetry.addData("    Arm Power", robot.motorArmL.getPower());
+//            telemetry.addData("    Arm Encoder Position (L)", BulkReading.pMotorArmL);
+            telemetry.addData("    Arm Encoder Position (R)", BulkReading.pMotorArmR);
         }else {
             telemetry.addLine("ARM TELEMETRY: OFF");
         }
@@ -113,25 +125,26 @@ public class Arm extends Subsystem {
                 telemetry.addData("Reference Acceleration", refAcl);
 
                 double pidPower = 0;
-                double output = 0;
-                if ( !(previousCurrentPos == BulkReading.pMotorArmL && previousRefPos == refPos) ) {
-                    pidPower = pid.calculatePID(refPos, BulkReading.pMotorArmL);
-
-                    output = pidPower;
-                    setArmPower(output);
+                if ( !(previousCurrentPos == BulkReading.pMotorArmR && previousRefPos == refPos) ) {
+                    pidPower = pid.calculatePID(refPos, BulkReading.pMotorArmR);
+                    setArmPower(pidPower);
                 }
 
-                previousCurrentPos = BulkReading.pMotorArmL;
+                previousCurrentPos = BulkReading.pMotorArmR;
                 previousRefPos = refPos;
+
+//                if (!mp.isBusy()) {
+//                    armState = ArmState.BASIC_PID;
+//                }
                 break;
             case BASIC_PID:
-                if ( !(previousCurrentPos == BulkReading.pMotorArmL && previousRefPos == referencePos) ) {
-                    double power = pid.calculatePID(referencePos, BulkReading.pMotorArmL);
+//                if ( !(previousCurrentPos == BulkReading.pMotorArmR && previousRefPos == referencePos) ) {
+                    double power = pid.calculatePID(referencePos, BulkReading.pMotorArmR);
                     setArmPower(power);
-                }
+//                }
 
-                previousCurrentPos = BulkReading.pMotorArmL;
-                previousRefPos = referencePos;
+//                previousCurrentPos = BulkReading.pMotorArmR;
+//                previousRefPos = referencePos;
                 break;
             case NOTHING:
                 break;
@@ -139,11 +152,54 @@ public class Arm extends Subsystem {
                 setArmPower(0);
                 break;
         }
-
     }
 
     @Override
     public void stop() {
 
     }
+
+    public void setRest() {
+        setPivotRest();
+        setMotionProfile(armPresetRest);
+    }
+    public void setIntakeSpecimen() {
+        setPivotIntakeSpecimen();
+        setMotionProfile(armPresetIntakeSpecimen);
+    }
+    public void setIntakeSample() {
+        setPivotIntakeSample();
+        setMotionProfile(armPresetIntakeSample);
+    }
+    public void setDepositSpecimen() {
+        setPivotDepositSpecimen();
+        setMotionProfile(armPresetDepositSpecimen);
+
+    }
+    public void setDepositSample() {
+        setPivotDepositSample();
+        setMotionProfile(armPreset1DepositSample);
+    }
+
+    public void setPivotRest() {
+        robot.servoPivotL.setPosition(pivotPresetRest);
+        robot.servoPivotR.setPosition(pivotPresetRest);
+    }
+    public void setPivotIntakeSpecimen() {
+        robot.servoPivotL.setPosition(pivotPresetIntakeSpecimen);
+        robot.servoPivotR.setPosition(pivotPresetIntakeSpecimen);
+    }
+    public void setPivotIntakeSample() {
+        robot.servoPivotL.setPosition(pivotPresetIntakeSample);
+        robot.servoPivotR.setPosition(pivotPresetIntakeSample);
+    }
+    public void setPivotDepositSpecimen() {
+        robot.servoPivotL.setPosition(pivotPresetDepositSpecimen);
+        robot.servoPivotR.setPosition(pivotPresetDepositSpecimen);
+    }
+    public void setPivotDepositSample() {
+        robot.servoPivotL.setPosition(pivotPresetDepositSample);
+        robot.servoPivotR.setPosition(pivotPresetDepositSample);
+    }
+
 }

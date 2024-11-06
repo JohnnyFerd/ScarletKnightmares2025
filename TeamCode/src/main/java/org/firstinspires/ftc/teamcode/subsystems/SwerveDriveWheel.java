@@ -18,7 +18,7 @@ public class SwerveDriveWheel {
     private double officialSetpoint = 0;
 
     public SwerveDriveWheel(double p, double i, double d, DcMotorEx speedMotor, CRServo directionServo) {
-        directionController = new PIDController(p, i, d);
+        directionController = new PIDController(p, i, d, 0);
         this.speedMotor = speedMotor;
         this.directionServo = directionServo;
     }

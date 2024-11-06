@@ -121,6 +121,8 @@ public class JVBoysSoccerRobot {
         motorArmL.setDirection(RobotSettings.ARM_LMOTOR_REVERSED ? DcMotor.Direction.REVERSE : DcMotor.Direction.FORWARD);
         motorArmR.setDirection(RobotSettings.ARM_RMOTOR_REVERSED ? DcMotor.Direction.REVERSE : DcMotor.Direction.FORWARD);
 
+        motorArmR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
         motorArmL.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         motorArmR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     }

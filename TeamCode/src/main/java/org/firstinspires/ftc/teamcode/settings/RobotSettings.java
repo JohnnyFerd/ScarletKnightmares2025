@@ -23,8 +23,8 @@ public class RobotSettings {
 
     public static String ARM_LMOTOR_NAME = "ArmLeft";
     public static String ARM_RMOTOR_NAME = "ArmRight";
-    public static boolean ARM_LMOTOR_REVERSED = true;
-    public static boolean ARM_RMOTOR_REVERSED = false;
+    public static boolean ARM_LMOTOR_REVERSED = false;
+    public static boolean ARM_RMOTOR_REVERSED = true;
 
     public static String ARM_LPIVOT_NAME = "ArmPivotLeft";
     public static String ARM_RPIVOT_NAME = "ArmPivotRight";
@@ -43,8 +43,5 @@ public class RobotSettings {
 
     public static String CLAW_SERVO_NAME = "ClawServo";
     public static boolean CLAW_SERVO_REVERSED = false;
-
-    public static double CLAW_CLOSED_POSITION = 0;
-    public static double CLAW_OPENED_POSITION = 0.1;
 
 }

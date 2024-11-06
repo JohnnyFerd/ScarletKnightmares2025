@@ -34,7 +34,7 @@ public class BulkReading {
 //        vBL = robot.motorBL.getVelocity();
 //        vBR = robot.motorBR.getVelocity();
 
-        pMotorArmL = robot.motorArmL.getCurrentPosition();
+//        pMotorArmL = robot.motorArmL.getCurrentPosition();
         pMotorArmR = robot.motorArmR.getCurrentPosition();
     }
 
