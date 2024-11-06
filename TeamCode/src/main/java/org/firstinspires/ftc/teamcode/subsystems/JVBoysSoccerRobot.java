@@ -66,10 +66,9 @@ public class JVBoysSoccerRobot {
         drivetrainSubsystem = new Drivetrain(hwMap, telemetry, this);
         clawSubsystem = new Claw(hwMap, telemetry, this);
         armSubsystem = new Arm(hwMap, telemetry, this);
-        riggingSubsystem = new Rigging(hwMap, telemetry, this);
-//        launcherSubsystem = new AirplaneLauncher(hwMap, telemetry, this);
+//        riggingSubsystem = new Rigging(hwMap, telemetry, this);
 
-        subsystems = Arrays.asList(drivetrainSubsystem, armSubsystem, riggingSubsystem, clawSubsystem
+        subsystems = Arrays.asList(drivetrainSubsystem, armSubsystem, clawSubsystem
 //                , clawSubsystem, armSubsystem, riggingSubsystem, launcherSubsystem
         );
         BR = new BulkReading(this);
@@ -88,7 +87,7 @@ public class JVBoysSoccerRobot {
 
         initDrivetrainHardware();
         initArmHardware();
-        initRiggingHardware();
+//        initRiggingHardware();
         initClawHardware();
     }
 

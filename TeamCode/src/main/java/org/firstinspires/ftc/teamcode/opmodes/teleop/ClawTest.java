@@ -8,11 +8,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.teamcode.subsystems.Claw;
 import org.firstinspires.ftc.teamcode.subsystems.JVBoysSoccerRobot;
-import org.firstinspires.ftc.teamcode.subsystems.Rigging;
-import org.firstinspires.ftc.teamcode.util.BulkReading;
-import org.firstinspires.ftc.teamcode.settings.RobotSettings;
 
 @Config
 @TeleOp (name = "Claw Test", group = "Testing")
@@ -23,12 +19,12 @@ public class ClawTest extends LinearOpMode {
 
     private Gamepad currentGamepad1, previousGamepad1;
 
-    private enum ClawControlsState {
+    private enum TestState {
         OPEN,
         CLOSED,
         NOTHING
     }
-    private ClawControlsState clawState = ClawControlsState.CLOSED;
+    private TestState testState = TestState.CLOSED;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -63,17 +59,17 @@ public class ClawTest extends LinearOpMode {
     }
 
     public void clawControls() {
-        switch (clawState) {
+        switch (testState) {
             case OPEN:
                 robot.clawSubsystem.openClaw();
                 if (currentGamepad1.x && !previousGamepad1.x) {
-                    clawState = ClawControlsState.CLOSED;
+                    testState = TestState.CLOSED;
                 }
                 break;
             case CLOSED:
                 robot.clawSubsystem.closeClaw();
                 if (currentGamepad1.x && !previousGamepad1.x) {
-                    clawState = ClawControlsState.OPEN;
+                    testState = TestState.OPEN;
                 }
                 break;
             case NOTHING:

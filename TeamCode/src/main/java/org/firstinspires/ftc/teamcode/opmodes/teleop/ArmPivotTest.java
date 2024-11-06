@@ -9,8 +9,6 @@ import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.teamcode.subsystems.Arm;
 import org.firstinspires.ftc.teamcode.subsystems.JVBoysSoccerRobot;
 
 @Config
@@ -26,15 +24,16 @@ public class ArmPivotTest extends LinearOpMode {
     private Gamepad currentGamepad2;
     private Gamepad previousGamepad2;
 
-    public static int GOAL_POSITION = 0;
+    public static double PRESET1 = 1;
+    public static double PRESET2 = 0.3;
 
-    private enum ArmTestState {
+    private enum TestState {
         PRESET1,
         PRESET2,
         NOTHING
     }
 
-    private ArmTestState armTestState = ArmTestState.PRESET1;
+    private TestState testState = TestState.PRESET1;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -75,21 +74,21 @@ public class ArmPivotTest extends LinearOpMode {
 
     public void armControls() {
 
-        switch (armTestState) {
+        switch (testState) {
             case NOTHING:
                 break;
             case PRESET1:
                 telemetry.addLine("PRESET 1");
-//                robot.armSubsystem.armPivotState = Arm.ArmPivotState.PRESET1;
+                robot.armSubsystem.setPivot(PRESET1);
                 if (currentGamepad1.dpad_up && !previousGamepad1.dpad_up) {
-                    armTestState = ArmTestState.PRESET2;
+                    testState = TestState.PRESET2;
                 }
                 break;
             case PRESET2:
                 telemetry.addLine("PRESET 2");
-//                robot.armSubsystem.armPivotState = Arm.ArmPivotState.PRESET2;
+                robot.armSubsystem.setPivot(PRESET2);
                 if (currentGamepad1.dpad_up && !previousGamepad1.dpad_up) {
-                    armTestState = ArmTestState.PRESET1;
+                    testState = TestState.PRESET1;
                 }
                 break;
         }

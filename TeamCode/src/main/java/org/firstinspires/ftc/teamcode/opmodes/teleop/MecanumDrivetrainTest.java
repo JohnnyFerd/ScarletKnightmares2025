@@ -50,13 +50,13 @@ public class MecanumDrivetrainTest extends LinearOpMode {
                 currentGamepad2.copy(gamepad2);
 
                 telemetry.addLine("CONTROLS: ");
-                telemetry.addLine("    DPAD UP: Reset Init Yaw ");
+                telemetry.addLine("    DPAD DOWN: Reset Init Yaw ");
                 telemetry.addLine("    B: Swap from field centric to robot centric ");
-                telemetry.addLine("    A: Toggle Orthogonal Mode ");
+                telemetry.addLine("    DPAD RIGHT: Toggle Orthogonal Mode ");
                 telemetry.addLine("    TRIGGERS: Slowdown the robot by factor of 3 ");
 
                 // Failsafe field-oriented view
-                if (currentGamepad1.dpad_up && !previousGamepad1.dpad_up) {
+                if (currentGamepad1.dpad_down && !previousGamepad1.dpad_down) {
                     robot.drivetrainSubsystem.resetInitYaw();
                 }
 
@@ -79,7 +79,7 @@ public class MecanumDrivetrainTest extends LinearOpMode {
             robot.drivetrainSubsystem.isFieldCentric = !robot.drivetrainSubsystem.isFieldCentric;
         }
 
-        if (currentGamepad1.a && !previousGamepad1.a) {
+        if (currentGamepad1.dpad_right && !previousGamepad1.dpad_right) {
             robot.drivetrainSubsystem.orthogonalMode = !robot.drivetrainSubsystem.orthogonalMode;
         }
 
@@ -92,6 +92,7 @@ public class MecanumDrivetrainTest extends LinearOpMode {
         if (robot.drivetrainSubsystem.lastAngle != null) {
             telemetry.addData("LAST ANGLE", robot.drivetrainSubsystem.lastAngle.firstAngle);
         }
+        telemetry.addData("CURRENT REFERENCE ANGLE", 1);
         telemetry.addData("X", x);
         telemetry.addData("Y", y);
         telemetry.addData("R", r);

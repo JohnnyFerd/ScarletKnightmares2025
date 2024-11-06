@@ -40,7 +40,7 @@ public class Arm extends Subsystem {
     private double maxVelocity = 0;
     private int STARTING_POS = 0;
     private int ENDING_POS = 0;
-    private double previousPower = 5;
+    private double previousPower = 100000;
     private double previousRefPos = 100000;
     private double previousCurrentPos = 100000;
 
@@ -52,7 +52,7 @@ public class Arm extends Subsystem {
         AT_REST,
         NOTHING
     }
-    public ArmState armState = ArmState.NOTHING;
+    public ArmState armState = ArmState.AT_REST;
 
     public Arm(HardwareMap hwMap, Telemetry telemetry, JVBoysSoccerRobot robot) {
         this.hwMap = hwMap;
@@ -142,7 +142,6 @@ public class Arm extends Subsystem {
                     double power = pid.calculatePID(referencePos, BulkReading.pMotorArmR);
                     setArmPower(power);
 //                }
-
 //                previousCurrentPos = BulkReading.pMotorArmR;
 //                previousRefPos = referencePos;
                 break;
@@ -174,7 +173,6 @@ public class Arm extends Subsystem {
     public void setDepositSpecimen() {
         setPivotDepositSpecimen();
         setMotionProfile(armPresetDepositSpecimen);
-
     }
     public void setDepositSample() {
         setPivotDepositSample();
@@ -200,6 +198,10 @@ public class Arm extends Subsystem {
     public void setPivotDepositSample() {
         robot.servoPivotL.setPosition(pivotPresetDepositSample);
         robot.servoPivotR.setPosition(pivotPresetDepositSample);
+    }
+    public void setPivot(double position) {
+        robot.servoPivotL.setPosition(position);
+        robot.servoPivotR.setPosition(position);
     }
 
 }

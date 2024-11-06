@@ -28,6 +28,7 @@ public class Drivetrain extends Subsystem {
         this.telemetry = telemetry;
         this.robot = robot;
 
+        resetInitYaw();
 //        lastAngle = robot.imu.getRobotOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
 //        initYaw = PoseStorage.originalInitYaw + PoseStorage.AUTO_SHIFT_DEGREES; // b/c auto started with back facing front
     }

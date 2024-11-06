@@ -1,7 +1,5 @@
 package org.firstinspires.ftc.teamcode.opmodes.teleop;
 
-import static org.firstinspires.ftc.teamcode.subsystems.Arm.pivotPresetRest;
-
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
@@ -12,7 +10,6 @@ import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.subsystems.Arm;
 import org.firstinspires.ftc.teamcode.subsystems.JVBoysSoccerRobot;
 
@@ -29,15 +26,16 @@ public class FullArmTest extends LinearOpMode {
     private Gamepad currentGamepad2;
     private Gamepad previousGamepad2;
 
-    private enum ArmTestState {
+    private enum TestState {
         GOING_TO_REST,
         GOING_TO_REST2,
+        GOING_TO_REST3,
         REST,
         OFF,
         MOVE_ARM
     }
 
-    private ArmTestState armTestState = ArmTestState.REST;
+    private TestState testState = TestState.REST;
     public double resetTime = 0;
 
     @Override
@@ -55,8 +53,6 @@ public class FullArmTest extends LinearOpMode {
         telemetry.addData("Elapsed time", runtime.toString());
         telemetry.update();
 
-        robot.armSubsystem.armState = Arm.ArmState.AT_REST;
-
         waitForStart();
 
         if (opModeIsActive()) {
@@ -68,7 +64,7 @@ public class FullArmTest extends LinearOpMode {
 
                 telemetry.addLine("CONTROLS: ");
                 telemetry.addLine("    DPAD UP: Turn motors on / off ");
-                telemetry.addData("    STATE", armTestState);
+                telemetry.addData("    STATE", testState);
                 armControls();
                 clawControls();
 
@@ -81,37 +77,35 @@ public class FullArmTest extends LinearOpMode {
     }
 
     public void armControls() {
-        switch (armTestState) {
+        switch (testState) {
             case REST:
-                telemetry.addLine("MOTORS: OFF");
 //                robot.armSubsystem.armState = Arm.ArmState.AT_REST;
                 robot.armSubsystem.setPivotRest();
                 if (currentGamepad1.x && !previousGamepad1.x) {
                     robot.armSubsystem.armState = Arm.ArmState.MOTION_PROFILE;
                     robot.armSubsystem.setDepositSample();
-                    armTestState = ArmTestState.MOVE_ARM;
+                    testState = TestState.MOVE_ARM;
                 }
                 if (currentGamepad1.y && !previousGamepad1.y) {
                     robot.armSubsystem.armState = Arm.ArmState.MOTION_PROFILE;
                     robot.armSubsystem.setDepositSpecimen();
-                    armTestState = ArmTestState.MOVE_ARM;
+                    testState = TestState.MOVE_ARM;
                 }
                 if (currentGamepad1.a && !previousGamepad1.a) {
                     robot.armSubsystem.armState = Arm.ArmState.MOTION_PROFILE;
                     robot.armSubsystem.setIntakeSample();
-                    armTestState = ArmTestState.MOVE_ARM;
+                    testState = TestState.MOVE_ARM;
                 }
                 if (currentGamepad1.b && !previousGamepad1.b) {
                     robot.armSubsystem.armState = Arm.ArmState.MOTION_PROFILE;
                     robot.armSubsystem.setIntakeSpecimen();
-                    armTestState = ArmTestState.MOVE_ARM;
+                    testState = TestState.MOVE_ARM;
                 }
                 break;
             case MOVE_ARM:
-                telemetry.addLine("MOTORS: ON");
                 if (currentGamepad1.dpad_up && !previousGamepad1.dpad_up) {
                     robot.armSubsystem.setRest();
-                    armTestState = ArmTestState.GOING_TO_REST;
+                    testState = TestState.GOING_TO_REST;
                 }
                 if (currentGamepad1.x && !previousGamepad1.x) {
                     robot.armSubsystem.setDepositSample();
@@ -131,15 +125,22 @@ public class FullArmTest extends LinearOpMode {
             case GOING_TO_REST:
                 if (!robot.armSubsystem.getMP().isBusy()) {
                     resetTime = runtime.seconds();
-                    armTestState = ArmTestState.GOING_TO_REST2;
+                    testState = TestState.GOING_TO_REST2;
                 }
                 break;
             case GOING_TO_REST2:
-                if (runtime.seconds() - resetTime > 0.5) {
+                if (runtime.seconds() - resetTime > 0.2) {
                     robot.armSubsystem.armState = Arm.ArmState.AT_REST;
+                    robot.armSubsystem.setArmPower(0);
+                    resetTime = runtime.seconds();
+                    testState = TestState.GOING_TO_REST3;
+                }
+                break;
+            case GOING_TO_REST3:
+                if (runtime.seconds() - resetTime > 0.2) {
                     robot.motorArmR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                     robot.motorArmR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-                    armTestState = ArmTestState.REST;
+                    testState = TestState.REST;
                 }
                 break;
         }
