@@ -70,6 +70,8 @@ public class Arm extends Subsystem {
         STARTING_POS = BulkReading.pMotorArmR;
         ENDING_POS = targetPosition;
 
+        referencePos = targetPosition;
+
         mp.setProfile(STARTING_POS, ENDING_POS);
 
 //        armState = ArmState.MOTION_PROFILE;
