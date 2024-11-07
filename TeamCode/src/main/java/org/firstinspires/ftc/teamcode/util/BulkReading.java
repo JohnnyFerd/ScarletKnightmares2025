@@ -7,8 +7,8 @@ import org.firstinspires.ftc.teamcode.subsystems.JVBoysSoccerRobot;
  */
 
 public class BulkReading {
-
     private JVBoysSoccerRobot robot;
+    private boolean isAuto = false;
 
     public static double pFL = 0;
     public static double pFR = 0;
@@ -22,20 +22,27 @@ public class BulkReading {
     public BulkReading(JVBoysSoccerRobot robot) {
         this.robot = robot;
     }
-
-    public void readAll() {
-        pFL = robot.motorFL.getCurrentPosition();
-        pFR = robot.motorFR.getCurrentPosition();
-        pBL = robot.motorBL.getCurrentPosition();
-        pBR = robot.motorBR.getCurrentPosition();
-
-//        vFL = robot.motorFL.getVelocity();
-//        vFR = robot.motorFR.getVelocity();
-//        vBL = robot.motorBL.getVelocity();
-//        vBR = robot.motorBR.getVelocity();
-
-//        pMotorArmL = robot.motorArmL.getCurrentPosition();
-        pMotorArmR = robot.motorArmR.getCurrentPosition();
+    public BulkReading(JVBoysSoccerRobot robot, boolean isAuto) {
+        this(robot);
+        this.isAuto = isAuto;
     }
 
+    public void readAll() {
+        if (isAuto) {
+            pMotorArmR = robot.motorArmR.getCurrentPosition();
+        }else {
+            pFL = robot.motorFL.getCurrentPosition();
+            pFR = robot.motorFR.getCurrentPosition();
+            pBL = robot.motorBL.getCurrentPosition();
+            pBR = robot.motorBR.getCurrentPosition();
+
+//            vFL = robot.motorFL.getVelocity();
+//            vFR = robot.motorFR.getVelocity();
+//            vBL = robot.motorBL.getVelocity();
+//            vBR = robot.motorBR.getVelocity();
+//
+//            pMotorArmL = robot.motorArmL.getCurrentPosition();
+            pMotorArmR = robot.motorArmR.getCurrentPosition();
+        }
+    }
 }

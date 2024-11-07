@@ -74,6 +74,26 @@ public class JVBoysSoccerRobot {
         BR = new BulkReading(this);
     }
 
+    public JVBoysSoccerRobot(HardwareMap hwMap, Telemetry telemetry, boolean isAuto) {
+        if (isAuto) {
+            // Configuring Hubs to auto mode for bulk reads
+            allHubs = hwMap.getAll(LynxModule.class);
+            for (LynxModule hub : allHubs) {
+//            hub.setBulkCachingMode(LynxModule.BulkCachingMode.OFF);
+                hub.setBulkCachingMode(LynxModule.BulkCachingMode.AUTO);
+            }
+
+            initArmHardware();
+            initClawHardware();
+            clawSubsystem = new Claw(hwMap, telemetry, this);
+            armSubsystem = new Arm(hwMap, telemetry, this);
+            subsystems = Arrays.asList(clawSubsystem, armSubsystem);
+            BR = new BulkReading(this, true);
+        }else {
+//            this(hwMap, telemetry);
+        }
+    }
+
     public void initIMU() {
         imu = hwMap.get(IMU.class, "imu");
         IMU.Parameters parameters1 = new IMU.Parameters(new RevHubOrientationOnRobot(

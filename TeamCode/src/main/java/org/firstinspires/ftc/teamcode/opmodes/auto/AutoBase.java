@@ -34,7 +34,7 @@ public abstract class AutoBase extends LinearOpMode {
 
     public void initialize() {
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
-        robot = new JVBoysSoccerRobot(hardwareMap, telemetry);
+        robot = new JVBoysSoccerRobot(hardwareMap, telemetry, true);
 
         armLift = new ArmLift();
         clawSystem = new ClawSystem();
