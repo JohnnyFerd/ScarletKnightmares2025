@@ -49,9 +49,8 @@ public class ClawTest extends LinearOpMode {
                 currentGamepad1.copy(gamepad1);
 
                 clawControls();
+                telemetry.addData("Position", robot.servoClaw.getPosition());
 
-                robot.clawSubsystem.addTelemetry();
-                robot.clawSubsystem.update();
                 robot.BR.readAll();
                 telemetry.update();
             }
@@ -61,12 +60,14 @@ public class ClawTest extends LinearOpMode {
     public void clawControls() {
         switch (testState) {
             case OPEN:
+                telemetry.addLine("CLAW OPENED");
                 robot.clawSubsystem.openClaw();
                 if (currentGamepad1.x && !previousGamepad1.x) {
                     testState = TestState.CLOSED;
                 }
                 break;
             case CLOSED:
+                telemetry.addLine("CLAW CLOSED");
                 robot.clawSubsystem.closeClaw();
                 if (currentGamepad1.x && !previousGamepad1.x) {
                     testState = TestState.OPEN;

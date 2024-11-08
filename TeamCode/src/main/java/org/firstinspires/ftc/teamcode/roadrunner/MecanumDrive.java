@@ -62,14 +62,14 @@ public final class MecanumDrive {
                 RobotSettings.USB_FACING_DIR;
 
         // drive model parameters
-        public double inPerTick = 1;
-        public double lateralInPerTick = inPerTick;
-        public double trackWidthTicks = 0;
+        public double inPerTick = 124.0 / 5469.0;
+        public double lateralInPerTick = 62.5 / 2415.0;
+        public double trackWidthTicks = 1218.1797293341328;
 
         // feedforward parameters (in tick units)
-        public double kS = 0;
-        public double kV = 0;
-        public double kA = 0;
+        public double kS = 1.2114912989457398;
+        public double kV = 0.004195028313762864;
+        public double kA = 0.00008;
 
         // path profile parameters (in inches)
         public double maxWheelVel = 50;
@@ -85,9 +85,9 @@ public final class MecanumDrive {
         public double lateralGain = 0.0;
         public double headingGain = 0.0; // shared with turn
 
-        public double axialVelGain = 0.0;
-        public double lateralVelGain = 0.0;
-        public double headingVelGain = 0.0; // shared with turn
+        public double axialVelGain = 6.0;
+        public double lateralVelGain = 3.0;
+        public double headingVelGain = 3.0; // shared with turn
     }
 
     public static Params PARAMS = new Params();

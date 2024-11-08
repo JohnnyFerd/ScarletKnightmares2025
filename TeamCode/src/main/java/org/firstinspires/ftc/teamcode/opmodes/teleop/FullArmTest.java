@@ -12,6 +12,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.subsystems.Arm;
 import org.firstinspires.ftc.teamcode.subsystems.JVBoysSoccerRobot;
+import org.firstinspires.ftc.teamcode.util.BulkReading;
 
 @Config
 @TeleOp (name = "Full Arm Test", group = "Testing")
@@ -36,7 +37,7 @@ public class FullArmTest extends LinearOpMode {
     }
 
     private TestState testState = TestState.REST;
-    public double resetTime = 0;
+    private double resetTime = 0;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -108,17 +109,56 @@ public class FullArmTest extends LinearOpMode {
                     testState = TestState.GOING_TO_REST;
                 }
                 if (currentGamepad1.x && !previousGamepad1.x) {
+                    robot.armSubsystem.armState = Arm.ArmState.MOTION_PROFILE;
                     robot.armSubsystem.setDepositSample();
                 }
                 if (currentGamepad1.y && !previousGamepad1.y) {
+                    robot.armSubsystem.armState = Arm.ArmState.MOTION_PROFILE;
                     robot.armSubsystem.setDepositSpecimen();
                 }
                 if (currentGamepad1.a && !previousGamepad1.a) {
+                    robot.armSubsystem.armState = Arm.ArmState.MOTION_PROFILE;
                     robot.armSubsystem.setIntakeSample();
                 }
                 if (currentGamepad1.b && !previousGamepad1.b) {
+                    robot.armSubsystem.armState = Arm.ArmState.MOTION_PROFILE;
                     robot.armSubsystem.setIntakeSpecimen();
                 }
+
+                if (currentGamepad1.right_trigger > 0.01 && currentGamepad1.left_trigger <= 0.01) {
+                    double newPosition = robot.servoPivotR.getPosition() + Arm.pivotSpeedConstant * currentGamepad1.right_trigger;
+                    robot.armSubsystem.setPivot(newPosition);
+                }
+                if (currentGamepad1.left_trigger > 0.01 && currentGamepad1.right_trigger <= 0.01) {
+                    double newPosition = robot.servoPivotR.getPosition() - Arm.pivotSpeedConstant * currentGamepad1.left_trigger;
+                    robot.armSubsystem.setPivot(newPosition);
+                }
+
+                if (currentGamepad1.dpad_down && !previousGamepad1.dpad_down) {
+                    robot.armSubsystem.pivotDown = !robot.armSubsystem.pivotDown;
+                    if (robot.armSubsystem.pivotDown) {
+                        robot.armSubsystem.setPivot(robot.armSubsystem.previousPivotPos - Arm.pivotDownIncrement);
+                    }else {
+                        robot.armSubsystem.setPivot(robot.armSubsystem.previousPivotPos);
+                    }
+                }
+
+                if (Math.abs(currentGamepad1.right_stick_y) > 0.01) {
+                    if (robot.armSubsystem.armState == Arm.ArmState.MOTION_PROFILE) {
+                        robot.armSubsystem.referencePos = BulkReading.pMotorArmR;
+                        robot.armSubsystem.armState = Arm.ArmState.BASIC_PID;
+                    }else if (robot.armSubsystem.armState == Arm.ArmState.BASIC_PID) {
+                        robot.armSubsystem.referencePos = robot.armSubsystem.referencePos + Arm.armSpeedConstantBig * currentGamepad1.right_stick_y * -1;
+                    }
+                }else if (Math.abs(currentGamepad1.left_stick_y) > 0.01) {
+                    if (robot.armSubsystem.armState == Arm.ArmState.MOTION_PROFILE) {
+                        robot.armSubsystem.referencePos = BulkReading.pMotorArmR;
+                        robot.armSubsystem.armState = Arm.ArmState.BASIC_PID;
+                    }else if (robot.armSubsystem.armState == Arm.ArmState.BASIC_PID) {
+                        robot.armSubsystem.referencePos = robot.armSubsystem.referencePos + Arm.armSpeedConstant * currentGamepad1.right_stick_y * -1;
+                    }
+                }
+
                 break;
             case OFF:
                 break;

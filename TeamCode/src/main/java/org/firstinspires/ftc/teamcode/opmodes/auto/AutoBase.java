@@ -44,24 +44,46 @@ public abstract class AutoBase extends LinearOpMode {
     }
 
     public class ArmLift {
-        private boolean isGoingToRest = false;
-        public class DepositSpecimen implements Action {
+        private boolean stopUpdate = false;
+        public class UpdateArmSubsystem implements Action {
             private boolean initialized = false;
 
             @Override
             public boolean run(@NonNull TelemetryPacket telemetryPacket) {
                 if (!initialized) {
                     initialized = true;
-                    robot.armSubsystem.setDepositSpecimen();
-                    robot.armSubsystem.armState = Arm.ArmState.MOTION_PROFILE;
+                    stopUpdate = false;
                 }
 
-                if (isGoingToRest) {
+                if (stopUpdate) {
                     return false;
                 }else {
                     robot.armSubsystem.update();
                     return true;
                 }
+            }
+        }
+        public Action updateArmSubsystem() {
+            return new UpdateArmSubsystem();
+        }
+
+        public class StopUpdate implements Action {
+            @Override
+            public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                stopUpdate = true;
+                return false;
+            }
+        }
+        public Action stopUpdate() {
+            return new StopUpdate();
+        }
+
+        public class DepositSpecimen implements Action {
+            @Override
+            public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                robot.armSubsystem.setDepositSpecimen();
+                robot.armSubsystem.armState = Arm.ArmState.MOTION_PROFILE;
+                return false;
             }
         }
         public Action depositSpecimen() {
@@ -69,22 +91,11 @@ public abstract class AutoBase extends LinearOpMode {
         }
 
         public class IntakeSpecimen implements Action {
-            private boolean initialized = false;
-
             @Override
             public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-                if (!initialized) {
-                    initialized = true;
-                    robot.armSubsystem.setIntakeSpecimen();
-                    robot.armSubsystem.armState = Arm.ArmState.MOTION_PROFILE;
-                }
-
-                if (isGoingToRest) {
-                    return false;
-                }else {
-                    robot.armSubsystem.update();
-                    return true;
-                }
+                robot.armSubsystem.setIntakeSpecimen();
+                robot.armSubsystem.armState = Arm.ArmState.MOTION_PROFILE;
+                return false;
             }
         }
         public Action intakeSpecimen() {
@@ -92,22 +103,11 @@ public abstract class AutoBase extends LinearOpMode {
         }
 
         public class DepositSample implements Action {
-            private boolean initialized = false;
-
             @Override
             public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-                if (!initialized) {
-                    initialized = true;
-                    robot.armSubsystem.setDepositSample();
-                    robot.armSubsystem.armState = Arm.ArmState.MOTION_PROFILE;
-                }
-
-                if (isGoingToRest) {
-                    return false;
-                }else {
-                    robot.armSubsystem.update();
-                    return true;
-                }
+                robot.armSubsystem.setDepositSample();
+                robot.armSubsystem.armState = Arm.ArmState.MOTION_PROFILE;
+                return false;
             }
         }
         public Action depositSample() {
@@ -115,22 +115,11 @@ public abstract class AutoBase extends LinearOpMode {
         }
 
         public class IntakeSample implements Action {
-            private boolean initialized = false;
-
             @Override
             public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-                if (!initialized) {
-                    initialized = true;
-                    robot.armSubsystem.setIntakeSample();
-                    robot.armSubsystem.armState = Arm.ArmState.MOTION_PROFILE;
-                }
-
-                if (isGoingToRest) {
-                    return false;
-                }else {
-                    robot.armSubsystem.update();
-                    return true;
-                }
+                robot.armSubsystem.setIntakeSample();
+                robot.armSubsystem.armState = Arm.ArmState.MOTION_PROFILE;
+                return false;
             }
         }
         public Action intakeSample() {
@@ -144,7 +133,6 @@ public abstract class AutoBase extends LinearOpMode {
             public boolean run(@NonNull TelemetryPacket telemetryPacket) {
                 if (!initialized) {
                     initialized = true;
-                    isGoingToRest = true;
                     robot.armSubsystem.setRest();
                     robot.armSubsystem.armState = Arm.ArmState.MOTION_PROFILE;
                 }
@@ -156,7 +144,6 @@ public abstract class AutoBase extends LinearOpMode {
                     robot.motorArmR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
                     return false;
                 }else {
-                    robot.armSubsystem.update();
                     return true;
                 }
             }

@@ -26,27 +26,27 @@ public class RedSpecimen1 extends AutoBase {
 
         initialize();
 
-        Pose2d initialPose = new Pose2d(8.65, -55, Math.toRadians(90));
+        Pose2d initialPose = new Pose2d(8.65, -72, Math.toRadians(270));
         MecanumDrive drive = new MecanumDrive(hardwareMap, initialPose);
 
         TrajectoryActionBuilder traj1 = drive.actionBuilder(initialPose)
                 .waitSeconds(1)
-                .lineToY(-24.5);
+                .lineToY(-60);
         TrajectoryActionBuilder driveBackwards = traj1.fresh()
-                .lineToY(-26);
+                .lineToY(-62);
         TrajectoryActionBuilder traj2 = driveBackwards.fresh()
-                .setReversed(true)
                 .splineTo(new Vector2d(48, -48), Math.toRadians(0))
-                .setReversed(false)
-                .turn(Math.toRadians(90))
+                .turn(Math.toRadians(-90))
                 .lineToY(-69);
 
         TrajectoryActionBuilder traj3 = traj2.fresh()
+                .lineToY(-64)
                 .turn(Math.toRadians(-90))
-                .splineTo(new Vector2d(6, -24.5), Math.toRadians(90));
-        TrajectoryActionBuilder traj4 = traj2.fresh()
                 .setReversed(true)
-                .turn(Math.toRadians(-90))
+                .splineTo(new Vector2d(6, -60), Math.toRadians(90))
+                .setReversed(false);
+        TrajectoryActionBuilder traj4 = traj2.fresh()
+                .turn(Math.toRadians(90))
                 .splineTo(new Vector2d(60, -60), Math.toRadians(0));
 
         TrajectoryActionBuilder wait2 = drive.actionBuilder(initialPose)

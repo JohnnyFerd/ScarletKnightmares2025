@@ -31,12 +31,12 @@ public class RedSpecimen2 extends AutoBase {
 
         TrajectoryActionBuilder traj1 = drive.actionBuilder(initialPose)
                 .waitSeconds(1)
-                .lineToY(-24.5);
+                .lineToY(-60);
         TrajectoryActionBuilder driveBackwards = traj1.fresh()
-                .lineToY(-26);
+                .lineToY(-62);
+
         TrajectoryActionBuilder traj4 = driveBackwards.fresh()
-                .setReversed(true)
-                .turn(Math.toRadians(-90))
+                .turn(Math.toRadians(90))
                 .splineTo(new Vector2d(60, -60), Math.toRadians(0));
 
         TrajectoryActionBuilder wait2 = drive.actionBuilder(initialPose)
