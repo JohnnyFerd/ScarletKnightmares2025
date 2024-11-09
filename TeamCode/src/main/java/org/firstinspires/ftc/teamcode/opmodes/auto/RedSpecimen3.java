@@ -18,32 +18,20 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import org.firstinspires.ftc.teamcode.roadrunner.MecanumDrive;
 
 @Config
-@Autonomous (name="Red Specimen 1 (2+0)", group="Testing")
-public class RedSpecimen1 extends AutoBase {
+@Autonomous (name="Red Specimen 3 (0+0)", group="Testing")
+public class RedSpecimen3 extends AutoBase {
 
     @Override
     public void runOpMode() throws InterruptedException {
 
         initialize();
 
-        Pose2d initialPose = new Pose2d(-8.65, -55, Math.toRadians(180));
-        PoseStorage.AUTO_SHIFT_YAW = 180.0;
+        Pose2d initialPose = new Pose2d(-17, -60, Math.toRadians(270));
+        PoseStorage.AUTO_SHIFT_YAW = 90;
         MecanumDrive drive = new MecanumDrive(hardwareMap, initialPose);
 
-        TrajectoryActionBuilder moveToBar1 = drive.actionBuilder(initialPose)
-                .waitSeconds(1)
-                .lineToY(-48);
-        TrajectoryActionBuilder moveToBar2 = moveToBar1.fresh()
-                .lineToY(-46);
-        TrajectoryActionBuilder moveToObservationZone = moveToBar2.fresh()
-                .turn(Math.toRadians(90))
-                .splineTo(new Vector2d(-60, -48), Math.toRadians(90))
-                .turn(Math.toRadians(90));
-        TrajectoryActionBuilder moveForward = moveToObservationZone.fresh()
-                .lineToY(-50);
-        TrajectoryActionBuilder moveBackToBar = moveForward.fresh()
-                .turn(Math.toRadians(90));
-            // FINISH THIS PATH LATER
+        TrajectoryActionBuilder moveToObservationZone = drive.actionBuilder(initialPose)
+                .lineToX(-55);
 
         TrajectoryActionBuilder wait2 = drive.actionBuilder(initialPose)
                 .waitSeconds(2);
@@ -67,21 +55,8 @@ public class RedSpecimen1 extends AutoBase {
         if (isStopRequested()) return;
 
         Actions.runBlocking(
-                new ParallelAction(
-                        armLift.updateArmSubsystem(),
-                        new SequentialAction(
-                                moveToBar1.build(),
-                                armLift.depositSpecimen(),
-                                moveToBar2.build(),
-                                armLift.pivotDown(),
-                                wait05.build(),
-                                clawSystem.openClaw(),
-                                wait05.build(),
-                                clawSystem.closeClaw(),
-                                armLift.restArm(),
-                                moveToObservationZone.build(),
-                                armLift.stopUpdate()
-                        )
+                new SequentialAction(
+                        moveToObservationZone.build()
                 )
         );
 

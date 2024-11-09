@@ -7,6 +7,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
+import org.firstinspires.ftc.teamcode.opmodes.auto.PoseStorage;
 import org.firstinspires.ftc.teamcode.settings.UseTelemetry;
 
 public class Drivetrain extends Subsystem {
@@ -28,7 +29,11 @@ public class Drivetrain extends Subsystem {
         this.telemetry = telemetry;
         this.robot = robot;
 
-        resetInitYaw();
+        if (PoseStorage.ORIGINAL_INIT_YAW > 10000) {
+            resetInitYaw();
+        }else {
+            initYaw = PoseStorage.ORIGINAL_INIT_YAW + PoseStorage.AUTO_SHIFT_YAW;
+        }
 //        lastAngle = robot.imu.getRobotOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
 //        initYaw = PoseStorage.originalInitYaw + PoseStorage.AUTO_SHIFT_DEGREES; // b/c auto started with back facing front
     }

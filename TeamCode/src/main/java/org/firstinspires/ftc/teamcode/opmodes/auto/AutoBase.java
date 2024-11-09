@@ -7,11 +7,15 @@ import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.Pose2d;
+import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.teamcode.subsystems.Arm;
 import org.firstinspires.ftc.teamcode.subsystems.JVBoysSoccerRobot;
 
@@ -32,12 +36,16 @@ public abstract class AutoBase extends LinearOpMode {
 
     protected boolean isBlue = false;
 
+    protected TrajectoryActionBuilder wait2;
+
     public void initialize() {
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
         robot = new JVBoysSoccerRobot(hardwareMap, telemetry, true);
 
         armLift = new ArmLift();
         clawSystem = new ClawSystem();
+
+        PoseStorage.ORIGINAL_INIT_YAW = robot.imu.getRobotOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle;
 
         telemetry.addData("Status", "Initialized");
         telemetry.addData("Elapsed time", runtime.toString());
@@ -79,23 +87,48 @@ public abstract class AutoBase extends LinearOpMode {
         }
 
         public class DepositSpecimen implements Action {
+            private boolean initialized = false;
             @Override
             public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-                robot.armSubsystem.setDepositSpecimen();
-                robot.armSubsystem.armState = Arm.ArmState.MOTION_PROFILE;
-                return false;
+                if (!initialized) {
+                    robot.armSubsystem.setDepositSpecimen();
+                    robot.armSubsystem.armState = Arm.ArmState.MOTION_PROFILE;
+                    initialized = true;
+                }
+                if (!robot.armSubsystem.getMP().isBusy()) {
+                    return false;
+                }
+                return true;
             }
         }
         public Action depositSpecimen() {
             return new DepositSpecimen();
         }
 
-        public class IntakeSpecimen implements Action {
+        public class PivotDown implements Action {
             @Override
             public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-                robot.armSubsystem.setIntakeSpecimen();
-                robot.armSubsystem.armState = Arm.ArmState.MOTION_PROFILE;
+                robot.armSubsystem.setPivot(Arm.pivotPresetDepositSpecimen - Arm.pivotDownIncrement);
                 return false;
+            }
+        }
+        public Action pivotDown() {
+            return new PivotDown();
+        }
+
+        public class IntakeSpecimen implements Action {
+            private boolean initialized = false;
+            @Override
+            public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                if (!initialized) {
+                    robot.armSubsystem.setIntakeSpecimen();
+                    robot.armSubsystem.armState = Arm.ArmState.MOTION_PROFILE;
+                    initialized = true;
+                }
+                if (!robot.armSubsystem.getMP().isBusy()) {
+                    return false;
+                }
+                return true;
             }
         }
         public Action intakeSpecimen() {
@@ -103,11 +136,18 @@ public abstract class AutoBase extends LinearOpMode {
         }
 
         public class DepositSample implements Action {
+            private boolean initialized = false;
             @Override
             public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-                robot.armSubsystem.setDepositSample();
-                robot.armSubsystem.armState = Arm.ArmState.MOTION_PROFILE;
-                return false;
+                if (!initialized) {
+                    robot.armSubsystem.setDepositSample();
+                    robot.armSubsystem.armState = Arm.ArmState.MOTION_PROFILE;
+                    initialized = true;
+                }
+                if (!robot.armSubsystem.getMP().isBusy()) {
+                    return false;
+                }
+                return true;
             }
         }
         public Action depositSample() {
@@ -115,11 +155,18 @@ public abstract class AutoBase extends LinearOpMode {
         }
 
         public class IntakeSample implements Action {
+            private boolean initialized = false;
             @Override
             public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-                robot.armSubsystem.setIntakeSample();
-                robot.armSubsystem.armState = Arm.ArmState.MOTION_PROFILE;
-                return false;
+                if (!initialized) {
+                    robot.armSubsystem.setIntakeSample();
+                    robot.armSubsystem.armState = Arm.ArmState.MOTION_PROFILE;
+                    initialized = true;
+                }
+                if (!robot.armSubsystem.getMP().isBusy()) {
+                    return false;
+                }
+                return true;
             }
         }
         public Action intakeSample() {
@@ -136,16 +183,14 @@ public abstract class AutoBase extends LinearOpMode {
                     robot.armSubsystem.setRest();
                     robot.armSubsystem.armState = Arm.ArmState.MOTION_PROFILE;
                 }
-
                 if (!robot.armSubsystem.getMP().isBusy()) {
                     robot.armSubsystem.armState = Arm.ArmState.AT_REST;
                     robot.armSubsystem.setArmPower(0);
                     robot.motorArmR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                     robot.motorArmR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
                     return false;
-                }else {
-                    return true;
                 }
+                return true;
             }
         }
         public Action restArm() {

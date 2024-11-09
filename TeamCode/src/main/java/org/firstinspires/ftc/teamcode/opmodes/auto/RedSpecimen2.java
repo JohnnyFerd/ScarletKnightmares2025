@@ -26,21 +26,24 @@ public class RedSpecimen2 extends AutoBase {
 
         initialize();
 
-        Pose2d initialPose = new Pose2d(8.65, -55, Math.toRadians(90));
+        Pose2d initialPose = new Pose2d(-8.65, -55, Math.toRadians(180));
+        PoseStorage.AUTO_SHIFT_YAW = 180.0;
         MecanumDrive drive = new MecanumDrive(hardwareMap, initialPose);
 
-        TrajectoryActionBuilder traj1 = drive.actionBuilder(initialPose)
+        TrajectoryActionBuilder moveToBar1 = drive.actionBuilder(initialPose)
                 .waitSeconds(1)
-                .lineToY(-60);
-        TrajectoryActionBuilder driveBackwards = traj1.fresh()
-                .lineToY(-62);
-
-        TrajectoryActionBuilder traj4 = driveBackwards.fresh()
-                .turn(Math.toRadians(90))
-                .splineTo(new Vector2d(60, -60), Math.toRadians(0));
+                .lineToY(-48);
+        TrajectoryActionBuilder moveToBar2 = moveToBar1.fresh()
+                .lineToY(-46);
+        TrajectoryActionBuilder moveToObservationZone = moveToBar2.fresh()
+                .splineTo(new Vector2d(-60, -60), Math.toRadians(270));
 
         TrajectoryActionBuilder wait2 = drive.actionBuilder(initialPose)
                 .waitSeconds(2);
+        TrajectoryActionBuilder wait1 = drive.actionBuilder(initialPose)
+                .waitSeconds(1);
+        TrajectoryActionBuilder wait05 = drive.actionBuilder(initialPose)
+                .waitSeconds(0.5);
 
         // actions that need to happen on init
         Actions.runBlocking(clawSystem.closeClaw());
@@ -57,18 +60,21 @@ public class RedSpecimen2 extends AutoBase {
         if (isStopRequested()) return;
 
         Actions.runBlocking(
-                new SequentialAction(
-                        traj1.build(),
-                        new ParallelAction(
+                new ParallelAction(
+                        armLift.updateArmSubsystem(),
+                        new SequentialAction(
+                                moveToBar1.build(),
                                 armLift.depositSpecimen(),
-                                new SequentialAction(
-                                        wait2.build(),
-                                        driveBackwards.build(),
-                                        clawSystem.openClaw(),
-                                        armLift.restArm()
-                                )
-                        ),
-                        traj4.build()
+                                moveToBar2.build(),
+                                armLift.pivotDown(),
+                                wait05.build(),
+                                clawSystem.openClaw(),
+                                wait05.build(),
+                                clawSystem.closeClaw(),
+                                armLift.restArm(),
+                                moveToObservationZone.build(),
+                                armLift.stopUpdate()
+                        )
                 )
         );
 
