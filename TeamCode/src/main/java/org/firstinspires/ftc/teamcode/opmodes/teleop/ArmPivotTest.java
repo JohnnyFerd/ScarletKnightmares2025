@@ -25,7 +25,7 @@ public class ArmPivotTest extends LinearOpMode {
     private Gamepad previousGamepad2;
 
     public static double PRESET1 = 1;
-    public static double PRESET2 = 0.3;
+    public static double PRESET2 = 0;
 
     private enum TestState {
         PRESET1,
@@ -78,14 +78,14 @@ public class ArmPivotTest extends LinearOpMode {
             case NOTHING:
                 break;
             case PRESET1:
-                telemetry.addLine("PRESET 1");
+                telemetry.addLine("PRESET 1 = 1.0");
                 robot.armSubsystem.setPivot(PRESET1);
                 if (currentGamepad1.dpad_up && !previousGamepad1.dpad_up) {
                     testState = TestState.PRESET2;
                 }
                 break;
             case PRESET2:
-                telemetry.addLine("PRESET 2");
+                telemetry.addLine("PRESET 2 = 0.0");
                 robot.armSubsystem.setPivot(PRESET2);
                 if (currentGamepad1.dpad_up && !previousGamepad1.dpad_up) {
                     testState = TestState.PRESET1;

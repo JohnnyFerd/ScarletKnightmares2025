@@ -132,8 +132,8 @@ public class Arm extends Subsystem {
                 if (UseTelemetry.ARM_TELEMETRY) {
                     telemetry.addData("    MP TIME", motionProfileTime.seconds());
                     telemetry.addData("    Reference Position", refPos);
-                    telemetry.addData("    Reference Velocity", refVel);
-                    telemetry.addData("    Reference Acceleration", refAcl);
+//                    telemetry.addData("    Reference Velocity", refVel);
+//                    telemetry.addData("    Reference Acceleration", refAcl);
                 }
 
                 double pidPower = 0;

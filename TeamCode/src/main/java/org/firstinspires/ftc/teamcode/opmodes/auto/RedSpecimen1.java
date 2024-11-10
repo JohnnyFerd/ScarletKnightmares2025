@@ -18,7 +18,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import org.firstinspires.ftc.teamcode.roadrunner.MecanumDrive;
 
 @Config
-@Autonomous (name="Red Specimen 1 (2+0)", group="Testing")
+@Autonomous (name="Red Specimen 1 (2+0) WIP", group="Testing")
 public class RedSpecimen1 extends AutoBase {
 
     @Override
