@@ -15,8 +15,8 @@ public class Claw extends Subsystem {
     private JVBoysSoccerRobot robot;
     public boolean opened = false;
 
-    public static double CLAW_CLOSED_POSITION = 0.6;
-    public static double CLAW_OPENED_POSITION = 0;
+    public static double CLAW_CLOSED_POSITION = 0.7;
+    public static double CLAW_OPENED_POSITION = 1.0;
 
     public Claw(HardwareMap hwMap, Telemetry telemetry, JVBoysSoccerRobot robot) {
         this.hwMap = hwMap;

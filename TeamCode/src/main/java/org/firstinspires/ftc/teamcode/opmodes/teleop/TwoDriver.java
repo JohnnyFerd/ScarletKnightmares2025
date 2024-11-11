@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.opmodes.teleop;
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -12,6 +13,7 @@ import org.firstinspires.ftc.teamcode.subsystems.Arm;
 import org.firstinspires.ftc.teamcode.subsystems.JVBoysSoccerRobot;
 import org.firstinspires.ftc.teamcode.util.BulkReading;
 
+@TeleOp (name="TWO DRIVER", group="FINAL")
 public class TwoDriver extends LinearOpMode {
 
     private HardwareMap hwMap;
@@ -85,13 +87,13 @@ public class TwoDriver extends LinearOpMode {
         switch (clawControl) {
             case OPEN:
                 robot.clawSubsystem.openClaw();
-                if (currentGamepad2.x && !previousGamepad2.x) {
+                if ((currentGamepad2.left_bumper && !previousGamepad2.left_bumper) || (currentGamepad2.right_bumper && !previousGamepad2.right_bumper)) {
                     clawControl = ClawControl.CLOSED;
                 }
                 break;
             case CLOSED:
                 robot.clawSubsystem.closeClaw();
-                if (currentGamepad2.x && !previousGamepad2.x) {
+                if ((currentGamepad2.left_bumper && !previousGamepad2.left_bumper) || (currentGamepad2.right_bumper && !previousGamepad2.right_bumper)) {
                     clawControl = ClawControl.OPEN;
                 }
                 break;
@@ -157,6 +159,8 @@ public class TwoDriver extends LinearOpMode {
                 break;
             case MOVE_ARM:
                 if (currentGamepad2.dpad_up && !previousGamepad2.dpad_up) {
+                    clawControl = ClawControl.CLOSED;
+                    robot.armSubsystem.armState = Arm.ArmState.MOTION_PROFILE;
                     robot.armSubsystem.setRest();
                     armControl = ArmControl.GOING_TO_REST;
                 }
@@ -202,7 +206,8 @@ public class TwoDriver extends LinearOpMode {
                     }else if (robot.armSubsystem.armState == Arm.ArmState.BASIC_PID) {
                         robot.armSubsystem.referencePos = robot.armSubsystem.referencePos + Arm.armSpeedConstantBig * currentGamepad2.right_stick_y * -1;
                     }
-                }else if (Math.abs(currentGamepad2.left_stick_y) > 0.01) {
+                }
+                if (Math.abs(currentGamepad2.left_stick_y) > 0.01) {
                     if (robot.armSubsystem.armState == Arm.ArmState.MOTION_PROFILE) {
                         robot.armSubsystem.referencePos = BulkReading.pMotorArmR;
                         robot.armSubsystem.armState = Arm.ArmState.BASIC_PID;

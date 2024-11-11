@@ -76,6 +76,9 @@ public class JVBoysSoccerRobot {
 
     public JVBoysSoccerRobot(HardwareMap hwMap, Telemetry telemetry, boolean isAuto) {
         if (isAuto) {
+            this.hwMap = hwMap;
+            this.telemetry = telemetry;
+
             // Configuring Hubs to auto mode for bulk reads
             allHubs = hwMap.getAll(LynxModule.class);
             for (LynxModule hub : allHubs) {

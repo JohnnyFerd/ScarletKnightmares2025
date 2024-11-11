@@ -21,24 +21,24 @@ public class Arm extends Subsystem {
     private PIDController pid;
 
     public static int armPresetRest = -50; // FINAL
-    public static int armPresetIntakeSpecimen = 800; // maybe
-    public static int armPresetIntakeSample = 925; // maybe
-    public static int armPresetDepositSpecimen = 590; // maybe good?
-    public static int armPreset1DepositSample = 550; // FINAL
+    public static int armPresetIntakeSpecimen = 200; // maybe
+    public static int armPresetIntakeSample = 200; // maybe
+    public static int armPresetDepositSpecimen = 425; // maybe good?
+    public static int armPreset1DepositSample = 425; // FINAL
 
     public static double pivotPresetRest = 0;
-    public static double pivotPresetIntakeSpecimen = 0.75;
+    public static double pivotPresetIntakeSpecimen = 0.87;
     public static double pivotPresetIntakeSample = 0.9;
-    public static double pivotPresetDepositSpecimen = 0.8;
+    public static double pivotPresetDepositSpecimen = 0.6;
     public static double pivotPresetDepositSample = 0.9;
     public static double pivotDownIncrement = 0.2;
 
     public boolean pivotDown = false;
     public double previousPivotPos = 0;
 
-    public static double pivotSpeedConstant = 0.001;
+    public static double pivotSpeedConstant = 0.005;
     public static double armSpeedConstant = 1;
-    public static double armSpeedConstantBig = 3;
+    public static double armSpeedConstantBig = 2.2;
 
     public static double Kp = 0.027, Ki = 0, Kd = 0, Kg = 0;
 
@@ -175,19 +175,19 @@ public class Arm extends Subsystem {
         setMotionProfile(armPresetRest);
     }
     public void setIntakeSpecimen() {
-        setPivotIntakeSpecimen();
+//        setPivotIntakeSpecimen();
         setMotionProfile(armPresetIntakeSpecimen);
     }
     public void setIntakeSample() {
-        setPivotIntakeSample();
+//        setPivotIntakeSample();
         setMotionProfile(armPresetIntakeSample);
     }
     public void setDepositSpecimen() {
-        setPivotDepositSpecimen();
+//        setPivotDepositSpecimen();
         setMotionProfile(armPresetDepositSpecimen);
     }
     public void setDepositSample() {
-        setPivotDepositSample();
+//        setPivotDepositSample();
         setMotionProfile(armPreset1DepositSample);
     }
 
