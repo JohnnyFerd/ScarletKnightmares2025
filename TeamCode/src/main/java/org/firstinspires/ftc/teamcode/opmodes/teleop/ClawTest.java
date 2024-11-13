@@ -49,7 +49,7 @@ public class ClawTest extends LinearOpMode {
                 currentGamepad1.copy(gamepad1);
 
                 clawControls();
-                telemetry.addData("Position", robot.servoClaw.getPosition());
+                telemetry.addData("Position", robot.servoClawL.getPosition());
 
                 robot.BR.readAll();
                 telemetry.update();

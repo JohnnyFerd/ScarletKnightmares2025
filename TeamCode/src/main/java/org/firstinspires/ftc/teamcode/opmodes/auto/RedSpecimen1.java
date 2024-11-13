@@ -21,23 +21,24 @@ import org.firstinspires.ftc.teamcode.roadrunner.MecanumDrive;
 @Autonomous (name="Red Specimen 1 (2+0) WIP", group="Testing")
 public class RedSpecimen1 extends AutoBase {
 
+    public static double FORWARD1 = -48;
+    public static double BACK1 = -46;
+
     @Override
     public void runOpMode() throws InterruptedException {
 
         initialize();
 
-        Pose2d initialPose = new Pose2d(-8.65, -55, Math.toRadians(180));
         PoseStorage.AUTO_SHIFT_YAW = 180.0;
-        MecanumDrive drive = new MecanumDrive(hardwareMap, initialPose);
+        MecanumDrive drive = new MecanumDrive(hardwareMap, specimenStart);
 
-        TrajectoryActionBuilder moveToBar1 = drive.actionBuilder(initialPose)
+        TrajectoryActionBuilder moveToBar1 = drive.actionBuilder(specimenStart)
                 .waitSeconds(1)
-                .lineToY(-48);
+                .splineTo(new Vector2d(FORWARD1, specimenStart.position.y), Math.toRadians(180));
         TrajectoryActionBuilder moveToBar2 = moveToBar1.fresh()
-                .lineToY(-46);
+                .splineTo(new Vector2d(BACK1, specimenStart.position.y), Math.toRadians(180));
         TrajectoryActionBuilder moveToObservationZone = moveToBar2.fresh()
-                .turn(Math.toRadians(90))
-                .splineTo(new Vector2d(-60, -48), Math.toRadians(90))
+                .splineTo(new Vector2d(-48, -60), Math.toRadians(270))
                 .turn(Math.toRadians(90));
         TrajectoryActionBuilder moveForward = moveToObservationZone.fresh()
                 .lineToY(-50);
@@ -45,22 +46,22 @@ public class RedSpecimen1 extends AutoBase {
                 .turn(Math.toRadians(90));
             // FINISH THIS PATH LATER
 
-        TrajectoryActionBuilder wait2 = drive.actionBuilder(initialPose)
+        TrajectoryActionBuilder wait2 = drive.actionBuilder(specimenStart)
                 .waitSeconds(2);
-        TrajectoryActionBuilder wait1 = drive.actionBuilder(initialPose)
+        TrajectoryActionBuilder wait1 = drive.actionBuilder(specimenStart)
                 .waitSeconds(1);
-        TrajectoryActionBuilder wait05 = drive.actionBuilder(initialPose)
+        TrajectoryActionBuilder wait05 = drive.actionBuilder(specimenStart)
                 .waitSeconds(0.5);
 
         // actions that need to happen on init
         Actions.runBlocking(clawSystem.closeClaw());
 
-        while (!isStopRequested() && opModeInInit()) {
-            telemetry.addData("TEAM COLOR", isBlue ? "BLUE" : "RED");
-            if (currentGamepad.x && !previousGamepad.x) {
-                isBlue = !isBlue;
-            }
-        }
+//        while (!isStopRequested() && opModeInInit()) {
+//            telemetry.addData("TEAM COLOR", isBlue ? "BLUE" : "RED");
+//            if (currentGamepad.x && !previousGamepad.x) {
+//                isBlue = !isBlue;
+//            }
+//        }
 
         waitForStart();
 

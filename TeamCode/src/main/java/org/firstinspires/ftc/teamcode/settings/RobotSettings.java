@@ -41,7 +41,9 @@ public class RobotSettings {
     public static String RIGGING_RSERVO_NAME = "RigRightS";
     public static double RIGGING_MOTOR_SPEED = 0.5;
 
-    public static String CLAW_SERVO_NAME = "ClawServo";
+    public static String CLAW_SERVO_NAME = "ClawServoL";
     public static boolean CLAW_SERVO_REVERSED = false;
+    public static String CLAW_SERVO2_NAME = "ClawServoR";
+    public static boolean CLAW_SERVO2_REVERSED = true;
 
 }

@@ -4,7 +4,6 @@ import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.teamcode.settings.RobotSettings;
 import org.firstinspires.ftc.teamcode.settings.UseTelemetry;
 
 @Config
@@ -15,8 +14,10 @@ public class Claw extends Subsystem {
     private JVBoysSoccerRobot robot;
     public boolean opened = false;
 
-    public static double CLAW_CLOSED_POSITION = 0.7;
-    public static double CLAW_OPENED_POSITION = 1.0;
+    public static double CLAW_CLOSED_POSITIONL = 0.23;
+    public static double CLAW_OPENED_POSITIONL = 0.45;
+    public static double CLAW_CLOSED_POSITIONR = 0.15;
+    public static double CLAW_OPENED_POSITIONR = 0.39;
 
     public Claw(HardwareMap hwMap, Telemetry telemetry, JVBoysSoccerRobot robot) {
         this.hwMap = hwMap;
@@ -26,11 +27,13 @@ public class Claw extends Subsystem {
 
     public void openClaw() {
         opened = true;
-        robot.servoClaw.setPosition(CLAW_OPENED_POSITION);
+        robot.servoClawL.setPosition(CLAW_OPENED_POSITIONL);
+        robot.servoClawR.setPosition(CLAW_OPENED_POSITIONR);
     }
     public void closeClaw() {
         opened = false;
-        robot.servoClaw.setPosition(CLAW_CLOSED_POSITION);
+        robot.servoClawL.setPosition(CLAW_CLOSED_POSITIONL);
+        robot.servoClawR.setPosition(CLAW_CLOSED_POSITIONR);
     }
 
     @Override

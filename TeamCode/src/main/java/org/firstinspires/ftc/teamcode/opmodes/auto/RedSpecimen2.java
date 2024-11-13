@@ -21,62 +21,89 @@ import org.firstinspires.ftc.teamcode.roadrunner.MecanumDrive;
 @Autonomous (name="Red Specimen 2 (1+0)", group="Testing")
 public class RedSpecimen2 extends AutoBase {
 
+    public static double FORWARD1 = -48;
+    public static double BACK1 = -46;
+
     @Override
     public void runOpMode() throws InterruptedException {
 
         initialize();
+        telemetry.update();
 
-        Pose2d initialPose = new Pose2d(-8.65, -55, Math.toRadians(180));
         PoseStorage.AUTO_SHIFT_YAW = 180.0;
-        MecanumDrive drive = new MecanumDrive(hardwareMap, initialPose);
+        MecanumDrive drive = new MecanumDrive(hardwareMap, specimenStart);
 
-        TrajectoryActionBuilder moveToBar1 = drive.actionBuilder(initialPose)
+        telemetry.addLine("BEFORE3z");
+        telemetry.update();
+
+        TrajectoryActionBuilder moveToBar1 = drive.actionBuilder(new Pose2d(-8.65, -55, Math.toRadians(270)))
                 .waitSeconds(1)
-                .lineToY(-48);
-        TrajectoryActionBuilder moveToBar2 = moveToBar1.fresh()
-                .lineToY(-46);
-        TrajectoryActionBuilder moveToObservationZone = moveToBar2.fresh()
-                .splineTo(new Vector2d(-60, -60), Math.toRadians(270));
+                .setReversed(true)
+                .splineTo(new Vector2d(-8.65, -48), Math.toRadians(270))
+                .setReversed(false);
+        TrajectoryActionBuilder moveToBar2 = moveToBar1.endTrajectory().fresh()
+                .setReversed(true)
+                .splineTo(new Vector2d(-8.65, -46), Math.toRadians(270))
+                .setReversed(false);
+        TrajectoryActionBuilder moveToObservationZone = moveToBar2.endTrajectory().fresh()
+                .waitSeconds(2)
+                .splineTo(new Vector2d(-60, -60), Math.toRadians(0));
 
-        TrajectoryActionBuilder wait2 = drive.actionBuilder(initialPose)
+        telemetry.addLine("BEFORE2");
+        telemetry.update();
+
+        TrajectoryActionBuilder wait2 = drive.actionBuilder(specimenStart)
                 .waitSeconds(2);
-        TrajectoryActionBuilder wait1 = drive.actionBuilder(initialPose)
+        TrajectoryActionBuilder wait1 = drive.actionBuilder(specimenStart)
                 .waitSeconds(1);
-        TrajectoryActionBuilder wait05 = drive.actionBuilder(initialPose)
+        TrajectoryActionBuilder wait05 = drive.actionBuilder(specimenStart)
                 .waitSeconds(0.5);
 
-        // actions that need to happen on init
-        Actions.runBlocking(clawSystem.closeClaw());
+        telemetry.addLine("BEFORE");
+        telemetry.update();
 
-        while (!isStopRequested() && opModeInInit()) {
-            telemetry.addData("TEAM COLOR", isBlue ? "BLUE" : "RED");
-            if (currentGamepad.x && !previousGamepad.x) {
-                isBlue = !isBlue;
-            }
-        }
+        Action moveToBar1b = moveToBar1.build();
+//        Action moveToBar2b = moveToBar2.build();
+//        Action moveToObservationZoneb = moveToObservationZone.build();
+
+        telemetry.addLine("HERERGSGDS");
+        telemetry.update();
+
+        // actions that need to happen on init
+//        Actions.runBlocking(clawSystem.closeClaw());
+
+//        while (!isStopRequested() && opModeInInit()) {
+//            telemetry.addData("TEAM COLOR", isBlue ? "BLUE" : "RED");
+//            if (currentGamepad.x && !previousGamepad.x) {
+//                isBlue = !isBlue;
+//            }
+//        }
 
         waitForStart();
 
         if (isStopRequested()) return;
 
         Actions.runBlocking(
-                new ParallelAction(
-                        armLift.updateArmSubsystem(),
-                        new SequentialAction(
-                                moveToBar1.build(),
-                                armLift.depositSpecimen(),
-                                moveToBar2.build(),
-                                armLift.pivotDown(),
-                                wait05.build(),
-                                clawSystem.openClaw(),
-                                wait05.build(),
-                                clawSystem.closeClaw(),
-                                armLift.restArm(),
-                                moveToObservationZone.build(),
-                                armLift.stopUpdate()
-                        )
-                )
+                    moveToBar1b
+//                    new ParallelAction(
+//                            armLift.updateArmSubsystem(),
+//                            new SequentialAction(
+//                                    moveToBar1.build(),
+////                                    ,armLift.depositSpecimen(),
+////                                    moveToBar2.build(),
+////                                    armLift.pivotDown(),
+////                                    wait05.build(),
+////                                    clawSystem.openClaw(),
+////                                    wait05.build(),
+////                                    clawSystem.closeClaw(),
+////                                    armLift.restArm(),
+////                                    moveToObservationZone.build(),
+//                                    armLift.stopUpdate()
+//                            )
+//                    )
         );
+
+
 
     }
 }

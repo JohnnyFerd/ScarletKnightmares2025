@@ -2,7 +2,6 @@ package org.firstinspires.ftc.teamcode.subsystems;
 
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
-import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -45,7 +44,8 @@ public class JVBoysSoccerRobot {
     public DcMotorEx motorFL, motorFR, motorBL, motorBR; // mecanum motors when swerve doesn't work
     public DcMotorEx motorArmL, motorArmR;
     public Servo servoPivotL, servoPivotR;
-    public Servo servoClaw;
+    public Servo servoClawL;
+    public Servo servoClawR;
 
     public Servo servoRigL, servoRigR;
     public DcMotorEx motorRigL, motorRigR;
@@ -86,6 +86,7 @@ public class JVBoysSoccerRobot {
                 hub.setBulkCachingMode(LynxModule.BulkCachingMode.AUTO);
             }
 
+            initIMU();
             initArmHardware();
             initClawHardware();
             clawSubsystem = new Claw(hwMap, telemetry, this);
@@ -167,8 +168,11 @@ public class JVBoysSoccerRobot {
         servoPivotL.setDirection(RobotSettings.ARM_LPIVOT_REVERSED ? Servo.Direction.REVERSE : Servo.Direction.FORWARD);
         servoPivotR.setDirection(RobotSettings.ARM_RPIVOT_REVERSED ? Servo.Direction.REVERSE : Servo.Direction.FORWARD);
 
-        servoClaw = hwMap.servo.get(RobotSettings.CLAW_SERVO_NAME);
-        servoClaw.setDirection(RobotSettings.CLAW_SERVO_REVERSED ? Servo.Direction.REVERSE : Servo.Direction.FORWARD);
+        servoClawL = hwMap.servo.get(RobotSettings.CLAW_SERVO_NAME);
+        servoClawL.setDirection(RobotSettings.CLAW_SERVO_REVERSED ? Servo.Direction.REVERSE : Servo.Direction.FORWARD);
+
+        servoClawR = hwMap.servo.get(RobotSettings.CLAW_SERVO2_NAME);
+        servoClawR.setDirection(RobotSettings.CLAW_SERVO2_REVERSED ? Servo.Direction.REVERSE : Servo.Direction.FORWARD);
     }
 
     public void addTelemetry() {

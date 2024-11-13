@@ -23,15 +23,15 @@ public class Arm extends Subsystem {
     public static int armPresetRest = -50; // FINAL
     public static int armPresetIntakeSpecimen = 200; // maybe
     public static int armPresetIntakeSample = 200; // maybe
-    public static int armPresetDepositSpecimen = 425; // maybe good?
+    public static int armPresetDepositSpecimen = 570; // maybe good?
     public static int armPreset1DepositSample = 425; // FINAL
 
     public static double pivotPresetRest = 0;
     public static double pivotPresetIntakeSpecimen = 0.87;
     public static double pivotPresetIntakeSample = 0.9;
-    public static double pivotPresetDepositSpecimen = 0.6;
+    public static double pivotPresetDepositSpecimen = 0.46;
     public static double pivotPresetDepositSample = 0.9;
-    public static double pivotDownIncrement = 0.2;
+    public static double pivotDownIncrement = 0.26;
 
     public boolean pivotDown = false;
     public double previousPivotPos = 0;
@@ -115,6 +115,7 @@ public class Arm extends Subsystem {
             telemetry.addData("    Arm Power", robot.motorArmL.getPower());
 //            telemetry.addData("    Arm Encoder Position (L)", BulkReading.pMotorArmL);
             telemetry.addData("    Arm Encoder Position (R)", BulkReading.pMotorArmR);
+            telemetry.addData("    Pivot Servo Position", robot.servoPivotR.getPosition());
         }else {
             telemetry.addLine("ARM TELEMETRY: OFF");
         }

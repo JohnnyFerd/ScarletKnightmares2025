@@ -28,10 +28,8 @@ public abstract class AutoBase extends LinearOpMode {
     protected Gamepad currentGamepad = new Gamepad();
     protected Gamepad previousGamepad = new Gamepad();
 
-    protected final Pose2d redCloseStart = new Pose2d(12, -54.3, Math.toRadians(90));
-    protected final Pose2d redFarStart = new Pose2d(-36, -54.3, Math.toRadians(90));
-    protected final Pose2d blueCloseStart = new Pose2d(12, 54.3, Math.toRadians(270));
-    protected final Pose2d blueFarStart = new Pose2d(-36, 54.3, Math.toRadians(270));
+    protected Pose2d specimenStart;
+    protected final Pose2d sampleStart = new Pose2d(-36, -54.3, Math.toRadians(90));
 
     protected JVBoysSoccerRobot robot;
     protected ArmLift armLift;
@@ -39,14 +37,13 @@ public abstract class AutoBase extends LinearOpMode {
 
     protected boolean isBlue = false;
 
-    protected TrajectoryActionBuilder wait2;
-
     public void initialize() {
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
         robot = new JVBoysSoccerRobot(hardwareMap, telemetry, true);
 
-        armLift = new ArmLift();
-        clawSystem = new ClawSystem();
+        specimenStart = new Pose2d(-8.65, -55, Math.toRadians(270));
+//        armLift = new ArmLift();
+//        clawSystem = new ClawSystem();
 
         PoseStorage.ORIGINAL_INIT_YAW = robot.imu.getRobotOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle;
 
