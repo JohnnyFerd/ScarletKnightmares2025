@@ -8,8 +8,8 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 public class MotionProfile {
     private double startingTime = 0;
 
-    public static int MAX_VELOCITY = 500; // enocder ticks per second
-    public static int MAX_ACCELERATION = 400; // encoder ticks per second
+    public static int MAX_VELOCITY = 600; // enocder ticks per second
+    public static int MAX_ACCELERATION = 600; // encoder ticks per second
 //    public static int MAX_JERK = 0;
 
     private double acceleration_dt, distance, halfway_distance, max_acceleration,
@@ -22,8 +22,16 @@ public class MotionProfile {
     private double instantVel = 0;
     private double instantAcl = 0;
     private boolean isBusy = false;
+    private double timeElapsed = 0;
 
     public MotionProfile() { }
+
+    public double getEntireMPTime() {
+        return entire_dt;
+    }
+    public double getTimeElapsed() {
+        return timeElapsed;
+    }
 
     public void setProfile(double start, double end) {
         isBusy = true;
@@ -81,7 +89,7 @@ public class MotionProfile {
 
     public void updateState(double currentTime) {
         isBusy = true;
-        double timeElapsed = currentTime - startingTime;
+        timeElapsed = currentTime - startingTime;
         timeElapsed = Math.abs(timeElapsed);
 
         // if no motion profile is set

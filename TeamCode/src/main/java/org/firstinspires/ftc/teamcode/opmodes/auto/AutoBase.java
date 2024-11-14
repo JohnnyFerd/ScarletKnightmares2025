@@ -8,11 +8,9 @@ import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.Pose2d;
-import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Gamepad;
-import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
@@ -41,14 +39,15 @@ public abstract class AutoBase extends LinearOpMode {
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
         robot = new JVBoysSoccerRobot(hardwareMap, telemetry, true);
 
-        specimenStart = new Pose2d(-8.65, -55, Math.toRadians(270));
-//        armLift = new ArmLift();
-//        clawSystem = new ClawSystem();
+        specimenStart = new Pose2d(0, -63.5, Math.toRadians(270));
+        armLift = new ArmLift();
+        clawSystem = new ClawSystem();
 
         PoseStorage.ORIGINAL_INIT_YAW = robot.imu.getRobotOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle;
 
         telemetry.addData("Status", "Initialized");
         telemetry.addData("Elapsed time", runtime.toString());
+        telemetry.update();
     }
 
     public class ArmLift {
@@ -91,7 +90,7 @@ public abstract class AutoBase extends LinearOpMode {
             @Override
             public boolean run(@NonNull TelemetryPacket telemetryPacket) {
                 if (!initialized) {
-                    robot.armSubsystem.setDepositSpecimen();
+                    robot.armSubsystem.setDepositSpecimen(false);
                     robot.armSubsystem.armState = Arm.ArmState.MOTION_PROFILE;
                     initialized = true;
                 }
@@ -121,7 +120,7 @@ public abstract class AutoBase extends LinearOpMode {
             @Override
             public boolean run(@NonNull TelemetryPacket telemetryPacket) {
                 if (!initialized) {
-                    robot.armSubsystem.setIntakeSpecimen();
+                    robot.armSubsystem.setIntakeSpecimen(false);
                     robot.armSubsystem.armState = Arm.ArmState.MOTION_PROFILE;
                     initialized = true;
                 }
@@ -140,7 +139,7 @@ public abstract class AutoBase extends LinearOpMode {
             @Override
             public boolean run(@NonNull TelemetryPacket telemetryPacket) {
                 if (!initialized) {
-                    robot.armSubsystem.setDepositSample();
+                    robot.armSubsystem.setDepositSample(false);
                     robot.armSubsystem.armState = Arm.ArmState.MOTION_PROFILE;
                     initialized = true;
                 }
@@ -159,7 +158,7 @@ public abstract class AutoBase extends LinearOpMode {
             @Override
             public boolean run(@NonNull TelemetryPacket telemetryPacket) {
                 if (!initialized) {
-                    robot.armSubsystem.setIntakeSample();
+                    robot.armSubsystem.setIntakeSample(false);
                     robot.armSubsystem.armState = Arm.ArmState.MOTION_PROFILE;
                     initialized = true;
                 }
@@ -202,7 +201,7 @@ public abstract class AutoBase extends LinearOpMode {
         public class CloseClaw implements Action {
             @Override
             public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-                robot.clawSubsystem.closeClaw();
+                robot.clawSubsystem.closeBothClaw();
                 return false;
             }
         }
@@ -213,7 +212,7 @@ public abstract class AutoBase extends LinearOpMode {
         public class OpenClaw implements Action {
             @Override
             public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-                robot.clawSubsystem.openClaw();
+                robot.clawSubsystem.openBothClaw();
                 return false;
             }
         }

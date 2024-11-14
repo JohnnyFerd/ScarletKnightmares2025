@@ -21,10 +21,10 @@ public class Arm extends Subsystem {
     private PIDController pid;
 
     public static int armPresetRest = -50; // FINAL
-    public static int armPresetIntakeSpecimen = 200; // maybe
-    public static int armPresetIntakeSample = 200; // maybe
-    public static int armPresetDepositSpecimen = 570; // maybe good?
-    public static int armPreset1DepositSample = 425; // FINAL
+    public static int armPresetIntakeSpecimen = 200; //
+    public static int armPresetIntakeSample = 200; //
+    public static int armPresetDepositSpecimen = 1140; // maybe good?
+    public static int armPreset1DepositSample = 425; //
 
     public static double pivotPresetRest = 0;
     public static double pivotPresetIntakeSpecimen = 0.87;
@@ -37,10 +37,8 @@ public class Arm extends Subsystem {
     public double previousPivotPos = 0;
 
     public static double pivotSpeedConstant = 0.005;
-    public static double armSpeedConstant = 1;
-    public static double armSpeedConstantBig = 2.2;
-
-    public static double Kp = 0.027, Ki = 0, Kd = 0, Kg = 0;
+    public static double armSpeedConstant = 2.2;
+    public static double armSpeedConstantBig = 4.4;
 
     public static double MAX_POWER = 1;
     public ElapsedTime motionProfileTime = new ElapsedTime();
@@ -51,6 +49,8 @@ public class Arm extends Subsystem {
     private double previousPower = 100000;
     private double previousRefPos = 100000;
     private double previousCurrentPos = 100000;
+
+    private int counter = 0;
 
     public double referencePos = 0; // for the basic_pid state
 
@@ -67,7 +67,7 @@ public class Arm extends Subsystem {
         this.telemetry = telemetry;
         this.robot = robot;
         this.mp = new MotionProfile();
-        pid = new PIDController(Kp, Ki, Kd, Kg);
+        pid = new PIDController();
     }
 
     public void setMotionProfile(int targetPosition) {
@@ -131,10 +131,14 @@ public class Arm extends Subsystem {
                 double refAcl = mp.getInstantAcceleration();
 
                 if (UseTelemetry.ARM_TELEMETRY) {
-                    telemetry.addData("    MP TIME", motionProfileTime.seconds());
+                    telemetry.addData("    MP TIME", mp.getTimeElapsed());
                     telemetry.addData("    Reference Position", refPos);
 //                    telemetry.addData("    Reference Velocity", refVel);
 //                    telemetry.addData("    Reference Acceleration", refAcl);
+                }
+
+                if (mp.getTimeElapsed() > (mp.getEntireMPTime() / 2.0)) {
+                    pivotQueue();
                 }
 
                 double pidPower = 0;
@@ -175,21 +179,60 @@ public class Arm extends Subsystem {
         setPivotRest();
         setMotionProfile(armPresetRest);
     }
-    public void setIntakeSpecimen() {
-//        setPivotIntakeSpecimen();
+
+    public void setIntakeSpecimen(boolean pivotTimed) {
+        if (pivotTimed) {
+            counter = 1;
+        }else {
+            setPivotIntakeSpecimen();
+            counter = 0;
+        }
         setMotionProfile(armPresetIntakeSpecimen);
     }
-    public void setIntakeSample() {
-//        setPivotIntakeSample();
+    public void setIntakeSample(boolean pivotTimed) {
+        if (pivotTimed) {
+            counter = 2;
+        }else {
+            setPivotIntakeSample();
+            counter = 0;
+        }
         setMotionProfile(armPresetIntakeSample);
     }
-    public void setDepositSpecimen() {
-//        setPivotDepositSpecimen();
+    public void setDepositSpecimen(boolean pivotTimed) {
+        if (pivotTimed) {
+            counter = 3;
+        }else {
+            setPivotDepositSpecimen();
+            counter = 0;
+        }
         setMotionProfile(armPresetDepositSpecimen);
     }
-    public void setDepositSample() {
-//        setPivotDepositSample();
+    public void setDepositSample(boolean pivotTimed) {
+        if (pivotTimed) {
+            counter = 4;
+        }else {
+            setPivotDepositSample();
+            counter = 0;
+        }
         setMotionProfile(armPreset1DepositSample);
+    }
+
+    public void pivotQueue() {
+        switch (counter) {
+            case 1:
+                setPivotIntakeSpecimen();
+                break;
+            case 2:
+                setPivotIntakeSample();
+                break;
+            case 3:
+                setPivotDepositSpecimen();
+                break;
+            case 4:
+                setPivotDepositSample();
+                break;
+        }
+        counter = 0;
     }
 
     public void setPivotRest() {

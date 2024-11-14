@@ -6,17 +6,13 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 @Config
 public class PIDController {
 
-    public static double p = 0.027, i = 0, d = 0, f = 0;
+    public static double p = 0.013, i = 0, d = 0, f = 0;
     private final double motorEncoderTicks = 1440;
     private double input = 0, output = 0;
     private ElapsedTime timer = new ElapsedTime();
     private double integralSum = 0, lastError = 0;
 
-    public PIDController(double p, double i, double d, double f) {
-        this.p = p;
-        this.i = i;
-        this.d = d;
-        this.f = f;
+    public PIDController() {
     }
 
     public double calculatePID(double reference, double state) {

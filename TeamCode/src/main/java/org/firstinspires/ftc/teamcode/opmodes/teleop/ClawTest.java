@@ -61,14 +61,14 @@ public class ClawTest extends LinearOpMode {
         switch (testState) {
             case OPEN:
                 telemetry.addLine("CLAW OPENED");
-                robot.clawSubsystem.openClaw();
+                robot.clawSubsystem.openBothClaw();
                 if (currentGamepad1.x && !previousGamepad1.x) {
                     testState = TestState.CLOSED;
                 }
                 break;
             case CLOSED:
                 telemetry.addLine("CLAW CLOSED");
-                robot.clawSubsystem.closeClaw();
+                robot.clawSubsystem.closeBothClaw();
                 if (currentGamepad1.x && !previousGamepad1.x) {
                     testState = TestState.OPEN;
                 }
