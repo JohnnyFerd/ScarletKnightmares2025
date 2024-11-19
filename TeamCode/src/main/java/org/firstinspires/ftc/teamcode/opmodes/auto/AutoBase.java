@@ -54,6 +54,7 @@ public abstract class AutoBase extends LinearOpMode {
         private boolean stopUpdate = false;
         public class UpdateArmSubsystem implements Action {
             private boolean initialized = false;
+            private int counter4 = 0;
 
             @Override
             public boolean run(@NonNull TelemetryPacket telemetryPacket) {
@@ -65,7 +66,9 @@ public abstract class AutoBase extends LinearOpMode {
                 if (stopUpdate) {
                     return false;
                 }else {
+                    robot.armSubsystem.armState = Arm.ArmState.MOTION_PROFILE;
                     robot.armSubsystem.update();
+                    robot.BR.readAll();
                     return true;
                 }
             }
@@ -94,6 +97,8 @@ public abstract class AutoBase extends LinearOpMode {
                     robot.armSubsystem.armState = Arm.ArmState.MOTION_PROFILE;
                     initialized = true;
                 }
+//                robot.armSubsystem.armState = Arm.ArmState.MOTION_PROFILE;
+//                robot.armSubsystem.update();
                 if (!robot.armSubsystem.getMP().isBusy()) {
                     return false;
                 }
@@ -132,6 +137,25 @@ public abstract class AutoBase extends LinearOpMode {
         }
         public Action intakeSpecimen() {
             return new IntakeSpecimen();
+        }
+
+        public class IntakeSpecimenGround implements Action {
+            private boolean initialized = false;
+            @Override
+            public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                if (!initialized) {
+                    robot.armSubsystem.setAutoIntakeSpecimen();
+                    robot.armSubsystem.armState = Arm.ArmState.MOTION_PROFILE;
+                    initialized = true;
+                }
+                if (!robot.armSubsystem.getMP().isBusy()) {
+                    return false;
+                }
+                return true;
+            }
+        }
+        public Action intakeSpecimenGround() {
+            return new IntakeSpecimenGround();
         }
 
         public class DepositSample implements Action {

@@ -21,17 +21,20 @@ public class Arm extends Subsystem {
     private PIDController pid;
 
     public static int armPresetRest = -50; // FINAL
-    public static int armPresetIntakeSpecimen = 200; //
-    public static int armPresetIntakeSample = 200; //
-    public static int armPresetDepositSpecimen = 1140; // maybe good?
+    public static int armPresetIntakeSpecimen = 1700; //
+    public static int armPresetIntakeSample = 1800; //
+    public static int armPresetDepositSpecimen = 1200; // maybe good?
     public static int armPreset1DepositSample = 425; //
 
     public static double pivotPresetRest = 0;
-    public static double pivotPresetIntakeSpecimen = 0.87;
-    public static double pivotPresetIntakeSample = 0.9;
+    public static double pivotPresetIntakeSpecimen = 0.78;
+    public static double pivotPresetIntakeSample = 0.2;
     public static double pivotPresetDepositSpecimen = 0.46;
     public static double pivotPresetDepositSample = 0.9;
-    public static double pivotDownIncrement = 0.26;
+    public static double pivotDownIncrement = 0.35;
+
+    public static int autoArmSpecimenPreset = 1700;
+    public static double autoPivotSpecimenPreset = 0.78;
 
     public boolean pivotDown = false;
     public double previousPivotPos = 0;
@@ -133,6 +136,9 @@ public class Arm extends Subsystem {
                 if (UseTelemetry.ARM_TELEMETRY) {
                     telemetry.addData("    MP TIME", mp.getTimeElapsed());
                     telemetry.addData("    Reference Position", refPos);
+                    telemetry.addData("    Arm Encoder Position (R)", BulkReading.pMotorArmR);
+                    telemetry.addData("    Pivot Servo Position", robot.servoPivotR.getPosition());
+                    telemetry.update();
 //                    telemetry.addData("    Reference Velocity", refVel);
 //                    telemetry.addData("    Reference Acceleration", refAcl);
                 }
@@ -188,6 +194,11 @@ public class Arm extends Subsystem {
             counter = 0;
         }
         setMotionProfile(armPresetIntakeSpecimen);
+    }
+    public void setAutoIntakeSpecimen() {
+        setMotionProfile(autoArmSpecimenPreset);
+        robot.servoPivotL.setPosition(autoPivotSpecimenPreset);
+        robot.servoPivotR.setPosition(autoPivotSpecimenPreset);
     }
     public void setIntakeSample(boolean pivotTimed) {
         if (pivotTimed) {

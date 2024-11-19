@@ -3,7 +3,9 @@ package org.firstinspires.ftc.teamcode.opmodes.auto;
 // RR-specific imports
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.Action;
+import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.SequentialAction;
+import com.acmerobotics.roadrunner.SleepAction;
 import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
@@ -32,6 +34,9 @@ public class RedSpecimen extends AutoBase {
         drive = new MecanumDrive(hardwareMap, specimenStart);
 
         while (!choicePicked) {
+            previousGamepad.copy(currentGamepad);
+            currentGamepad.copy(gamepad1);
+
             telemetry.addLine("PICK NUMBER OF SPECIMEN");
             telemetry.addLine("A = 1, B = 2, X = 3, Y = 4");
             telemetry.update();
@@ -39,10 +44,16 @@ public class RedSpecimen extends AutoBase {
                 pathNumber = 1;
                 choicePicked = true;
             }
+            if (currentGamepad.b && !previousGamepad.b) {
+                pathNumber = 2;
+                choicePicked = true;
+            }
+            if (currentGamepad.x && !previousGamepad.x) {
+                pathNumber = 3;
+                choicePicked = true;
+            }
+            if (isStopRequested()) return;
         }
-
-        telemetry.addData("NUMBER OF SPECIMEN CHOSEN: ", pathNumber);
-        telemetry.update();
 
         switch (pathNumber) {
             case 1:
@@ -52,11 +63,14 @@ public class RedSpecimen extends AutoBase {
                 twoSpecimenPaths();
                 break;
             case 3:
+                twoSpecimenPathsAlternate();
                 break;
             case 4:
                 break;
         }
 
+        telemetry.addData("NUMBER OF SPECIMEN CHOSEN: ", pathNumber);
+        telemetry.update();
 
         // actions that need to happen on init
         Actions.runBlocking(clawSystem.closeClaw());
@@ -68,30 +82,95 @@ public class RedSpecimen extends AutoBase {
         switch (pathNumber) {
             case 1:
                 Actions.runBlocking(
-                    new SequentialAction(
-                            moveToBar11,
-                            moveToBar21,
-                            moveToObservationZone1
-                    )
-//                    new ParallelAction(
-//                            armLift.updateArmSubsystem(),
-//                            new SequentialAction(
-//                                    moveToBar1.build(),
-//                                    armLift.depositSpecimen(),
-//                                    moveToBar2.build(),
-//                                    armLift.pivotDown(),
-//                                    new SleepAction(0.5),
-//                                    clawSystem.openClaw(),
-//                                    new SleepAction(0.5),
-//                                    clawSystem.closeClaw(),
-//                                    armLift.restArm(),
-//                                    moveToObservationZone.build(),
-//                                    armLift.stopUpdate()
-//                            )
-//                    )
+                        new ParallelAction(
+                                armLift.updateArmSubsystem(),
+                                new SequentialAction(
+                                        moveToBar11,
+                                        armLift.depositSpecimen(),
+                                        armLift.pivotDown(),
+                                        new SleepAction(0.5),
+                                        clawSystem.openClaw(),
+                                        new SleepAction(0.5),
+                                        moveToBar21,
+                                        clawSystem.closeClaw(),
+                                        armLift.restArm(),
+                                        moveToObservationZone1,
+                                        armLift.stopUpdate()
+                                )
+                        )
                 );
                 break;
             case 2:
+                Actions.runBlocking(
+                        new ParallelAction(
+                                armLift.updateArmSubsystem(),
+                                new SequentialAction(
+                                        moveToBar12,
+                                        armLift.depositSpecimen(),
+                                        new SleepAction(0.5),
+                                        armLift.pivotDown(),
+                                        new SleepAction(0.5),
+                                        clawSystem.openClaw(),
+                                        moveToBar22,
+                                        clawSystem.closeClaw(),
+                                        moveToObservationZone2,
+                                        armLift.intakeSpecimen(),
+                                        clawSystem.openClaw(),
+                                        new SleepAction(1),
+                                        getSpecimen2,
+                                        new SleepAction(0.5),
+                                        clawSystem.closeClaw(),
+                                        new SleepAction(0.5),
+                                        armLift.depositSpecimen(), // separate pivot mechanism from arm mechanism here
+                                        moveBackToBar12,
+                                        armLift.pivotDown(),
+                                        new SleepAction(0.5),
+                                        clawSystem.openClaw(),
+                                        new SleepAction(0.5),
+                                        moveToBar22,
+                                        clawSystem.closeClaw(),
+                                        armLift.restArm(),
+                                        moveBackToObservationZone2,
+                                        armLift.stopUpdate()
+                                )
+                        )
+                );
+                break;
+            case 3:
+                Actions.runBlocking(
+                        new ParallelAction(
+                                armLift.updateArmSubsystem(),
+                                new SequentialAction(
+                                        moveToBar12,
+                                        armLift.depositSpecimen(),
+                                        new SleepAction(0.5),
+                                        armLift.pivotDown(),
+                                        new SleepAction(0.5),
+                                        clawSystem.openClaw(),
+                                        moveToBar22,
+                                        clawSystem.closeClaw(),
+                                        moveToObservationZone2,
+                                        armLift.intakeSpecimenGround(),
+                                        clawSystem.openClaw(),
+                                        new SleepAction(0.5),
+                                        getSpecimen2,
+                                        new SleepAction(0.5),
+                                        clawSystem.closeClaw(),
+                                        new SleepAction(0.5),
+                                        armLift.depositSpecimen(),
+                                        moveBackToBar12,
+                                        armLift.pivotDown(),
+                                        new SleepAction(0.5),
+                                        clawSystem.openClaw(),
+                                        new SleepAction(0.5),
+                                        moveToBar22,
+                                        clawSystem.closeClaw(),
+                                        armLift.restArm(),
+                                        moveBackToObservationZone2,
+                                        armLift.stopUpdate()
+                                )
+                        )
+                );
                 break;
         }
     }
@@ -99,10 +178,10 @@ public class RedSpecimen extends AutoBase {
     public void oneSpecimenPaths() {
         TrajectoryActionBuilder moveToBar1B = drive.actionBuilder(specimenStart)
                 .waitSeconds(1)
-                .lineToY(-53);
+                .lineToY(-44);
         TrajectoryActionBuilder moveToBar2B = moveToBar1B.endTrajectory().fresh()
                 .waitSeconds(1)
-                .lineToY(-55);
+                .lineToY(-46);
         TrajectoryActionBuilder moveToObservationZoneB = moveToBar2B.endTrajectory().fresh()
                 .waitSeconds(1)
                 .splineTo(new Vector2d(60, -60), Math.toRadians(0));
@@ -115,26 +194,24 @@ public class RedSpecimen extends AutoBase {
 
     public void twoSpecimenPaths() {
         TrajectoryActionBuilder moveToBar1B = drive.actionBuilder(specimenStart)
-                .waitSeconds(1)
-                .lineToY(-50);
+                .lineToY(-44);
         TrajectoryActionBuilder moveToBar2B = moveToBar1B.endTrajectory().fresh()
-                .waitSeconds(1)
-                .lineToY(-52);
+                .lineToY(-46);
         TrajectoryActionBuilder moveToObservationZoneB = moveToBar2B.endTrajectory().fresh()
-                .waitSeconds(1)
-                .splineTo(new Vector2d(60, -56), Math.toRadians(0));
-//                .setReversed(false);
-        TrajectoryActionBuilder getSpecimenB = moveToObservationZoneB.endTrajectory().fresh()
-                .setReversed(false)
                 .turn(Math.toRadians(90))
-                .lineToY(-57);
+                .splineTo(new Vector2d(48, -45), Math.toRadians(0))
+                .waitSeconds(0.5)
+                .turn(Math.toRadians(90));
+        TrajectoryActionBuilder getSpecimenB = moveToObservationZoneB.endTrajectory().fresh()
+                .lineToY(-48);
         TrajectoryActionBuilder moveBackToBar1B = getSpecimenB.endTrajectory().fresh()
                 .turn(Math.toRadians(-90))
                 .setReversed(true)
-                .splineTo(new Vector2d(2, -50), Math.toRadians(90));
+                .splineTo(new Vector2d(2, -46), Math.toRadians(90))
+                .lineToY(-45);
         TrajectoryActionBuilder moveBackToBar2B = moveBackToBar1B.endTrajectory().fresh()
                 .setReversed(false)
-                .lineToY(-52);
+                .lineToY(-50);
         TrajectoryActionBuilder moveBackToObservationZoneB = moveBackToBar2B.endTrajectory().fresh()
                 .splineTo(new Vector2d(60, -60), Math.toRadians(0));
 
@@ -146,5 +223,36 @@ public class RedSpecimen extends AutoBase {
         moveBackToBar22 = moveBackToBar2B.build();
         moveBackToObservationZone2 = moveBackToObservationZoneB.build();
 
+    }
+
+    public void twoSpecimenPathsAlternate() {
+        TrajectoryActionBuilder moveToBar1B = drive.actionBuilder(specimenStart)
+                .lineToY(-44);
+        TrajectoryActionBuilder moveToBar2B = moveToBar1B.endTrajectory().fresh()
+                .lineToY(-46);
+        TrajectoryActionBuilder moveToObservationZoneB = moveToBar2B.endTrajectory().fresh()
+                .turn(Math.toRadians(-90))
+                .setReversed(true)
+                .splineTo(new Vector2d(36, -60), Math.toRadians(0));
+        TrajectoryActionBuilder getSpecimenB = moveToObservationZoneB.endTrajectory().fresh()
+                .lineToX(38);
+        TrajectoryActionBuilder moveBackToBar1B = getSpecimenB.endTrajectory().fresh()
+                .lineToX(36)
+                .setReversed(false)
+                .splineTo(new Vector2d(2, -46), Math.toRadians(180))
+                .turn(Math.toRadians(90))
+                .lineToY(-45);
+        TrajectoryActionBuilder moveBackToBar2B = moveBackToBar1B.endTrajectory().fresh()
+                .lineToY(-50);
+        TrajectoryActionBuilder moveBackToObservationZoneB = moveBackToBar2B.endTrajectory().fresh()
+                .splineTo(new Vector2d(60, -60), Math.toRadians(0));
+
+        moveToBar12 = moveToBar1B.build();
+        moveToBar22 = moveToBar2B.build();
+        moveToObservationZone2 = moveToObservationZoneB.build();
+        getSpecimen2 = getSpecimenB.build();
+        moveBackToBar12 = moveBackToBar1B.build();
+        moveBackToBar22 = moveBackToBar2B.build();
+        moveBackToObservationZone2 = moveBackToObservationZoneB.build();
     }
 }
