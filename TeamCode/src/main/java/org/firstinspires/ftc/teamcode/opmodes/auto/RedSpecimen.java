@@ -24,6 +24,7 @@ public class RedSpecimen extends AutoBase {
     // 1 specimen
     private Action moveToBar11, moveToBar21, moveToObservationZone1;
     private Action moveToBar12, moveToBar22, moveToObservationZone2, getSpecimen2, moveBackToBar12, moveBackToBar22, moveBackToObservationZone2;
+    private Action groundSample1, groundSample2;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -143,34 +144,33 @@ public class RedSpecimen extends AutoBase {
                                 new SequentialAction(
                                         moveToBar12,
                                         armLift.depositSpecimen(),
-                                        new SleepAction(0.5),
+                                        new SleepAction(0.75),
                                         armLift.pivotDown(),
-                                        new SleepAction(0.5),
+                                        new SleepAction(0.25),
                                         clawSystem.openClaw(),
                                         moveToBar22,
                                         clawSystem.closeClaw(),
                                         moveToObservationZone2,
-                                        armLift.intakeSpecimenGround(),
                                         clawSystem.openClaw(),
-                                        new SleepAction(0.5),
-                                        getSpecimen2,
+                                        armLift.intakeSpecimenGround(),
                                         new SleepAction(0.5),
                                         clawSystem.closeClaw(),
-                                        new SleepAction(0.5),
+                                        new SleepAction(0.25),
                                         armLift.depositSpecimen(),
                                         moveBackToBar12,
                                         armLift.pivotDown(),
                                         new SleepAction(0.5),
                                         clawSystem.openClaw(),
-                                        new SleepAction(0.5),
-                                        moveToBar22,
+                                        new SleepAction(0.25),
                                         clawSystem.closeClaw(),
                                         armLift.restArm(),
-                                        moveBackToObservationZone2,
-                                        armLift.stopUpdate()
+                                        armLift.stopUpdate(),
+                                        groundSample1
                                 )
                         )
                 );
+                break;
+            case 4:
                 break;
         }
     }
@@ -233,26 +233,33 @@ public class RedSpecimen extends AutoBase {
         TrajectoryActionBuilder moveToObservationZoneB = moveToBar2B.endTrajectory().fresh()
                 .turn(Math.toRadians(-90))
                 .setReversed(true)
-                .splineTo(new Vector2d(36, -60), Math.toRadians(0));
-        TrajectoryActionBuilder getSpecimenB = moveToObservationZoneB.endTrajectory().fresh()
-                .lineToX(38);
-        TrajectoryActionBuilder moveBackToBar1B = getSpecimenB.endTrajectory().fresh()
-                .lineToX(36)
+                .splineTo(new Vector2d(26, -60), Math.toRadians(0));
+//        TrajectoryActionBuilder getSpecimenB = moveToObservationZoneB.endTrajectory().fresh()
+//                .lineToX(38);
+        TrajectoryActionBuilder moveBackToBar1B = moveToObservationZoneB.endTrajectory().fresh()
                 .setReversed(false)
-                .splineTo(new Vector2d(2, -46), Math.toRadians(180))
+                .splineTo(new Vector2d(2, -50), Math.toRadians(180))
                 .turn(Math.toRadians(90))
-                .lineToY(-45);
-        TrajectoryActionBuilder moveBackToBar2B = moveBackToBar1B.endTrajectory().fresh()
-                .lineToY(-50);
-        TrajectoryActionBuilder moveBackToObservationZoneB = moveBackToBar2B.endTrajectory().fresh()
-                .splineTo(new Vector2d(60, -60), Math.toRadians(0));
+                .lineToY(-48);
+//        TrajectoryActionBuilder moveBackToBar2B = moveBackToBar1B.endTrajectory().fresh()
+//                .lineToY(-50);
+        TrajectoryActionBuilder groundSample1B = moveBackToBar1B.endTrajectory().fresh()
+                .turn(Math.toRadians(90))
+                .lineToX(30)
+                .splineTo(new Vector2d(36, -12), Math.toRadians(90))
+                .setReversed(true)
+                .splineTo(new Vector2d(48, -48), Math.toRadians(270))
+                .lineToY(-60);
+//        TrajectoryActionBuilder moveBackToObservationZoneB = moveBackToBar2B.endTrajectory().fresh()
+//                .splineTo(new Vector2d(60, -60), Math.toRadians(0));
 
         moveToBar12 = moveToBar1B.build();
         moveToBar22 = moveToBar2B.build();
         moveToObservationZone2 = moveToObservationZoneB.build();
-        getSpecimen2 = getSpecimenB.build();
+//        getSpecimen2 = getSpecimenB.build();
         moveBackToBar12 = moveBackToBar1B.build();
-        moveBackToBar22 = moveBackToBar2B.build();
-        moveBackToObservationZone2 = moveBackToObservationZoneB.build();
+//        moveBackToBar22 = moveBackToBar2B.build();
+        groundSample1 = groundSample1B.build();
+//        moveBackToObservationZone2 = moveBackToObservationZoneB.build();
     }
 }

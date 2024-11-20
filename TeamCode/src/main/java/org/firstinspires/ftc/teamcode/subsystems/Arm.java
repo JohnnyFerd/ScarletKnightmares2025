@@ -22,19 +22,19 @@ public class Arm extends Subsystem {
 
     public static int armPresetRest = -50; // FINAL
     public static int armPresetIntakeSpecimen = 1700; //
-    public static int armPresetIntakeSample = 1800; //
+    public static int armPresetIntakeSample = 1720; //
     public static int armPresetDepositSpecimen = 1200; // maybe good?
     public static int armPreset1DepositSample = 425; //
 
     public static double pivotPresetRest = 0;
-    public static double pivotPresetIntakeSpecimen = 0.78;
-    public static double pivotPresetIntakeSample = 0.2;
+    public static double pivotPresetIntakeSpecimen = 0.83;
+    public static double pivotPresetIntakeSample = 0.49;
     public static double pivotPresetDepositSpecimen = 0.46;
     public static double pivotPresetDepositSample = 0.9;
     public static double pivotDownIncrement = 0.35;
 
-    public static int autoArmSpecimenPreset = 1700;
-    public static double autoPivotSpecimenPreset = 0.78;
+    public static int autoArmSpecimenPreset = 1870;
+    public static double autoPivotSpecimenPreset = 0.68;
 
     public boolean pivotDown = false;
     public double previousPivotPos = 0;

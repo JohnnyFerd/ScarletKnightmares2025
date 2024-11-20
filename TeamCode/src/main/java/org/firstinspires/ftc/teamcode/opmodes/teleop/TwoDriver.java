@@ -159,6 +159,16 @@ public class TwoDriver extends LinearOpMode {
                     robot.armSubsystem.setIntakeSpecimen(true);
                     armControl = ArmControl.MOVE_ARM;
                 }
+
+                if (currentGamepad2.right_trigger > 0.01 && currentGamepad2.left_trigger <= 0.01) {
+                    armControl = ArmControl.MOVE_ARM;
+                }
+                if (currentGamepad2.left_trigger > 0.01 && currentGamepad2.right_trigger <= 0.01) {
+                    armControl = ArmControl.MOVE_ARM;
+                }
+                if (Math.abs(currentGamepad2.right_stick_y) > 0.01 || Math.abs(currentGamepad2.left_stick_y) > 0.01) {
+                    armControl = ArmControl.MOVE_ARM;
+                }
                 break;
             case MOVE_ARM:
                 if (currentGamepad2.dpad_up && !previousGamepad2.dpad_up) {
@@ -243,5 +253,7 @@ public class TwoDriver extends LinearOpMode {
                 }
                 break;
         }
+        // EMERGENCY ARM RESET
+
     }
 }

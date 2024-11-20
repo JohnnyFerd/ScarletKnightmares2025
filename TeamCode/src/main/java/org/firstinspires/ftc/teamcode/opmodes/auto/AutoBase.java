@@ -182,7 +182,7 @@ public abstract class AutoBase extends LinearOpMode {
             @Override
             public boolean run(@NonNull TelemetryPacket telemetryPacket) {
                 if (!initialized) {
-                    robot.armSubsystem.setIntakeSample(false);
+                    robot.armSubsystem.setIntakeSample(true);
                     robot.armSubsystem.armState = Arm.ArmState.MOTION_PROFILE;
                     initialized = true;
                 }
