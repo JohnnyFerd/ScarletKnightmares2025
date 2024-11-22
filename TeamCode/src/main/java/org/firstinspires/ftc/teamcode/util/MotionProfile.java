@@ -8,14 +8,16 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 public class MotionProfile {
     private double startingTime = 0;
 
-    public static int MAX_VELOCITY = 1000; // enocder ticks per second
-    public static int MAX_ACCELERATION = 600; // encoder ticks per second
-//    public static int MAX_JERK = 0;
+    public static int MAX_VELOCITY = 3000; // enocder ticks per second
+    public static int MAX_ACCELERATION = 2300; // encoder ticks per second
+    public static int MAX_DECELERATION = 1000;
 
-    private double acceleration_dt, distance, halfway_distance, max_acceleration,
-            max_velocity, acceleration_distance, deceleration_dt,
-            cruise_distance, cruise_dt, deceleration_time, entire_dt,
+    private double acceleration_dt = 0, distance, halfway_distance, max_acceleration,
+            max_velocity, acceleration_distance, deceleration_dt = 0,
+            cruise_distance, cruise_dt = 0, deceleration_time, entire_dt = 0,
             start, end;
+    private double max_deceleration, deceleration_distance, goal_velocity;
+    private Telemetry telemetry;
 
     private double instantPos = 0;
     public double distanceTraveled = 0;
@@ -24,13 +26,25 @@ public class MotionProfile {
     private boolean isBusy = false;
     private double timeElapsed = 0;
 
-    public MotionProfile() { }
+    private double multiplier = 1.0;
+
+    public MotionProfile(Telemetry telemetry) {
+        this.telemetry = telemetry;
+    }
 
     public double getEntireMPTime() {
         return entire_dt;
     }
     public double getTimeElapsed() {
         return timeElapsed;
+    }
+
+    public void addTelemetry() {
+        telemetry.addData("Acceleration dt", acceleration_dt);
+        telemetry.addData("Cruise dt", cruise_dt);
+        telemetry.addData("Deceleration dt", deceleration_dt);
+        telemetry.addData("Entire dt", entire_dt);
+        telemetry.addData("Distance", distance);
     }
 
     public void setProfile(double start, double end) {
@@ -85,6 +99,135 @@ public class MotionProfile {
 
         // for back and forth test opmode
 //        profileTime = entire_dt;
+    }
+    public void setAsymmetricProfile(double start, double end) {
+        isBusy = true;
+
+        this.start = start;
+        this.end = end;
+        distance = end - start;
+        max_acceleration = MAX_ACCELERATION;
+        max_velocity = MAX_VELOCITY;
+        max_deceleration = MAX_DECELERATION;
+
+        if (distance == 0 || max_acceleration == 0 || max_velocity == 0) {
+            isBusy = false;
+            instantPos = end;
+            distanceTraveled = 0;
+            instantVel = 0;
+            instantAcl = 0;
+//            return;
+        }
+        if (distance < 0) {
+//            multiplier = -1.0;
+//            distance *= multiplier;
+            max_velocity *= -1;
+            max_acceleration *= -1;
+            max_deceleration *= -1;
+        }
+
+        acceleration_dt = max_velocity / max_acceleration;
+        deceleration_dt = max_velocity / max_deceleration;
+
+        acceleration_distance = 0.5 * max_acceleration * Math.pow(acceleration_dt, 2);
+        deceleration_distance = 0.5 * max_deceleration * Math.pow(deceleration_dt, 2);
+        cruise_distance = distance - acceleration_distance - deceleration_distance;
+        cruise_dt = cruise_distance / max_velocity;
+
+        if (cruise_distance < 0) {
+            cruise_distance = 0;
+            cruise_dt = 0;
+            goal_velocity = Math.sqrt( (distance * 2 * max_deceleration * max_acceleration) / (max_acceleration + max_deceleration) );
+            acceleration_dt = goal_velocity / max_acceleration;
+            deceleration_dt = goal_velocity / max_deceleration;
+
+            max_velocity = goal_velocity;
+
+            acceleration_distance = 0.5 * max_acceleration * Math.pow(acceleration_dt, 2);
+            deceleration_distance = 0.5 * max_deceleration * Math.pow(deceleration_dt, 2);
+        }
+
+        entire_dt = acceleration_dt + cruise_dt + deceleration_dt;
+        deceleration_time = acceleration_dt + cruise_dt;
+
+    }
+
+    public void updateAsymmetricState(double currentTime) {
+        isBusy = true;
+        timeElapsed = currentTime - startingTime;
+        timeElapsed = Math.abs(timeElapsed);
+
+        // if no motion profile is set
+        if (distance == 0 || max_acceleration == 0 || max_velocity == 0) {
+            isBusy = false;
+            instantPos = end;
+            distanceTraveled = 0;
+            instantVel = 0;
+            instantAcl = 0;
+            return;
+        }
+
+        // if motion profile is done
+        if (timeElapsed > entire_dt) {
+            isBusy = false;
+            instantPos = end;
+            distanceTraveled = end - start;
+            instantVel = 0;
+            instantAcl = 0;
+            return;
+        }
+
+        // if we're accelerating
+        if (timeElapsed < acceleration_dt) {
+            // use the kinematic equation for acceleration
+            instantPos = 0.5 * max_acceleration * Math.pow(timeElapsed, 2);
+            distanceTraveled = instantPos;
+            instantPos += start;
+            instantVel = max_acceleration * timeElapsed;
+            instantAcl = max_acceleration;
+            distanceTraveled *= multiplier;
+            instantPos *= multiplier;
+            instantVel *= multiplier;
+            instantAcl *= multiplier;
+            return;
+        }
+
+        // if we're cruising
+        else if (timeElapsed < deceleration_time) {
+            acceleration_distance = 0.5 * max_acceleration * Math.pow(acceleration_dt, 2);
+            double cruise_current_dt = timeElapsed - acceleration_dt;
+
+            // use the kinematic equation for constant velocity
+            instantPos = acceleration_distance + max_velocity * cruise_current_dt;
+            distanceTraveled = instantPos;
+            instantPos += start;
+            instantVel = max_velocity;
+            instantAcl = 0;
+            distanceTraveled *= multiplier;
+            instantPos *= multiplier;
+            instantVel *= multiplier;
+            instantAcl *= multiplier;
+            return;
+        }
+
+        // if we're decelerating
+        else {
+            acceleration_distance = 0.5 * max_acceleration * Math.pow(acceleration_dt, 2);
+            cruise_distance = max_velocity * cruise_dt;
+            double decelerationTime = timeElapsed - deceleration_time;
+
+            // use the kinematic equations to calculate the instantaneous desired position
+            instantPos = acceleration_distance + cruise_distance + max_velocity * decelerationTime - 0.5 * max_deceleration * Math.pow(decelerationTime, 2);
+            distanceTraveled = instantPos;
+            instantPos += start;
+            instantVel = max_velocity - max_deceleration * (timeElapsed - deceleration_time);
+            instantAcl = -1.0 * max_deceleration;
+            distanceTraveled *= multiplier;
+            instantPos *= multiplier;
+            instantVel *= multiplier;
+            instantAcl *= multiplier;
+            return;
+        }
     }
 
     public void updateState(double currentTime) {

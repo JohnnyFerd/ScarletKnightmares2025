@@ -59,6 +59,7 @@ public class TwoDriver extends LinearOpMode {
         waitForStart();
 
         if (opModeIsActive()) {
+            telemetry.clear();
             while (opModeIsActive()) {
                 previousGamepad1.copy(currentGamepad1);
                 currentGamepad1.copy(gamepad1);

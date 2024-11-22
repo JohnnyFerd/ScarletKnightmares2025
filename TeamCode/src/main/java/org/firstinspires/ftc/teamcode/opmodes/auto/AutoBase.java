@@ -93,7 +93,7 @@ public abstract class AutoBase extends LinearOpMode {
             @Override
             public boolean run(@NonNull TelemetryPacket telemetryPacket) {
                 if (!initialized) {
-                    robot.armSubsystem.setDepositSpecimen(false);
+                    robot.armSubsystem.setDepositSpecimen(true);
                     robot.armSubsystem.armState = Arm.ArmState.MOTION_PROFILE;
                     initialized = true;
                 }
@@ -107,6 +107,26 @@ public abstract class AutoBase extends LinearOpMode {
         }
         public Action depositSpecimen() {
             return new DepositSpecimen();
+        }
+
+        public class DepositSpecimenHigher implements Action {
+            private boolean initialized = false;
+            @Override
+            public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                if (!initialized) {
+                    robot.armSubsystem.setMotionProfile(3375);
+                    robot.armSubsystem.counter = 3;
+                    robot.armSubsystem.armState = Arm.ArmState.MOTION_PROFILE;
+                    initialized = true;
+                }
+                if (!robot.armSubsystem.getMP().isBusy()) {
+                    return false;
+                }
+                return true;
+            }
+        }
+        public Action depositSpecimenHigher() {
+            return new DepositSpecimenHigher();
         }
 
         public class PivotDown implements Action {
@@ -125,7 +145,8 @@ public abstract class AutoBase extends LinearOpMode {
             @Override
             public boolean run(@NonNull TelemetryPacket telemetryPacket) {
                 if (!initialized) {
-                    robot.armSubsystem.setIntakeSpecimen(false);
+                    robot.armSubsystem.setMotionProfile(4720);
+                    robot.armSubsystem.setPivotIntakeSpecimen();
                     robot.armSubsystem.armState = Arm.ArmState.MOTION_PROFILE;
                     initialized = true;
                 }

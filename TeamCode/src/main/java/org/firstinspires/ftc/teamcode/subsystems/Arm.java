@@ -20,18 +20,18 @@ public class Arm extends Subsystem {
     private MotionProfile mp;
     private PIDController pid;
 
-    public static int armPresetRest = -50; // FINAL
-    public static int armPresetIntakeSpecimen = 1700; //
-    public static int armPresetIntakeSample = 1720; //
-    public static int armPresetDepositSpecimen = 1200; // maybe good?
-    public static int armPreset1DepositSample = 425; //
+    public static int armPresetRest = -120; // FINAL
+    public static int armPresetIntakeSpecimen = 4900; //
+    public static int armPresetIntakeSample = 4900; //
+    public static int armPresetDepositSpecimen = 3500; // maybe good?
+    public static int armPreset1DepositSample = 3100; //
 
     public static double pivotPresetRest = 0;
-    public static double pivotPresetIntakeSpecimen = 0.83;
-    public static double pivotPresetIntakeSample = 0.49;
-    public static double pivotPresetDepositSpecimen = 0.46;
+    public static double pivotPresetIntakeSpecimen = 0.74;
+    public static double pivotPresetIntakeSample = 0.4;
+    public static double pivotPresetDepositSpecimen = 0.475;
     public static double pivotPresetDepositSample = 0.9;
-    public static double pivotDownIncrement = 0.35;
+    public static double pivotDownIncrement = 0.45;
 
     public static int autoArmSpecimenPreset = 1870;
     public static double autoPivotSpecimenPreset = 0.68;
@@ -40,8 +40,8 @@ public class Arm extends Subsystem {
     public double previousPivotPos = 0;
 
     public static double pivotSpeedConstant = 0.005;
-    public static double armSpeedConstant = 2.2;
-    public static double armSpeedConstantBig = 4.4;
+    public static double armSpeedConstant = 10;
+    public static double armSpeedConstantBig = 20;
 
     public static double MAX_POWER = 1;
     public ElapsedTime motionProfileTime = new ElapsedTime();
@@ -53,7 +53,9 @@ public class Arm extends Subsystem {
     private double previousRefPos = 100000;
     private double previousCurrentPos = 100000;
 
-    private int counter = 0;
+    private double refPos = 0, refVel = 0, refAcl = 0;
+
+    public int counter = 0;
 
     public double referencePos = 0; // for the basic_pid state
 
@@ -69,7 +71,7 @@ public class Arm extends Subsystem {
         this.hwMap = hwMap;
         this.telemetry = telemetry;
         this.robot = robot;
-        this.mp = new MotionProfile();
+        this.mp = new MotionProfile(telemetry);
         pid = new PIDController();
     }
 
@@ -84,6 +86,7 @@ public class Arm extends Subsystem {
         referencePos = targetPosition;
 
         mp.setProfile(STARTING_POS, ENDING_POS);
+//        mp.setAsymmetricProfile(STARTING_POS, ENDING_POS);
 
 //        armState = ArmState.MOTION_PROFILE;
     }
@@ -113,12 +116,18 @@ public class Arm extends Subsystem {
 
     @Override
     public void addTelemetry() {
+        if (UseTelemetry.MOTION_PROFILE_TELEMETRY) {
+            mp.addTelemetry();
+        }
         if (UseTelemetry.ARM_TELEMETRY) {
             telemetry.addLine("ARM TELEMETRY: ON");
             telemetry.addData("    Arm Power", robot.motorArmL.getPower());
 //            telemetry.addData("    Arm Encoder Position (L)", BulkReading.pMotorArmL);
             telemetry.addData("    Arm Encoder Position (R)", BulkReading.pMotorArmR);
             telemetry.addData("    Pivot Servo Position", robot.servoPivotR.getPosition());
+            telemetry.addData("    Reference Position", refPos);
+            telemetry.addData("    Reference Velocity", refVel);
+            telemetry.addData("    Reference Acceleration", refAcl);
         }else {
             telemetry.addLine("ARM TELEMETRY: OFF");
         }
@@ -129,18 +138,19 @@ public class Arm extends Subsystem {
         switch(armState) {
             case MOTION_PROFILE:
                 mp.updateState(motionProfileTime.seconds());
-                double refPos = mp.getInstantPosition();
-                double refVel = mp.getInstantVelocity();
-                double refAcl = mp.getInstantAcceleration();
+//                mp.updateAsymmetricState(motionProfileTime.seconds());
+                refPos = mp.getInstantPosition();
+                refVel = mp.getInstantVelocity();
+                refAcl = mp.getInstantAcceleration();
 
                 if (UseTelemetry.ARM_TELEMETRY) {
                     telemetry.addData("    MP TIME", mp.getTimeElapsed());
                     telemetry.addData("    Reference Position", refPos);
+                    telemetry.addData("    Reference Velocity", refVel);
+                    telemetry.addData("    Reference Acceleration", refAcl);
                     telemetry.addData("    Arm Encoder Position (R)", BulkReading.pMotorArmR);
                     telemetry.addData("    Pivot Servo Position", robot.servoPivotR.getPosition());
                     telemetry.update();
-//                    telemetry.addData("    Reference Velocity", refVel);
-//                    telemetry.addData("    Reference Acceleration", refAcl);
                 }
 
                 if (mp.getTimeElapsed() > (mp.getEntireMPTime() / 2.0)) {

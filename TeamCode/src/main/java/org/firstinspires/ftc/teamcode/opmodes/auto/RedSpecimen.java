@@ -7,6 +7,7 @@ import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.SleepAction;
 import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
+import com.acmerobotics.roadrunner.TranslationalVelConstraint;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
@@ -128,7 +129,7 @@ public class RedSpecimen extends AutoBase {
                                         new SleepAction(0.5),
                                         clawSystem.openClaw(),
                                         new SleepAction(0.5),
-                                        moveToBar22,
+                                        moveBackToBar22,
                                         clawSystem.closeClaw(),
                                         armLift.restArm(),
                                         moveBackToObservationZone2,
@@ -194,9 +195,9 @@ public class RedSpecimen extends AutoBase {
 
     public void twoSpecimenPaths() {
         TrajectoryActionBuilder moveToBar1B = drive.actionBuilder(specimenStart)
-                .lineToY(-44);
+                .lineToY(-45.5);
         TrajectoryActionBuilder moveToBar2B = moveToBar1B.endTrajectory().fresh()
-                .lineToY(-46);
+                .lineToY(-47);
         TrajectoryActionBuilder moveToObservationZoneB = moveToBar2B.endTrajectory().fresh()
                 .turn(Math.toRadians(90))
                 .splineTo(new Vector2d(48, -45), Math.toRadians(0))
@@ -207,11 +208,11 @@ public class RedSpecimen extends AutoBase {
         TrajectoryActionBuilder moveBackToBar1B = getSpecimenB.endTrajectory().fresh()
                 .turn(Math.toRadians(-90))
                 .setReversed(true)
-                .splineTo(new Vector2d(2, -46), Math.toRadians(90))
-                .lineToY(-45);
+                .splineTo(new Vector2d(4, -48), Math.toRadians(90))
+                .lineToY(-46.5);
         TrajectoryActionBuilder moveBackToBar2B = moveBackToBar1B.endTrajectory().fresh()
                 .setReversed(false)
-                .lineToY(-50);
+                .lineToY(-48);
         TrajectoryActionBuilder moveBackToObservationZoneB = moveBackToBar2B.endTrajectory().fresh()
                 .splineTo(new Vector2d(60, -60), Math.toRadians(0));
 
@@ -227,13 +228,13 @@ public class RedSpecimen extends AutoBase {
 
     public void twoSpecimenPathsAlternate() {
         TrajectoryActionBuilder moveToBar1B = drive.actionBuilder(specimenStart)
-                .lineToY(-44);
+                .lineToY(-45.5);
         TrajectoryActionBuilder moveToBar2B = moveToBar1B.endTrajectory().fresh()
                 .lineToY(-46);
         TrajectoryActionBuilder moveToObservationZoneB = moveToBar2B.endTrajectory().fresh()
                 .turn(Math.toRadians(-90))
                 .setReversed(true)
-                .splineTo(new Vector2d(26, -60), Math.toRadians(0));
+                .splineTo(new Vector2d(26, -60), Math.toRadians(0), new TranslationalVelConstraint(40));
 //        TrajectoryActionBuilder getSpecimenB = moveToObservationZoneB.endTrajectory().fresh()
 //                .lineToX(38);
         TrajectoryActionBuilder moveBackToBar1B = moveToObservationZoneB.endTrajectory().fresh()
