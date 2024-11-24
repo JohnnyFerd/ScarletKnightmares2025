@@ -15,8 +15,8 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import org.firstinspires.ftc.teamcode.roadrunner.MecanumDrive;
 
 @Config
-@Autonomous (name="Red Specimen", group="Testing")
-public class RedSpecimen extends AutoBase {
+@Autonomous (name="Blue Specimen", group="Testing")
+public class BlueSpecimen extends AutoBase {
 
     private boolean choicePicked = false;
     private int pathNumber = 0;

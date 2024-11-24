@@ -40,8 +40,8 @@ public class Arm extends Subsystem {
     public double previousPivotPos = 0;
 
     public static double pivotSpeedConstant = 0.005;
-    public static double armSpeedConstant = 10;
-    public static double armSpeedConstantBig = 20;
+    public static double armSpeedConstant = 8;
+    public static double armSpeedConstantBig = 16;
 
     public static double MAX_POWER = 1;
     public ElapsedTime motionProfileTime = new ElapsedTime();

@@ -15,12 +15,12 @@ public class Claw extends Subsystem {
     private JVBoysSoccerRobot robot;
     public boolean leftOpened = false;
     public boolean rightOpened = false;
-    private int thresholdEncoderValue = 1000;
+    private int thresholdEncoderValue = 2500;
     private boolean reversedControls = false;
 
-    public static double CLAW_CLOSED_POSITIONL = 0.23;
-    public static double CLAW_OPENED_POSITIONL = 0.49;
-    public static double CLAW_CLOSED_POSITIONR = 0.15;
+    public static double CLAW_CLOSED_POSITIONL = 0.24;
+    public static double CLAW_CLOSED_POSITIONR = 0.1;
+    public static double CLAW_OPENED_POSITIONL = 0.7;
     public static double CLAW_OPENED_POSITIONR = 0.44;
 
     public Claw(HardwareMap hwMap, Telemetry telemetry, JVBoysSoccerRobot robot) {
