@@ -21,9 +21,9 @@ public class Arm extends Subsystem {
     private PIDController pid;
 
     public static int armPresetRest = -120; // FINAL
-    public static int armPresetIntakeSpecimen = 4900; //
+    public static int armPresetIntakeSpecimen = 4820; //
     public static int armPresetIntakeSample = 4900; //
-    public static int armPresetDepositSpecimen = 3500; // maybe good?
+    public static int armPresetDepositSpecimen = 3480; // maybe good?
     public static int armPreset1DepositSample = 3100; //
 
     public static double pivotPresetRest = 0;

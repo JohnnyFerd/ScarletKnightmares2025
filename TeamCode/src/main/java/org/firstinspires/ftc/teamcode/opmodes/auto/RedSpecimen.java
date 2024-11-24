@@ -123,7 +123,7 @@ public class RedSpecimen extends AutoBase {
                                         new SleepAction(0.5),
                                         clawSystem.closeClaw(),
                                         new SleepAction(0.5),
-                                        armLift.depositSpecimen(), // separate pivot mechanism from arm mechanism here
+                                        armLift.depositSpecimenHigher(), // separate pivot mechanism from arm mechanism here
                                         moveBackToBar12,
                                         armLift.pivotDown(),
                                         new SleepAction(0.5),

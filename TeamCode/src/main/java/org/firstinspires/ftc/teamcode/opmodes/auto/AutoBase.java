@@ -114,7 +114,7 @@ public abstract class AutoBase extends LinearOpMode {
             @Override
             public boolean run(@NonNull TelemetryPacket telemetryPacket) {
                 if (!initialized) {
-                    robot.armSubsystem.setMotionProfile(3375);
+                    robot.armSubsystem.setMotionProfile(3200);
                     robot.armSubsystem.counter = 3;
                     robot.armSubsystem.armState = Arm.ArmState.MOTION_PROFILE;
                     initialized = true;
@@ -145,7 +145,7 @@ public abstract class AutoBase extends LinearOpMode {
             @Override
             public boolean run(@NonNull TelemetryPacket telemetryPacket) {
                 if (!initialized) {
-                    robot.armSubsystem.setMotionProfile(4720);
+                    robot.armSubsystem.setMotionProfile(4620);
                     robot.armSubsystem.setPivotIntakeSpecimen();
                     robot.armSubsystem.armState = Arm.ArmState.MOTION_PROFILE;
                     initialized = true;
