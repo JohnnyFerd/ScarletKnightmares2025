@@ -43,8 +43,10 @@ public class MotionProfile {
         telemetry.addData("    Cruise dt", cruise_dt);
         telemetry.addData("    Deceleration dt", deceleration_dt);
         telemetry.addData("    Entire dt", entire_dt);
+        telemetry.addData("    Goal Velocity", goal_velocity);
+        telemetry.addData("    Goal Velocity", goal_velocity);
         telemetry.addData("    Distance", distance);
-        telemetry.addData("    Time ELapsed", timeElapsed);
+        telemetry.addData("    Time Elapsed", timeElapsed);
     }
     
     public void setProfile(MotionProfileParameters parameters) {
@@ -56,6 +58,7 @@ public class MotionProfile {
         this.max_acceleration = parameters.getMaxAcceleration();
         this.max_velocity = parameters.getMaxVelocity();
         this.max_deceleration = parameters.getMaxDeceleration();
+        isBackwards = false;
         distance = end - start;
 
         if (distance == 0 || max_acceleration == 0 || max_velocity == 0) {
@@ -120,7 +123,7 @@ public class MotionProfile {
         cruise_distance = distance - acceleration_distance - deceleration_distance;
         cruise_dt = cruise_distance / max_velocity;
 
-        if (cruise_distance < 0) {
+        if ((cruise_distance < 0 && !isBackwards) || (cruise_distance > 0 && isBackwards)) {
             cruise_distance = 0;
             cruise_dt = 0;
             goal_velocity = Math.sqrt( (distance * 2 * max_deceleration * max_acceleration) / (max_acceleration + max_deceleration) );

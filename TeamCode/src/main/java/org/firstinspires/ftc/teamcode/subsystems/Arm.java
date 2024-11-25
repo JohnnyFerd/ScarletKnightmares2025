@@ -20,9 +20,9 @@ public class Arm extends Subsystem {
     private MotionProfile mp;
     private PIDController pid;
 
-    public static int MAX_VELOCITY = 3000; // enocder ticks per second
-    public static int MAX_ACCELERATION = 2300; // encoder ticks per second
-    public static int MAX_DECELERATION = 1000;
+    public static int MAX_VELOCITY = 4000; // enocder ticks per second
+    public static int MAX_ACCELERATION = 3200; // encoder ticks per second
+    public static int MAX_DECELERATION = 1500;
 
     public static int armPresetRest = -120; // FINAL
     public static int armPresetIntakeSpecimen = 4820; //
@@ -77,12 +77,17 @@ public class Arm extends Subsystem {
 
     public void setMotionProfile(int targetPosition) {
         referencePos = targetPosition; // used for manual control later in teleop
-        mp.setProfile(new MotionProfileParameters(BulkReading.pMotorArmR, targetPosition, MAX_ACCELERATION, MAX_VELOCITY));
+        mp.setProfile(new MotionProfileParameters(BulkReading.pMotorArmR, targetPosition, MAX_ACCELERATION, MAX_VELOCITY, MAX_DECELERATION));
         armState = ArmState.MOTION_PROFILE;
     }
     public void setMotionProfile(int targetPosition, int acl, int vel) {
         referencePos = targetPosition; // used for manual control later in teleop
         mp.setProfile(new MotionProfileParameters(BulkReading.pMotorArmR, targetPosition, acl, vel));
+        armState = ArmState.MOTION_PROFILE;
+    }
+    public void setMotionProfile(int targetPosition, int acl, int vel, int dcl) {
+        referencePos = targetPosition; // used for manual control later in teleop
+        mp.setProfile(new MotionProfileParameters(BulkReading.pMotorArmR, targetPosition, acl, vel, dcl));
         armState = ArmState.MOTION_PROFILE;
     }
 
