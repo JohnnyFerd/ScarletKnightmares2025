@@ -94,8 +94,7 @@ public abstract class AutoBase extends LinearOpMode {
             public boolean run(@NonNull TelemetryPacket telemetryPacket) {
                 if (!initialized) {
                     robot.armSubsystem.setMotionProfile(3300);
-                    robot.armSubsystem.counter = 3;
-                    robot.armSubsystem.armState = Arm.ArmState.MOTION_PROFILE;
+                    robot.armSubsystem.pivotCounter = 3;
                     initialized = true;
                 }
 //                robot.armSubsystem.armState = Arm.ArmState.MOTION_PROFILE;
@@ -116,8 +115,7 @@ public abstract class AutoBase extends LinearOpMode {
             public boolean run(@NonNull TelemetryPacket telemetryPacket) {
                 if (!initialized) {
                     robot.armSubsystem.setMotionProfile(3200);
-                    robot.armSubsystem.counter = 3;
-                    robot.armSubsystem.armState = Arm.ArmState.MOTION_PROFILE;
+                    robot.armSubsystem.pivotCounter = 3;
                     initialized = true;
                 }
                 if (!robot.armSubsystem.getMP().isBusy()) {
@@ -148,7 +146,6 @@ public abstract class AutoBase extends LinearOpMode {
                 if (!initialized) {
                     robot.armSubsystem.setMotionProfile(4560);
                     robot.armSubsystem.setPivotIntakeSpecimen();
-                    robot.armSubsystem.armState = Arm.ArmState.MOTION_PROFILE;
                     initialized = true;
                 }
                 if (!robot.armSubsystem.getMP().isBusy()) {
@@ -167,7 +164,6 @@ public abstract class AutoBase extends LinearOpMode {
             public boolean run(@NonNull TelemetryPacket telemetryPacket) {
                 if (!initialized) {
                     robot.armSubsystem.setAutoIntakeSpecimen();
-                    robot.armSubsystem.armState = Arm.ArmState.MOTION_PROFILE;
                     initialized = true;
                 }
                 if (!robot.armSubsystem.getMP().isBusy()) {
@@ -186,7 +182,6 @@ public abstract class AutoBase extends LinearOpMode {
             public boolean run(@NonNull TelemetryPacket telemetryPacket) {
                 if (!initialized) {
                     robot.armSubsystem.setDepositSample(false);
-                    robot.armSubsystem.armState = Arm.ArmState.MOTION_PROFILE;
                     initialized = true;
                 }
                 if (!robot.armSubsystem.getMP().isBusy()) {
@@ -205,7 +200,6 @@ public abstract class AutoBase extends LinearOpMode {
             public boolean run(@NonNull TelemetryPacket telemetryPacket) {
                 if (!initialized) {
                     robot.armSubsystem.setIntakeSample(true);
-                    robot.armSubsystem.armState = Arm.ArmState.MOTION_PROFILE;
                     initialized = true;
                 }
                 if (!robot.armSubsystem.getMP().isBusy()) {
@@ -226,7 +220,6 @@ public abstract class AutoBase extends LinearOpMode {
                 if (!initialized) {
                     initialized = true;
                     robot.armSubsystem.setRest();
-                    robot.armSubsystem.armState = Arm.ArmState.MOTION_PROFILE;
                 }
                 if (!robot.armSubsystem.getMP().isBusy()) {
                     robot.armSubsystem.armState = Arm.ArmState.AT_REST;

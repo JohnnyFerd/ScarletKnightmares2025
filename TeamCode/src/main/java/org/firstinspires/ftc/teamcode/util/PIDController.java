@@ -3,11 +3,13 @@ package org.firstinspires.ftc.teamcode.util;
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.teamcode.settings.RobotSettings;
+
 @Config
 public class PIDController {
 
     public static double p = 0.0021, i = 0.000015, d = 0.00015, f = 0;
-    private final double motorEncoderTicks = 1440;
+    private final double motorEncoderTicks = RobotSettings.TOTAL_ENCODER_TICKS;
     private double input = 0, output = 0;
     private ElapsedTime timer = new ElapsedTime();
     private double integralSum = 0, lastError = 0;

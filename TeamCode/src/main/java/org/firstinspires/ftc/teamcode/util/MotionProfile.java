@@ -1,17 +1,13 @@
 package org.firstinspires.ftc.teamcode.util;
 
 import com.acmerobotics.dashboard.config.Config;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 @Config
 public class MotionProfile {
     private double startingTime = 0;
-
-    public static int MAX_VELOCITY = 3000; // enocder ticks per second
-    public static int MAX_ACCELERATION = 2300; // encoder ticks per second
-    public static int MAX_DECELERATION = 1000;
-
     private double acceleration_dt = 0, distance, halfway_distance, max_acceleration,
             max_velocity, acceleration_distance, deceleration_dt = 0,
             cruise_distance, cruise_dt = 0, deceleration_time, entire_dt = 0,
@@ -26,10 +22,13 @@ public class MotionProfile {
     private boolean isBusy = false;
     private double timeElapsed = 0;
 
-    private double multiplier = 1.0;
+    private MotionProfileParameters parameters;
+    private boolean isBackwards = false;
+    private ElapsedTime timer;
 
     public MotionProfile(Telemetry telemetry) {
         this.telemetry = telemetry;
+        timer = new ElapsedTime();
     }
 
     public double getEntireMPTime() {
@@ -40,21 +39,24 @@ public class MotionProfile {
     }
 
     public void addTelemetry() {
-        telemetry.addData("Acceleration dt", acceleration_dt);
-        telemetry.addData("Cruise dt", cruise_dt);
-        telemetry.addData("Deceleration dt", deceleration_dt);
-        telemetry.addData("Entire dt", entire_dt);
-        telemetry.addData("Distance", distance);
+        telemetry.addData("    Acceleration dt", acceleration_dt);
+        telemetry.addData("    Cruise dt", cruise_dt);
+        telemetry.addData("    Deceleration dt", deceleration_dt);
+        telemetry.addData("    Entire dt", entire_dt);
+        telemetry.addData("    Distance", distance);
+        telemetry.addData("    Time ELapsed", timeElapsed);
     }
-
-    public void setProfile(double start, double end) {
+    
+    public void setProfile(MotionProfileParameters parameters) {
         isBusy = true;
-
-        this.start = start;
-        this.end = end;
+        startingTime = timer.seconds();
+        this.parameters = parameters;
+        this.start = parameters.getStart();
+        this.end = parameters.getEnd();
+        this.max_acceleration = parameters.getMaxAcceleration();
+        this.max_velocity = parameters.getMaxVelocity();
+        this.max_deceleration = parameters.getMaxDeceleration();
         distance = end - start;
-        max_acceleration = MAX_ACCELERATION;
-        max_velocity = MAX_VELOCITY;
 
         if (distance == 0 || max_acceleration == 0 || max_velocity == 0) {
             isBusy = false;
@@ -62,14 +64,23 @@ public class MotionProfile {
             distanceTraveled = 0;
             instantVel = 0;
             instantAcl = 0;
-//            return;
+            return;
         }
-
         if (distance < 0) {
-            max_acceleration *= -1;
             max_velocity *= -1;
+            max_acceleration *= -1;
+            max_deceleration *= -1;
+            isBackwards = true;
         }
 
+        if (parameters.isAsymmetric()) {
+            setAsymmetricProfile();
+        }else {
+            setSymmetricProfile();
+        }
+    }
+
+    public void setSymmetricProfile() {
         // Calculate the time it takes to accelerate to max velocity
         acceleration_dt = max_velocity / max_acceleration;
 
@@ -100,32 +111,7 @@ public class MotionProfile {
         // for back and forth test opmode
 //        profileTime = entire_dt;
     }
-    public void setAsymmetricProfile(double start, double end) {
-        isBusy = true;
-
-        this.start = start;
-        this.end = end;
-        distance = end - start;
-        max_acceleration = MAX_ACCELERATION;
-        max_velocity = MAX_VELOCITY;
-        max_deceleration = MAX_DECELERATION;
-
-        if (distance == 0 || max_acceleration == 0 || max_velocity == 0) {
-            isBusy = false;
-            instantPos = end;
-            distanceTraveled = 0;
-            instantVel = 0;
-            instantAcl = 0;
-//            return;
-        }
-        if (distance < 0) {
-//            multiplier = -1.0;
-//            distance *= multiplier;
-            max_velocity *= -1;
-            max_acceleration *= -1;
-            max_deceleration *= -1;
-        }
-
+    public void setAsymmetricProfile() {
         acceleration_dt = max_velocity / max_acceleration;
         deceleration_dt = max_velocity / max_deceleration;
 
@@ -138,6 +124,9 @@ public class MotionProfile {
             cruise_distance = 0;
             cruise_dt = 0;
             goal_velocity = Math.sqrt( (distance * 2 * max_deceleration * max_acceleration) / (max_acceleration + max_deceleration) );
+            if (isBackwards) {
+                goal_velocity = -1.0 * Math.abs(goal_velocity);
+            }
             acceleration_dt = goal_velocity / max_acceleration;
             deceleration_dt = goal_velocity / max_deceleration;
 
@@ -149,12 +138,19 @@ public class MotionProfile {
 
         entire_dt = acceleration_dt + cruise_dt + deceleration_dt;
         deceleration_time = acceleration_dt + cruise_dt;
-
     }
 
-    public void updateAsymmetricState(double currentTime) {
+    public void updateState() {
+        if (parameters.isAsymmetric()) {
+            updateAsymmetricState();
+        }else {
+            updateSymmetricState();
+        }
+    }
+
+    public void updateAsymmetricState() {
         isBusy = true;
-        timeElapsed = currentTime - startingTime;
+        timeElapsed = timer.seconds() - startingTime;
         timeElapsed = Math.abs(timeElapsed);
 
         // if no motion profile is set
@@ -185,10 +181,6 @@ public class MotionProfile {
             instantPos += start;
             instantVel = max_acceleration * timeElapsed;
             instantAcl = max_acceleration;
-            distanceTraveled *= multiplier;
-            instantPos *= multiplier;
-            instantVel *= multiplier;
-            instantAcl *= multiplier;
             return;
         }
 
@@ -203,10 +195,6 @@ public class MotionProfile {
             instantPos += start;
             instantVel = max_velocity;
             instantAcl = 0;
-            distanceTraveled *= multiplier;
-            instantPos *= multiplier;
-            instantVel *= multiplier;
-            instantAcl *= multiplier;
             return;
         }
 
@@ -222,17 +210,13 @@ public class MotionProfile {
             instantPos += start;
             instantVel = max_velocity - max_deceleration * (timeElapsed - deceleration_time);
             instantAcl = -1.0 * max_deceleration;
-            distanceTraveled *= multiplier;
-            instantPos *= multiplier;
-            instantVel *= multiplier;
-            instantAcl *= multiplier;
             return;
         }
     }
 
-    public void updateState(double currentTime) {
+    public void updateSymmetricState() {
         isBusy = true;
-        timeElapsed = currentTime - startingTime;
+        timeElapsed = timer.seconds() - startingTime;
         timeElapsed = Math.abs(timeElapsed);
 
         // if no motion profile is set
@@ -294,9 +278,6 @@ public class MotionProfile {
             instantAcl = -1.0 * max_acceleration;
             return;
         }
-    }
-    public void setStartingTime(double startingTime) {
-        this.startingTime = startingTime;
     }
     public double getInstantPosition() {
         return instantPos;

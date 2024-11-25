@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.teamcode.subsystems;
 
 import com.acmerobotics.dashboard.config.Config;
-import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -9,6 +8,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.settings.UseTelemetry;
 import org.firstinspires.ftc.teamcode.util.BulkReading;
 import org.firstinspires.ftc.teamcode.util.MotionProfile;
+import org.firstinspires.ftc.teamcode.util.MotionProfileParameters;
 import org.firstinspires.ftc.teamcode.util.PIDController;
 
 @Config
@@ -19,6 +19,10 @@ public class Arm extends Subsystem {
     private JVBoysSoccerRobot robot;
     private MotionProfile mp;
     private PIDController pid;
+
+    public static int MAX_VELOCITY = 3000; // enocder ticks per second
+    public static int MAX_ACCELERATION = 2300; // encoder ticks per second
+    public static int MAX_DECELERATION = 1000;
 
     public static int armPresetRest = -120; // FINAL
     public static int armPresetIntakeSpecimen = 4820; //
@@ -33,37 +37,33 @@ public class Arm extends Subsystem {
     public static double pivotPresetDepositSample = 0.9;
     public static double pivotDownIncrement = 0.45;
 
-    public static int autoArmSpecimenPreset = 1870;
-    public static double autoPivotSpecimenPreset = 0.68;
+    public static final int autoArmSpecimenPreset = 1870;
+    public static final double autoPivotSpecimenPreset = 0.68;
 
     public boolean pivotDown = false;
     public double previousPivotPos = 0;
 
-    public static double pivotSpeedConstant = 0.005;
-    public static double armSpeedConstant = 8;
-    public static double armSpeedConstantBig = 16;
+    public static final double pivotSpeedConstant = 0.005;
+    public static final double armSpeedConstant = 8;
+    public static final double armSpeedConstantBig = 16;
 
     public static double MAX_POWER = 1;
     public ElapsedTime motionProfileTime = new ElapsedTime();
 
-    private double maxVelocity = 0;
-    private int STARTING_POS = 0;
-    private int ENDING_POS = 0;
     private double previousPower = 100000;
     private double previousRefPos = 100000;
     private double previousCurrentPos = 100000;
 
     private double refPos = 0, refVel = 0, refAcl = 0;
 
-    public int counter = 0;
+    public int pivotCounter = 0;
 
     public double referencePos = 0; // for the basic_pid state
 
     public enum ArmState {
         MOTION_PROFILE,
         BASIC_PID,
-        AT_REST,
-        NOTHING
+        AT_REST
     }
     public ArmState armState = ArmState.AT_REST;
 
@@ -76,24 +76,14 @@ public class Arm extends Subsystem {
     }
 
     public void setMotionProfile(int targetPosition) {
-        noEncoders();
-        motionProfileTime.reset();
-        mp.setStartingTime(motionProfileTime.seconds());
-
-        STARTING_POS = BulkReading.pMotorArmR;
-        ENDING_POS = targetPosition;
-
-        referencePos = targetPosition;
-
-        mp.setProfile(STARTING_POS, ENDING_POS);
-//        mp.setAsymmetricProfile(STARTING_POS, ENDING_POS);
-
-//        armState = ArmState.MOTION_PROFILE;
+        referencePos = targetPosition; // used for manual control later in teleop
+        mp.setProfile(new MotionProfileParameters(BulkReading.pMotorArmR, targetPosition, MAX_ACCELERATION, MAX_VELOCITY));
+        armState = ArmState.MOTION_PROFILE;
     }
-
-    public void noEncoders() {
-        robot.motorArmL.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        robot.motorArmR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+    public void setMotionProfile(int targetPosition, int acl, int vel) {
+        referencePos = targetPosition; // used for manual control later in teleop
+        mp.setProfile(new MotionProfileParameters(BulkReading.pMotorArmR, targetPosition, acl, vel));
+        armState = ArmState.MOTION_PROFILE;
     }
 
     public MotionProfile getMP() {
@@ -114,10 +104,27 @@ public class Arm extends Subsystem {
         previousPower = power;
     }
 
+    public void setSmartArmPower(int goalPosition) {
+        int distance = Math.abs(goalPosition - BulkReading.pMotorArmR);
+        if (distance < 300) {
+            referencePos = goalPosition;
+            armState = ArmState.BASIC_PID;
+        }
+        else if (distance < 1000) {
+            setMotionProfile(goalPosition, 4000, 4000);
+        }
+        else {
+            setMotionProfile(goalPosition);
+        }
+
+    }
+
     @Override
     public void addTelemetry() {
         if (UseTelemetry.MOTION_PROFILE_TELEMETRY) {
             mp.addTelemetry();
+        }else {
+            telemetry.addLine("MOTION PROFILE TELEMETRY: OFF");
         }
         if (UseTelemetry.ARM_TELEMETRY) {
             telemetry.addLine("ARM TELEMETRY: ON");
@@ -137,21 +144,10 @@ public class Arm extends Subsystem {
     public void update() {
         switch(armState) {
             case MOTION_PROFILE:
-                mp.updateState(motionProfileTime.seconds());
-//                mp.updateAsymmetricState(motionProfileTime.seconds());
+                mp.updateState();
                 refPos = mp.getInstantPosition();
                 refVel = mp.getInstantVelocity();
                 refAcl = mp.getInstantAcceleration();
-
-                if (UseTelemetry.ARM_TELEMETRY) {
-                    telemetry.addData("    MP TIME", mp.getTimeElapsed());
-                    telemetry.addData("    Reference Position", refPos);
-                    telemetry.addData("    Reference Velocity", refVel);
-                    telemetry.addData("    Reference Acceleration", refAcl);
-                    telemetry.addData("    Arm Encoder Position (R)", BulkReading.pMotorArmR);
-                    telemetry.addData("    Pivot Servo Position", robot.servoPivotR.getPosition());
-                    telemetry.update();
-                }
 
                 if (mp.getTimeElapsed() > (mp.getEntireMPTime() / 2.0)) {
                     pivotQueue();
@@ -165,10 +161,6 @@ public class Arm extends Subsystem {
 
                 previousCurrentPos = BulkReading.pMotorArmR;
                 previousRefPos = refPos;
-
-//                if (!mp.isBusy()) {
-//                    armState = ArmState.BASIC_PID;
-//                }
                 break;
             case BASIC_PID:
 //                if ( !(previousCurrentPos == BulkReading.pMotorArmR && previousRefPos == referencePos) ) {
@@ -177,8 +169,6 @@ public class Arm extends Subsystem {
 //                }
 //                previousCurrentPos = BulkReading.pMotorArmR;
 //                previousRefPos = referencePos;
-                break;
-            case NOTHING:
                 break;
             case AT_REST:
                 setArmPower(0);
@@ -198,10 +188,10 @@ public class Arm extends Subsystem {
 
     public void setIntakeSpecimen(boolean pivotTimed) {
         if (pivotTimed) {
-            counter = 1;
+            pivotCounter = 1;
         }else {
             setPivotIntakeSpecimen();
-            counter = 0;
+            pivotCounter = 0;
         }
         setMotionProfile(armPresetIntakeSpecimen);
     }
@@ -212,34 +202,34 @@ public class Arm extends Subsystem {
     }
     public void setIntakeSample(boolean pivotTimed) {
         if (pivotTimed) {
-            counter = 2;
+            pivotCounter = 2;
         }else {
             setPivotIntakeSample();
-            counter = 0;
+            pivotCounter = 0;
         }
         setMotionProfile(armPresetIntakeSample);
     }
     public void setDepositSpecimen(boolean pivotTimed) {
         if (pivotTimed) {
-            counter = 3;
+            pivotCounter = 3;
         }else {
             setPivotDepositSpecimen();
-            counter = 0;
+            pivotCounter = 0;
         }
         setMotionProfile(armPresetDepositSpecimen);
     }
     public void setDepositSample(boolean pivotTimed) {
         if (pivotTimed) {
-            counter = 4;
+            pivotCounter = 4;
         }else {
             setPivotDepositSample();
-            counter = 0;
+            pivotCounter = 0;
         }
         setMotionProfile(armPreset1DepositSample);
     }
 
     public void pivotQueue() {
-        switch (counter) {
+        switch (pivotCounter) {
             case 1:
                 setPivotIntakeSpecimen();
                 break;
@@ -253,7 +243,7 @@ public class Arm extends Subsystem {
                 setPivotDepositSample();
                 break;
         }
-        counter = 0;
+        pivotCounter = 0;
     }
 
     public void setPivotRest() {

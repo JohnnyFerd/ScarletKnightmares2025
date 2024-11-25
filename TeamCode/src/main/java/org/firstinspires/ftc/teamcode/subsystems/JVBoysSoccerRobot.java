@@ -34,21 +34,15 @@ public class JVBoysSoccerRobot {
     // Subsystems
     public Drivetrain drivetrainSubsystem;
     public Arm armSubsystem;
-    public Rigging riggingSubsystem;
     public Claw clawSubsystem;
+    public LinearSlide slideSubsystem;
 
     // Hardware
-    public DcMotorEx SwerveMotorLeft, SwerveMotorRight;
-    public DcMotorSimple SwerveServoLeft, SwerveServoRight;
-
     public DcMotorEx motorFL, motorFR, motorBL, motorBR; // mecanum motors when swerve doesn't work
     public DcMotorEx motorArmL, motorArmR;
     public Servo servoPivotL, servoPivotR;
     public Servo servoClawL;
     public Servo servoClawR;
-
-    public Servo servoRigL, servoRigR;
-    public DcMotorEx motorRigL, motorRigR;
 
     public JVBoysSoccerRobot(HardwareMap hwMap, Telemetry telemetry) {
         this.hwMap = hwMap;
@@ -66,11 +60,9 @@ public class JVBoysSoccerRobot {
         drivetrainSubsystem = new Drivetrain(hwMap, telemetry, this);
         clawSubsystem = new Claw(hwMap, telemetry, this);
         armSubsystem = new Arm(hwMap, telemetry, this);
-//        riggingSubsystem = new Rigging(hwMap, telemetry, this);
+        slideSubsystem = new LinearSlide(hwMap, telemetry, this);
 
-        subsystems = Arrays.asList(drivetrainSubsystem, armSubsystem, clawSubsystem
-//                , clawSubsystem, armSubsystem, riggingSubsystem, launcherSubsystem
-        );
+        subsystems = Arrays.asList(drivetrainSubsystem, armSubsystem, clawSubsystem, slideSubsystem);
         BR = new BulkReading(this);
     }
 
@@ -89,12 +81,11 @@ public class JVBoysSoccerRobot {
             initIMU();
             initArmHardware();
             initClawHardware();
+            initSlideHardware();
             clawSubsystem = new Claw(hwMap, telemetry, this);
             armSubsystem = new Arm(hwMap, telemetry, this);
             subsystems = Arrays.asList(clawSubsystem, armSubsystem);
             BR = new BulkReading(this, true);
-        }else {
-//            this(hwMap, telemetry);
         }
     }
 
@@ -111,8 +102,8 @@ public class JVBoysSoccerRobot {
 
         initDrivetrainHardware();
         initArmHardware();
-//        initRiggingHardware();
         initClawHardware();
+        initSlideHardware();
     }
 
     public void initDrivetrainHardware() {
@@ -150,18 +141,6 @@ public class JVBoysSoccerRobot {
         motorArmR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     }
 
-    public void initRiggingHardware() {
-        motorRigL = hwMap.get(DcMotorEx.class, RobotSettings.RIGGING_LMOTOR_NAME);
-        motorRigR = hwMap.get(DcMotorEx.class, RobotSettings.RIGGING_RMOTOR_NAME);
-        motorRigL.setDirection(RobotSettings.RIGGING_LMOTOR_REVERSED ? DcMotor.Direction.REVERSE : DcMotor.Direction.FORWARD);
-        motorRigR.setDirection(RobotSettings.RIGGING_RMOTOR_REVERSED ? DcMotor.Direction.REVERSE : DcMotor.Direction.FORWARD);
-
-        servoRigL = hwMap.servo.get(RobotSettings.RIGGING_LSERVO_NAME);
-        servoRigR = hwMap.servo.get(RobotSettings.RIGGING_RSERVO_NAME);
-        servoRigL.setDirection(RobotSettings.RIGGING_LSERVO_REVERSED ? Servo.Direction.REVERSE : Servo.Direction.FORWARD);
-        servoRigR.setDirection(RobotSettings.RIGGING_RSERVO_REVERSED ? Servo.Direction.REVERSE : Servo.Direction.FORWARD);
-    }
-
     public void initClawHardware() {
         servoPivotL = hwMap.servo.get(RobotSettings.ARM_LPIVOT_NAME);
         servoPivotR = hwMap.servo.get(RobotSettings.ARM_RPIVOT_NAME);
@@ -175,6 +154,10 @@ public class JVBoysSoccerRobot {
         servoClawR.setDirection(RobotSettings.CLAW_SERVO2_REVERSED ? Servo.Direction.REVERSE : Servo.Direction.FORWARD);
     }
 
+    public void initSlideHardware() {
+
+    }
+
     public void addTelemetry() {
         if (UseTelemetry.ROBOT_TELEMETRY) {
             for (Subsystem s : subsystems) {
@@ -182,9 +165,14 @@ public class JVBoysSoccerRobot {
             }
         }
     }
-    public void update() {
-        for (Subsystem s : subsystems) {
-            s.update();
+    public void update(boolean updateSubsystems) {
+        if (updateSubsystems) {
+            for (Subsystem s : subsystems) {
+                s.update();
+            }
         }
+        addTelemetry();
+        telemetry.update();
+        BR.readAll();
     }
 }
