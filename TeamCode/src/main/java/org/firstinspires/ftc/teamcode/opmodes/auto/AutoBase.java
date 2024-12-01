@@ -11,18 +11,17 @@ import com.acmerobotics.roadrunner.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Gamepad;
-import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
+import org.firstinspires.ftc.teamcode.settings.RobotSettings;
 import org.firstinspires.ftc.teamcode.subsystems.Arm;
 import org.firstinspires.ftc.teamcode.subsystems.JVBoysSoccerRobot;
 
 @Config
 public abstract class AutoBase extends LinearOpMode {
 
-    protected ElapsedTime runtime = new ElapsedTime();
     protected Gamepad currentGamepad = new Gamepad();
     protected Gamepad previousGamepad = new Gamepad();
 
@@ -46,7 +45,7 @@ public abstract class AutoBase extends LinearOpMode {
         PoseStorage.ORIGINAL_INIT_YAW = robot.imu.getRobotOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle;
 
         telemetry.addData("Status", "Initialized");
-        telemetry.addData("Elapsed time", runtime.toString());
+        telemetry.addData("Elapsed time", RobotSettings.SUPER_TIME.toString());
         telemetry.update();
     }
 

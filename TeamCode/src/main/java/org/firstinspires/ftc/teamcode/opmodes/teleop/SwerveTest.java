@@ -8,13 +8,14 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.teamcode.settings.RobotSettings;
+
 @Config
 @TeleOp(name = "Swerve Test", group = "Testing")
 public class SwerveTest extends LinearOpMode {
 
     private Gamepad currentGamepad1;
     private Gamepad previousGamepad1;
-    private ElapsedTime runtime = new ElapsedTime();
 
     public static double MOTOR_POWER = 0;
     public static double SERVO_ENCODER = 0;
@@ -26,7 +27,7 @@ public class SwerveTest extends LinearOpMode {
         previousGamepad1 = new Gamepad();
 
         telemetry.addData("Status", "Initialized");
-        telemetry.addData("Elapsed time", runtime.toString());
+        telemetry.addData("Elapsed time", RobotSettings.SUPER_TIME.toString());
         telemetry.update();
 
         DcMotorEx drive_motor = hardwareMap.get(DcMotorEx.class, "drive_motor");

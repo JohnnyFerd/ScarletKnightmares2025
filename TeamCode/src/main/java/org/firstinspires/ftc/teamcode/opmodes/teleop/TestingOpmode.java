@@ -15,6 +15,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.teamcode.settings.RobotSettings;
 import org.firstinspires.ftc.teamcode.subsystems.JVBoysSoccerRobot;
 
 @Config
@@ -23,7 +24,6 @@ public class TestingOpmode extends LinearOpMode {
 
     private HardwareMap hwMap;
 //    private Telemetry telemetry;
-    private ElapsedTime runtime = new ElapsedTime();
     private int counter1 = 0, counter2 = 0, counter3 = 0;
     private boolean motorsOn = false, servosOn = false;
 
@@ -47,14 +47,12 @@ public class TestingOpmode extends LinearOpMode {
         hwMap = hardwareMap;
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
         telemetry.addData("Status", "Initialized");
-        telemetry.addData("Elapsed time", runtime.toString());
+        telemetry.addData("Elapsed time", RobotSettings.SUPER_TIME.toString());
         telemetry.update();
 
         initHardware();
 
         waitForStart();
-
-        runtime.reset();
 
         if (opModeIsActive()) {
             while (opModeIsActive()) {

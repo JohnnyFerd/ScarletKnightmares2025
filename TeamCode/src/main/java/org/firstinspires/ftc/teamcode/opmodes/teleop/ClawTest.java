@@ -8,13 +8,13 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.teamcode.settings.RobotSettings;
 import org.firstinspires.ftc.teamcode.subsystems.JVBoysSoccerRobot;
 
 @Config
 @TeleOp (name = "Claw Test", group = "Testing")
 public class ClawTest extends LinearOpMode {
 
-    private ElapsedTime runtime = new ElapsedTime();
     private JVBoysSoccerRobot robot;
 
     private Gamepad currentGamepad1, previousGamepad1;
@@ -36,7 +36,7 @@ public class ClawTest extends LinearOpMode {
         robot = new JVBoysSoccerRobot(hardwareMap, telemetry);
 
         telemetry.addData("Status", "Initialized");
-        telemetry.addData("Elapsed time", runtime.toString());
+        telemetry.addData("Elapsed time", RobotSettings.SUPER_TIME.toString());
         telemetry.update();
 
         waitForStart();

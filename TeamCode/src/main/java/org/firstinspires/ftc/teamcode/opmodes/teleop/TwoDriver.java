@@ -9,6 +9,7 @@ import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.teamcode.settings.RobotSettings;
 import org.firstinspires.ftc.teamcode.subsystems.Arm;
 import org.firstinspires.ftc.teamcode.subsystems.JVBoysSoccerRobot;
 import org.firstinspires.ftc.teamcode.util.BulkReading;
@@ -18,7 +19,6 @@ public class TwoDriver extends LinearOpMode {
 
     private HardwareMap hwMap;
     private JVBoysSoccerRobot robot;
-    private ElapsedTime runtime = new ElapsedTime();
 
     private Gamepad currentGamepad1;
     private Gamepad previousGamepad1;
@@ -53,7 +53,7 @@ public class TwoDriver extends LinearOpMode {
         robot = new JVBoysSoccerRobot(hwMap, telemetry);
 
         telemetry.addData("Status", "Initialized");
-        telemetry.addData("Elapsed time", runtime.toString());
+        telemetry.addData("Elapsed time", RobotSettings.SUPER_TIME.toString());
         telemetry.update();
 
         waitForStart();
@@ -138,22 +138,18 @@ public class TwoDriver extends LinearOpMode {
 //                robot.armSubsystem.armState = Arm.ArmState.AT_REST;
                 robot.armSubsystem.setPivotRest();
                 if (currentGamepad2.x && !previousGamepad2.x) {
-                    robot.armSubsystem.armState = Arm.ArmState.MOTION_PROFILE;
                     robot.armSubsystem.setDepositSample(true);
                     armControl = ArmControl.MOVE_ARM;
                 }
                 if (currentGamepad2.y && !previousGamepad2.y) {
-                    robot.armSubsystem.armState = Arm.ArmState.MOTION_PROFILE;
                     robot.armSubsystem.setDepositSpecimen(true);
                     armControl = ArmControl.MOVE_ARM;
                 }
                 if (currentGamepad2.a && !previousGamepad2.a) {
-                    robot.armSubsystem.armState = Arm.ArmState.MOTION_PROFILE;
                     robot.armSubsystem.setIntakeSample(true);
                     armControl = ArmControl.MOVE_ARM;
                 }
                 if (currentGamepad2.b && !previousGamepad2.b) {
-                    robot.armSubsystem.armState = Arm.ArmState.MOTION_PROFILE;
                     robot.armSubsystem.setIntakeSpecimen(true);
                     armControl = ArmControl.MOVE_ARM;
                 }
@@ -166,44 +162,27 @@ public class TwoDriver extends LinearOpMode {
                 }
                 if (Math.abs(currentGamepad2.right_stick_y) > 0.01) {
                     armControl = ArmControl.MOVE_ARM;
-                    if (robot.armSubsystem.armState == Arm.ArmState.MOTION_PROFILE || robot.armSubsystem.armState == Arm.ArmState.AT_REST) {
-                        robot.armSubsystem.referencePos = BulkReading.pMotorArmR;
-                        robot.armSubsystem.armState = Arm.ArmState.BASIC_PID;
-                    }else if (robot.armSubsystem.armState == Arm.ArmState.BASIC_PID) {
-                        robot.armSubsystem.referencePos = robot.armSubsystem.referencePos + Arm.armSpeedConstantBig * currentGamepad2.right_stick_y * -1;
-                    }
                 }
                 else if (Math.abs(currentGamepad2.left_stick_y) > 0.01) {
                     armControl = ArmControl.MOVE_ARM;
-                    if (robot.armSubsystem.armState == Arm.ArmState.MOTION_PROFILE || robot.armSubsystem.armState == Arm.ArmState.AT_REST) {
-                        robot.armSubsystem.referencePos = BulkReading.pMotorArmR;
-                        robot.armSubsystem.armState = Arm.ArmState.BASIC_PID;
-                    }else if (robot.armSubsystem.armState == Arm.ArmState.BASIC_PID) {
-                        robot.armSubsystem.referencePos = robot.armSubsystem.referencePos + Arm.armSpeedConstant * currentGamepad2.left_stick_y * -1;
-                    }
                 }
                 break;
             case MOVE_ARM:
                 if (currentGamepad2.dpad_up && !previousGamepad2.dpad_up) {
                     robot.clawSubsystem.closeBothClaw();
-                    robot.armSubsystem.armState = Arm.ArmState.MOTION_PROFILE;
                     robot.armSubsystem.setRest();
                     armControl = ArmControl.GOING_TO_REST;
                 }
                 if (currentGamepad2.x && !previousGamepad2.x) {
-                    robot.armSubsystem.armState = Arm.ArmState.MOTION_PROFILE;
                     robot.armSubsystem.setDepositSample(true);
                 }
                 if (currentGamepad2.y && !previousGamepad2.y) {
-                    robot.armSubsystem.armState = Arm.ArmState.MOTION_PROFILE;
                     robot.armSubsystem.setDepositSpecimen(true);
                 }
                 if (currentGamepad2.a && !previousGamepad2.a) {
-                    robot.armSubsystem.armState = Arm.ArmState.MOTION_PROFILE;
                     robot.armSubsystem.setIntakeSample(true);
                 }
                 if (currentGamepad2.b && !previousGamepad2.b) {
-                    robot.armSubsystem.armState = Arm.ArmState.MOTION_PROFILE;
                     robot.armSubsystem.setIntakeSpecimen(true);
                 }
 
@@ -246,20 +225,20 @@ public class TwoDriver extends LinearOpMode {
                 break;
             case GOING_TO_REST:
                 if (!robot.armSubsystem.getMP().isBusy()) {
-                    resetTime = runtime.seconds();
+                    resetTime = RobotSettings.SUPER_TIME.seconds();
                     armControl = ArmControl.GOING_TO_REST2;
                 }
                 break;
             case GOING_TO_REST2:
-                if (runtime.seconds() - resetTime > 0.2) {
+                if (RobotSettings.SUPER_TIME.seconds() - resetTime > 0.2) {
                     robot.armSubsystem.armState = Arm.ArmState.AT_REST;
                     robot.armSubsystem.setArmPower(0);
-                    resetTime = runtime.seconds();
+                    resetTime = RobotSettings.SUPER_TIME.seconds();
                     armControl = ArmControl.GOING_TO_REST3;
                 }
                 break;
             case GOING_TO_REST3:
-                if (runtime.seconds() - resetTime > 0.2) {
+                if (RobotSettings.SUPER_TIME.seconds() - resetTime > 0.2) {
                     robot.motorArmR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                     robot.motorArmR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
                     armControl = ArmControl.REST;

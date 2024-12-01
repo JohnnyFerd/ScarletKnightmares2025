@@ -71,6 +71,17 @@ public class Claw extends Subsystem {
         robot.servoClawR.setPosition(CLAW_CLOSED_POSITIONR);
     }
 
+    /**
+     *
+     * @param pivotAngle 0-1
+     * @param wristAngle 0-1
+     */
+    public void differential(double pivotAngle, double wristAngle) {
+
+
+
+    }
+
     @Override
     public void addTelemetry() {
         if (UseTelemetry.CLAW_TELEMETRY) {

@@ -9,6 +9,7 @@ import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.teamcode.settings.RobotSettings;
 import org.firstinspires.ftc.teamcode.subsystems.JVBoysSoccerRobot;
 
 @Config
@@ -17,7 +18,6 @@ public class ArmPivotTest extends LinearOpMode {
 
     private HardwareMap hwMap;
     private JVBoysSoccerRobot robot;
-    private ElapsedTime runtime = new ElapsedTime();
 
     private Gamepad currentGamepad1;
     private Gamepad previousGamepad1;
@@ -47,7 +47,7 @@ public class ArmPivotTest extends LinearOpMode {
         robot = new JVBoysSoccerRobot(hwMap, telemetry);
 
         telemetry.addData("Status", "Initialized");
-        telemetry.addData("Elapsed time", runtime.toString());
+        telemetry.addData("Elapsed time", RobotSettings.SUPER_TIME.toString());
         telemetry.update();
 
         waitForStart();

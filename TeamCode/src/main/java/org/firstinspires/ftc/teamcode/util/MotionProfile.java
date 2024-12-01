@@ -1,18 +1,18 @@
 package org.firstinspires.ftc.teamcode.util;
 
 import com.acmerobotics.dashboard.config.Config;
-import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.teamcode.settings.RobotSettings;
 
 @Config
 public class MotionProfile {
     private double startingTime = 0;
-    private double acceleration_dt = 0, distance, halfway_distance, max_acceleration,
-            max_velocity, acceleration_distance, deceleration_dt = 0,
+    private double acceleration_dt = 0, distance, halfway_distance, max_acceleration = 0,
+            max_velocity = 0, acceleration_distance, deceleration_dt = 0,
             cruise_distance, cruise_dt = 0, deceleration_time, entire_dt = 0,
             start, end;
-    private double max_deceleration, deceleration_distance, goal_velocity;
+    private double max_deceleration = 0, deceleration_distance, goal_velocity;
     private Telemetry telemetry;
 
     private double instantPos = 0;
@@ -24,11 +24,9 @@ public class MotionProfile {
 
     private MotionProfileParameters parameters;
     private boolean isBackwards = false;
-    private ElapsedTime timer;
 
     public MotionProfile(Telemetry telemetry) {
         this.telemetry = telemetry;
-        timer = new ElapsedTime();
     }
 
     public double getEntireMPTime() {
@@ -47,11 +45,14 @@ public class MotionProfile {
         telemetry.addData("    Goal Velocity", goal_velocity);
         telemetry.addData("    Distance", distance);
         telemetry.addData("    Time Elapsed", timeElapsed);
+        telemetry.addData("    Reference Position", instantPos);
+        telemetry.addData("    Reference Velocity", instantVel);
+        telemetry.addData("    Reference Acceleration", instantAcl);
     }
     
     public void setProfile(MotionProfileParameters parameters) {
         isBusy = true;
-        startingTime = timer.seconds();
+        startingTime = RobotSettings.SUPER_TIME.seconds();
         this.parameters = parameters;
         this.start = parameters.getStart();
         this.end = parameters.getEnd();
@@ -76,6 +77,9 @@ public class MotionProfile {
             isBackwards = true;
         }
 
+        // Calculate the time it takes to accelerate to max velocity
+        acceleration_dt = max_velocity / max_acceleration;
+
         if (parameters.isAsymmetric()) {
             setAsymmetricProfile();
         }else {
@@ -84,9 +88,6 @@ public class MotionProfile {
     }
 
     public void setSymmetricProfile() {
-        // Calculate the time it takes to accelerate to max velocity
-        acceleration_dt = max_velocity / max_acceleration;
-
         // If we can't accelerate to max velocity in the given distance, we'll accelerate as much as possible
         halfway_distance = distance / 2;
         acceleration_distance = 0.5 * max_acceleration * Math.pow(acceleration_dt, 2);
@@ -115,7 +116,6 @@ public class MotionProfile {
 //        profileTime = entire_dt;
     }
     public void setAsymmetricProfile() {
-        acceleration_dt = max_velocity / max_acceleration;
         deceleration_dt = max_velocity / max_deceleration;
 
         acceleration_distance = 0.5 * max_acceleration * Math.pow(acceleration_dt, 2);
@@ -144,16 +144,8 @@ public class MotionProfile {
     }
 
     public void updateState() {
-        if (parameters.isAsymmetric()) {
-            updateAsymmetricState();
-        }else {
-            updateSymmetricState();
-        }
-    }
-
-    public void updateAsymmetricState() {
         isBusy = true;
-        timeElapsed = timer.seconds() - startingTime;
+        timeElapsed = RobotSettings.SUPER_TIME.seconds() - startingTime;
         timeElapsed = Math.abs(timeElapsed);
 
         // if no motion profile is set
@@ -165,7 +157,6 @@ public class MotionProfile {
             instantAcl = 0;
             return;
         }
-
         // if motion profile is done
         if (timeElapsed > entire_dt) {
             isBusy = false;
@@ -175,7 +166,14 @@ public class MotionProfile {
             instantAcl = 0;
             return;
         }
+        if (parameters.isAsymmetric()) {
+            updateAsymmetricState();
+        }else {
+            updateSymmetricState();
+        }
+    }
 
+    public void updateAsymmetricState() {
         // if we're accelerating
         if (timeElapsed < acceleration_dt) {
             // use the kinematic equation for acceleration
@@ -218,30 +216,6 @@ public class MotionProfile {
     }
 
     public void updateSymmetricState() {
-        isBusy = true;
-        timeElapsed = timer.seconds() - startingTime;
-        timeElapsed = Math.abs(timeElapsed);
-
-        // if no motion profile is set
-        if (distance == 0 || max_acceleration == 0 || max_velocity == 0) {
-            isBusy = false;
-            instantPos = end;
-            distanceTraveled = 0;
-            instantVel = 0;
-            instantAcl = 0;
-            return;
-        }
-
-        // if motion profile is done
-        if (timeElapsed > entire_dt) {
-            isBusy = false;
-            instantPos = end;
-            distanceTraveled = end - start;
-            instantVel = 0;
-            instantAcl = 0;
-            return;
-        }
-
         // if we're accelerating
         if (timeElapsed < acceleration_dt) {
             // use the kinematic equation for acceleration

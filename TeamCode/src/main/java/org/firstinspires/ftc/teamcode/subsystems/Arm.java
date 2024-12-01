@@ -2,7 +2,6 @@ package org.firstinspires.ftc.teamcode.subsystems;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.settings.UseTelemetry;
@@ -20,9 +19,9 @@ public class Arm extends Subsystem {
     private MotionProfile mp;
     private PIDController pid;
 
-    public static int MAX_VELOCITY = 4000; // enocder ticks per second
-    public static int MAX_ACCELERATION = 3200; // encoder ticks per second
-    public static int MAX_DECELERATION = 1500;
+    public static int MAX_VELOCITY = 5000; // enocder ticks per second
+    public static int MAX_ACCELERATION = 6000; // encoder ticks per second
+    public static int MAX_DECELERATION = 1800;
 
     public static int armPresetRest = -120; // FINAL
     public static int armPresetIntakeSpecimen = 4820; //
@@ -48,13 +47,10 @@ public class Arm extends Subsystem {
     public static final double armSpeedConstantBig = 16;
 
     public static double MAX_POWER = 1;
-    public ElapsedTime motionProfileTime = new ElapsedTime();
 
     private double previousPower = 100000;
     private double previousRefPos = 100000;
     private double previousCurrentPos = 100000;
-
-    private double refPos = 0, refVel = 0, refAcl = 0;
 
     public int pivotCounter = 0;
 
@@ -75,6 +71,7 @@ public class Arm extends Subsystem {
         pid = new PIDController();
     }
 
+    // DEFAULT ASYMMETRIC PROFILE
     public void setMotionProfile(int targetPosition) {
         referencePos = targetPosition; // used for manual control later in teleop
         mp.setProfile(new MotionProfileParameters(BulkReading.pMotorArmR, targetPosition, MAX_ACCELERATION, MAX_VELOCITY, MAX_DECELERATION));
@@ -116,12 +113,31 @@ public class Arm extends Subsystem {
             armState = ArmState.BASIC_PID;
         }
         else if (distance < 1000) {
-            setMotionProfile(goalPosition, 4000, 4000);
+            setMotionProfile(goalPosition, 5000, 5000, 2300);
         }
         else {
             setMotionProfile(goalPosition);
         }
+    }
 
+    /**
+     * Changes PID constants for power calculation dynamically based on goal distance
+     * @param reference
+     * @param state
+     * @return
+     */
+    public double dynamicPIDPower(double reference, double state) {
+        double distance = Math.abs(reference - state);
+        if (distance < 300) {
+
+        }else if (distance < 1000) {
+
+        }else if (distance < 2000) {
+
+        }else {
+
+        }
+        return pid.calculatePID(reference, state);
     }
 
     @Override
@@ -134,12 +150,8 @@ public class Arm extends Subsystem {
         if (UseTelemetry.ARM_TELEMETRY) {
             telemetry.addLine("ARM TELEMETRY: ON");
             telemetry.addData("    Arm Power", robot.motorArmL.getPower());
-//            telemetry.addData("    Arm Encoder Position (L)", BulkReading.pMotorArmL);
             telemetry.addData("    Arm Encoder Position (R)", BulkReading.pMotorArmR);
             telemetry.addData("    Pivot Servo Position", robot.servoPivotR.getPosition());
-            telemetry.addData("    Reference Position", refPos);
-            telemetry.addData("    Reference Velocity", refVel);
-            telemetry.addData("    Reference Acceleration", refAcl);
         }else {
             telemetry.addLine("ARM TELEMETRY: OFF");
         }
@@ -150,27 +162,21 @@ public class Arm extends Subsystem {
         switch(armState) {
             case MOTION_PROFILE:
                 mp.updateState();
-                refPos = mp.getInstantPosition();
-                refVel = mp.getInstantVelocity();
-                refAcl = mp.getInstantAcceleration();
+                double refPos = mp.getInstantPosition();
 
                 if (mp.getTimeElapsed() > (mp.getEntireMPTime() / 2.0)) {
                     pivotQueue();
                 }
 
-                double pidPower = 0;
                 if ( !(previousCurrentPos == BulkReading.pMotorArmR && previousRefPos == refPos) ) {
-                    pidPower = pid.calculatePID(refPos, BulkReading.pMotorArmR);
-                    setArmPower(pidPower);
+                    setArmPower(dynamicPIDPower(refPos, BulkReading.pMotorArmR));
                 }
-
                 previousCurrentPos = BulkReading.pMotorArmR;
                 previousRefPos = refPos;
                 break;
             case BASIC_PID:
 //                if ( !(previousCurrentPos == BulkReading.pMotorArmR && previousRefPos == referencePos) ) {
-                    double power = pid.calculatePID(referencePos, BulkReading.pMotorArmR);
-                    setArmPower(power);
+                    setArmPower(dynamicPIDPower(referencePos, BulkReading.pMotorArmR));
 //                }
 //                previousCurrentPos = BulkReading.pMotorArmR;
 //                previousRefPos = referencePos;

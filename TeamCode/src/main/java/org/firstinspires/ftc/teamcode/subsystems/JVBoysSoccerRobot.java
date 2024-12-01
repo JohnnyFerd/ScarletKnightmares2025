@@ -41,8 +41,12 @@ public class JVBoysSoccerRobot {
     public DcMotorEx motorFL, motorFR, motorBL, motorBR; // mecanum motors when swerve doesn't work
     public DcMotorEx motorArmL, motorArmR;
     public Servo servoPivotL, servoPivotR;
+    public Servo servoWristDiffyL, servoWristDiffyR;
     public Servo servoClawL;
     public Servo servoClawR;
+
+    private int hertzCounter = 0;
+    private double previousTime = 0;
 
     public JVBoysSoccerRobot(HardwareMap hwMap, Telemetry telemetry) {
         this.hwMap = hwMap;
@@ -147,6 +151,11 @@ public class JVBoysSoccerRobot {
         servoPivotL.setDirection(RobotSettings.ARM_LPIVOT_REVERSED ? Servo.Direction.REVERSE : Servo.Direction.FORWARD);
         servoPivotR.setDirection(RobotSettings.ARM_RPIVOT_REVERSED ? Servo.Direction.REVERSE : Servo.Direction.FORWARD);
 
+//        servoWristDiffyL = hwMap.servo.get(RobotSettings.CLAW_LWRIST_NAME);
+//        servoWristDiffyR = hwMap.servo.get(RobotSettings.CLAW_RWRIST_NAME);
+//        servoWristDiffyL.setDirection(RobotSettings.CLAW_LWRIST_REVERSED ? Servo.Direction.REVERSE : Servo.Direction.FORWARD);
+//        servoWristDiffyR.setDirection(RobotSettings.CLAW_RWRIST_REVERSED ? Servo.Direction.REVERSE : Servo.Direction.FORWARD);
+
         servoClawL = hwMap.servo.get(RobotSettings.CLAW_SERVO_NAME);
         servoClawL.setDirection(RobotSettings.CLAW_SERVO_REVERSED ? Servo.Direction.REVERSE : Servo.Direction.FORWARD);
 
@@ -172,6 +181,12 @@ public class JVBoysSoccerRobot {
             }
         }
         addTelemetry();
+        hertzCounter++;
+        if (RobotSettings.SUPER_TIME.seconds() - previousTime > 1.0) {
+            telemetry.addData("HERTZ: ", hertzCounter);
+            hertzCounter = 0;
+        }
+        previousTime = RobotSettings.SUPER_TIME.seconds();
         telemetry.update();
         BR.readAll();
     }

@@ -2,12 +2,15 @@ package org.firstinspires.ftc.teamcode.settings;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 @Config
 public class RobotSettings {
 
     public static RevHubOrientationOnRobot.LogoFacingDirection LOGO_FACING_DIR = RevHubOrientationOnRobot.LogoFacingDirection.RIGHT;
     public static RevHubOrientationOnRobot.UsbFacingDirection USB_FACING_DIR = RevHubOrientationOnRobot.UsbFacingDirection.BACKWARD;
+
+    public static ElapsedTime SUPER_TIME = new ElapsedTime();
 
     // DRIVETRAIN
 
@@ -31,20 +34,15 @@ public class RobotSettings {
     public static final boolean ARM_LPIVOT_REVERSED = true;
     public static final boolean ARM_RPIVOT_REVERSED = false;
 
-    public static boolean RIGGING_LMOTOR_REVERSED = true;
-    public static boolean RIGGING_RMOTOR_REVERSED = false;
-    public static String RIGGING_LMOTOR_NAME = "RigLeft";
-    public static String RIGGING_RMOTOR_NAME = "RigRight";
-    public static boolean RIGGING_LSERVO_REVERSED = true;
-    public static boolean RIGGING_RSERVO_REVERSED = true;
-    public static String RIGGING_LSERVO_NAME = "RigLeftS";
-    public static String RIGGING_RSERVO_NAME = "RigRightS";
-    public static double RIGGING_MOTOR_SPEED = 0.5;
-
     public static String CLAW_SERVO_NAME = "ClawServoL";
     public static boolean CLAW_SERVO_REVERSED = false;
     public static String CLAW_SERVO2_NAME = "ClawServoR";
     public static boolean CLAW_SERVO2_REVERSED = true;
+
+    public static String CLAW_RWRIST_NAME = "ClawServoDiffyR";
+    public static boolean CLAW_RWRIST_REVERSED = true;
+    public static String CLAW_LWRIST_NAME = "ClawServoDiffyL";
+    public static boolean CLAW_LWRIST_REVERSED = false;
 
     // ENCODER MAPPING
     public static final int TOTAL_ENCODER_TICKS = 8192;

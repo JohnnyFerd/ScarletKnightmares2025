@@ -7,9 +7,9 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.teamcode.settings.RobotSettings;
 import org.firstinspires.ftc.teamcode.subsystems.Arm;
 import org.firstinspires.ftc.teamcode.subsystems.JVBoysSoccerRobot;
 
@@ -19,7 +19,6 @@ public class ArmMPTest extends LinearOpMode {
 
     private HardwareMap hwMap;
     private JVBoysSoccerRobot robot;
-    private ElapsedTime runtime = new ElapsedTime();
 
     private Gamepad currentGamepad1;
     private Gamepad previousGamepad1;
@@ -48,7 +47,7 @@ public class ArmMPTest extends LinearOpMode {
         robot = new JVBoysSoccerRobot(hwMap, telemetry);
 
         telemetry.addData("Status", "Initialized");
-        telemetry.addData("Elapsed time", runtime.toString());
+        telemetry.addData("Elapsed time", RobotSettings.SUPER_TIME.toString());
         telemetry.update();
 
         robot.armSubsystem.armState = Arm.ArmState.AT_REST;
