@@ -34,6 +34,9 @@ public class LinearSlide extends Subsystem {
     public void addTelemetry() {
         if (UseTelemetry.SLIDE_TELEMETRY) {
             telemetry.addLine("SLIDE TELEMETRY: ON");
+//            telemetry.addData("    Arm Power", robot.motorArmL.getPower());
+//            telemetry.addData("    Arm Encoder Position (R)", BulkReading.pMotorArmR);
+//            telemetry.addData("    Pivot Servo Position", robot.servoPivotR.getPosition());
         }else {
             telemetry.addLine("SLIDE TELEMETRY: OFF");
         }
