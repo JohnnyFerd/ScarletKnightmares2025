@@ -7,7 +7,8 @@ import org.firstinspires.ftc.teamcode.settings.RobotSettings;
 @Config
 public class PIDController {
 
-    private double p = 0.0021, i = 0.000015, d = 0.00015, f = 0;
+    // p = 0.0021, i = 0.000015, d = 0.00015, f = 0;
+    public static double p = 0, i = 0, d = 0, f = 0;
     private final double motorEncoderTicks = RobotSettings.TOTAL_ENCODER_TICKS;
     private double input = 0, output = 0;
     private double integralSum = 0, lastError = 0;

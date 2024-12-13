@@ -18,6 +18,7 @@ public class BulkReading {
     public static double vFL = 0, vFR = 0, vBL = 0, vBR = 0;
 
     public static int pMotorArmL = 0, pMotorArmR = 0;
+    public static int pMotorLinkage = 0;
     public static int pSlide = 0;
 
     public BulkReading(JVBoysSoccerRobot robot) {
@@ -27,8 +28,6 @@ public class BulkReading {
         this(robot);
         this.isAuto = isAuto;
     }
-
-    //TODO: make slide encoder variables
 
     public void readAll() {
         if (isAuto) {
@@ -46,6 +45,7 @@ public class BulkReading {
 //
 //            pMotorArmL = robot.motorArmL.getCurrentPosition();
             pMotorArmR = robot.motorArmR.getCurrentPosition();
+            pMotorLinkage = robot.motorSlide.getCurrentPosition();
 //            pSlide = robot
         }
     }

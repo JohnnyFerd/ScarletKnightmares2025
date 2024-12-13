@@ -70,7 +70,7 @@ public class TwoDriver extends LinearOpMode {
                 clawControls();
                 armControls();
 
-                robot.update(true);
+                robot.update(true, true);
             }
         }
 

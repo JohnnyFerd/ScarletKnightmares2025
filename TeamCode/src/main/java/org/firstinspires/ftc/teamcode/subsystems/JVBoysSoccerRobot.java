@@ -40,6 +40,7 @@ public class JVBoysSoccerRobot {
     // Hardware
     public DcMotorEx motorFL, motorFR, motorBL, motorBR; // mecanum motors when swerve doesn't work
     public DcMotorEx motorArmL, motorArmR;
+    public DcMotorEx motorSlide;
     public Servo servoPivotL, servoPivotR;
     public Servo servoWristDiffyL, servoWristDiffyR;
     public Servo servoClawL;
@@ -164,7 +165,8 @@ public class JVBoysSoccerRobot {
     }
 
     public void initSlideHardware() {
-
+        motorSlide = hwMap.get(DcMotorEx.class, RobotSettings.SLIDE_MOTOR_NAME);
+        motorSlide.setDirection(RobotSettings.SLIDE_MOTOR_REVERSED ? DcMotor.Direction.REVERSE : DcMotor.Direction.FORWARD);
     }
 
     public void addTelemetry() {
@@ -174,13 +176,15 @@ public class JVBoysSoccerRobot {
             }
         }
     }
-    public void update(boolean updateSubsystems) {
+    public void update(boolean updateSubsystems, boolean useTelemetry) {
         if (updateSubsystems) {
             for (Subsystem s : subsystems) {
                 s.update();
             }
         }
-        addTelemetry();
+        if (useTelemetry) {
+            addTelemetry();
+        }
         hertzCounter++;
         if (RobotSettings.SUPER_TIME.seconds() - previousTime > 1.0) {
             telemetry.addData("HERTZ: ", hertzCounter);

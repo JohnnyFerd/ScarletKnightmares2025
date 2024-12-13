@@ -7,8 +7,8 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 @Config
 public class RobotSettings {
 
-    public static RevHubOrientationOnRobot.LogoFacingDirection LOGO_FACING_DIR = RevHubOrientationOnRobot.LogoFacingDirection.RIGHT;
-    public static RevHubOrientationOnRobot.UsbFacingDirection USB_FACING_DIR = RevHubOrientationOnRobot.UsbFacingDirection.BACKWARD;
+    public static RevHubOrientationOnRobot.LogoFacingDirection LOGO_FACING_DIR = RevHubOrientationOnRobot.LogoFacingDirection.UP;
+    public static RevHubOrientationOnRobot.UsbFacingDirection USB_FACING_DIR = RevHubOrientationOnRobot.UsbFacingDirection.RIGHT;
 
     public static ElapsedTime SUPER_TIME = new ElapsedTime();
 
@@ -26,8 +26,8 @@ public class RobotSettings {
 
     public static final String ARM_LMOTOR_NAME = "ArmLeft";
     public static final String ARM_RMOTOR_NAME = "ArmRight";
-    public static final boolean ARM_LMOTOR_REVERSED = false;
-    public static final boolean ARM_RMOTOR_REVERSED = true;
+    public static final boolean ARM_LMOTOR_REVERSED = true;
+    public static final boolean ARM_RMOTOR_REVERSED = false;
 
     public static final String ARM_LPIVOT_NAME = "ArmPivotLeft";
     public static final String ARM_RPIVOT_NAME = "ArmPivotRight";
@@ -43,6 +43,9 @@ public class RobotSettings {
     public static boolean CLAW_RWRIST_REVERSED = true;
     public static String CLAW_LWRIST_NAME = "ClawServoDiffyL";
     public static boolean CLAW_LWRIST_REVERSED = false;
+
+    public static final String SLIDE_MOTOR_NAME = "LinkageArm";
+    public static final boolean SLIDE_MOTOR_REVERSED = false;
 
     // ENCODER MAPPING
     public static final int TOTAL_ENCODER_TICKS = 8192;

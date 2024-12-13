@@ -18,7 +18,7 @@ import org.firstinspires.ftc.teamcode.util.BulkReading;
 
 @Disabled
 @Config
-@TeleOp (name = "Full Arm Test", group = "Testing")
+@TeleOp (name = "Full Arm Test OLD", group = "Testing")
 public class FullArmTest extends LinearOpMode {
 
     private HardwareMap hwMap;
