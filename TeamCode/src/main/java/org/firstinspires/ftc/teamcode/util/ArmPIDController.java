@@ -5,7 +5,7 @@ import com.acmerobotics.dashboard.config.Config;
 import org.firstinspires.ftc.teamcode.settings.RobotSettings;
 
 @Config
-public class PIDController {
+public class ArmPIDController {
 
     // p = 0.0021, i = 0.000015, d = 0.00015, f = 0;
     public static double p_FG = 0.0027, i_FG = 0.00000024, d_FG = 0.00003, f = 0.00035;
@@ -17,14 +17,14 @@ public class PIDController {
 
     private final double VERTICAL_POS = 2650;
 
-    public PIDController() { }
-    public PIDController(double p, double i, double d) {
+    public ArmPIDController() { }
+    public ArmPIDController(double p, double i, double d) {
         this.p_FG = p;
         this.i_FG = i;
         this.d_FG = d;
         f = 0;
     }
-    public PIDController(double p, double i, double d, double f) {
+    public ArmPIDController(double p, double i, double d, double f) {
         this.p_FG = p;
         this.i_FG = i;
         this.d_FG = d;

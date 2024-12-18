@@ -8,7 +8,7 @@ import org.firstinspires.ftc.teamcode.settings.UseTelemetry;
 import org.firstinspires.ftc.teamcode.util.BulkReading;
 import org.firstinspires.ftc.teamcode.util.MotionProfile;
 import org.firstinspires.ftc.teamcode.util.MotionProfileParameters;
-import org.firstinspires.ftc.teamcode.util.PIDController;
+import org.firstinspires.ftc.teamcode.util.ArmPIDController;
 
 @Config
 public class Arm extends Subsystem {
@@ -17,7 +17,7 @@ public class Arm extends Subsystem {
     private Telemetry telemetry;
     private JVBoysSoccerRobot robot;
     private MotionProfile mp;
-    private PIDController pid;
+    private ArmPIDController pid;
 
     public static int MAX_VELOCITY = 5000; // enocder ticks per second
     public static int MAX_ACCELERATION = 6000; // encoder ticks per second
@@ -69,7 +69,7 @@ public class Arm extends Subsystem {
         this.telemetry = telemetry;
         this.robot = robot;
         this.mp = new MotionProfile(telemetry);
-        pid = new PIDController();
+        pid = new ArmPIDController();
     }
 
     // DEFAULT ASYMMETRIC PROFILE

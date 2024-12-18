@@ -7,7 +7,6 @@ import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.Gamepad;
-import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.teamcode.settings.RobotSettings;
 import org.firstinspires.ftc.teamcode.subsystems.Arm;
@@ -22,9 +21,10 @@ public class FullSlideTest extends LinearOpMode {
 
     private Gamepad currentGamepad1, currentGamepad2, previousGamepad1, previousGamepad2;
     private JVBoysSoccerRobot robot;
-    public static double GOAL_POSITION = 0;
+    public static double GOAL_POSITION_ARM = 0;
     public static int ACL = 400, VEL = 400, DCL = 200;
-    public static double GOAL_MP_POSITION = 0;
+    public static double GOAL_POSITION_LINKAGE = 0;
+    public static int ACL_L = 400, VEL_L = 400, DCL_L = 200;
 
     public enum ArmTestState {
         OFF,
@@ -35,9 +35,10 @@ public class FullSlideTest extends LinearOpMode {
 
     public enum SlideTestState {
         OFF,
-        POWER_ZERO
+        PID_TO_POSITION,
+        MOTION_PROFILE
     }
-    private SlideTestState slideTestState = SlideTestState.POWER_ZERO;
+    private SlideTestState slideTestState = SlideTestState.OFF;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -69,7 +70,7 @@ public class FullSlideTest extends LinearOpMode {
                 telemetry.addData("Arm State", armTestState);
                 telemetry.addData("Slide State", slideTestState);
                 telemetry.addData("Encoder Value", BulkReading.pMotorArmR);
-                telemetry.addData("Goal Position", GOAL_POSITION);
+                telemetry.addData("Goal Position", GOAL_POSITION_ARM);
 
                 robot.update(true, true);
             }
@@ -85,16 +86,16 @@ public class FullSlideTest extends LinearOpMode {
                 }
                 if (currentGamepad1.y && !previousGamepad1.y) {
                     armTestState = ArmTestState.MOTION_PROFILE;
-                    robot.armSubsystem.setMotionProfile((int)GOAL_POSITION, ACL, VEL, DCL);
+                    robot.armSubsystem.setMotionProfile((int) GOAL_POSITION_ARM, ACL, VEL, DCL);
                 }
-                robot.armSubsystem.referencePos = GOAL_POSITION;
+                robot.armSubsystem.referencePos = GOAL_POSITION_ARM;
                 break;
             case PID_TO_POSITION:
                 if (currentGamepad1.x && !previousGamepad1.x) {
                     armTestState = ArmTestState.OFF;
                     robot.armSubsystem.armState = Arm.ArmState.AT_REST;
                 }
-                robot.armSubsystem.referencePos = GOAL_POSITION;
+                robot.armSubsystem.referencePos = GOAL_POSITION_ARM;
                 break;
             case MOTION_PROFILE:
                 if (currentGamepad1.y && !previousGamepad1.y) {
@@ -105,16 +106,40 @@ public class FullSlideTest extends LinearOpMode {
                     armTestState = ArmTestState.PID_TO_POSITION;
                     robot.armSubsystem.armState = Arm.ArmState.BASIC_PID;
                 }
-                robot.armSubsystem.referencePos = GOAL_POSITION;
+                robot.armSubsystem.referencePos = GOAL_POSITION_ARM;
                 break;
         }
     }
     public void slideControls() {
         switch (slideTestState) {
             case OFF:
+                if (currentGamepad1.a && !previousGamepad1.a) {
+                    slideTestState = SlideTestState.PID_TO_POSITION;
+                    robot.slideSubsystem.slideState = LinearSlide.SlideState.BASIC_PID;
+                }
+                if (currentGamepad1.b && !previousGamepad1.b) {
+                    slideTestState = SlideTestState.MOTION_PROFILE;
+                    robot.slideSubsystem.setMotionProfile((int) GOAL_POSITION_LINKAGE, ACL, VEL, DCL);
+                }
+                robot.slideSubsystem.referencePos = GOAL_POSITION_LINKAGE;
                 break;
-            case POWER_ZERO:
-                robot.slideSubsystem.slideState = LinearSlide.SlideState.AT_REST;
+            case PID_TO_POSITION:
+                if (currentGamepad1.a && !previousGamepad1.a) {
+                    slideTestState = SlideTestState.OFF;
+                    robot.slideSubsystem.slideState = LinearSlide.SlideState.AT_REST;
+                }
+                robot.slideSubsystem.referencePos = GOAL_POSITION_LINKAGE;
+                break;
+            case MOTION_PROFILE:
+                if (currentGamepad1.b && !previousGamepad1.b) {
+                    slideTestState = SlideTestState.OFF;
+                    robot.slideSubsystem.slideState = LinearSlide.SlideState.AT_REST;
+                }
+                if (currentGamepad1.a && !previousGamepad1.a) {
+                    slideTestState = SlideTestState.PID_TO_POSITION;
+                    robot.slideSubsystem.slideState = LinearSlide.SlideState.BASIC_PID;
+                }
+                robot.slideSubsystem.referencePos = GOAL_POSITION_LINKAGE;
                 break;
         }
     }
