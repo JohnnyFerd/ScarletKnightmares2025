@@ -23,10 +23,13 @@ public class FullSlideTest extends LinearOpMode {
     private Gamepad currentGamepad1, currentGamepad2, previousGamepad1, previousGamepad2;
     private JVBoysSoccerRobot robot;
     public static double GOAL_POSITION = 0;
+    public static int ACL = 400, VEL = 400, DCL = 200;
+    public static double GOAL_MP_POSITION = 0;
 
     public enum ArmTestState {
         OFF,
-        PID_TO_POSITION
+        PID_TO_POSITION,
+        MOTION_PROFILE
     }
     private ArmTestState armTestState = ArmTestState.OFF;
 
@@ -80,11 +83,27 @@ public class FullSlideTest extends LinearOpMode {
                     armTestState = ArmTestState.PID_TO_POSITION;
                     robot.armSubsystem.armState = Arm.ArmState.BASIC_PID;
                 }
+                if (currentGamepad1.y && !previousGamepad1.y) {
+                    armTestState = ArmTestState.MOTION_PROFILE;
+                    robot.armSubsystem.setMotionProfile((int)GOAL_POSITION, ACL, VEL, DCL);
+                }
+                robot.armSubsystem.referencePos = GOAL_POSITION;
                 break;
             case PID_TO_POSITION:
                 if (currentGamepad1.x && !previousGamepad1.x) {
                     armTestState = ArmTestState.OFF;
                     robot.armSubsystem.armState = Arm.ArmState.AT_REST;
+                }
+                robot.armSubsystem.referencePos = GOAL_POSITION;
+                break;
+            case MOTION_PROFILE:
+                if (currentGamepad1.y && !previousGamepad1.y) {
+                    armTestState = ArmTestState.OFF;
+                    robot.armSubsystem.armState = Arm.ArmState.AT_REST;
+                }
+                if (currentGamepad1.x && !previousGamepad1.x) {
+                    armTestState = ArmTestState.PID_TO_POSITION;
+                    robot.armSubsystem.armState = Arm.ArmState.BASIC_PID;
                 }
                 robot.armSubsystem.referencePos = GOAL_POSITION;
                 break;

@@ -57,7 +57,7 @@ public class LinearSlide extends Subsystem {
             case MOTION_PROFILE:
                 break;
             case BASIC_PID:
-                double pow = pid.calculatePID(referencePos, BulkReading.pMotorLinkage);
+                double pow = pid.calculatePID(referencePos, BulkReading.pMotorLinkage, true);
                 setSlidePower(pow);
                 break;
             case AT_REST:

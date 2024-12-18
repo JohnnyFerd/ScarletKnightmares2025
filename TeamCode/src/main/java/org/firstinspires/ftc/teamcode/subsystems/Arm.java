@@ -51,6 +51,7 @@ public class Arm extends Subsystem {
     private double previousPower = 100000;
     private double previousRefPos = 100000;
     private double previousCurrentPos = 100000;
+    private boolean fightingGravity = true;
 
     public int pivotCounter = 0;
 
@@ -127,17 +128,17 @@ public class Arm extends Subsystem {
      * @return
      */
     public double dynamicPIDPower(double reference, double state) {
-        double distance = Math.abs(reference - state);
-        if (distance < 300) {
-
-        }else if (distance < 1000) {
-
-        }else if (distance < 2000) {
-
-        }else {
-
-        }
-        return pid.calculatePID(reference, state);
+//        double distance = Math.abs(reference - state);
+//        if (distance < 300) {
+//
+//        }else if (distance < 1000) {
+//
+//        }else if (distance < 2000) {
+//
+//        }else {
+//
+//        }
+        return pid.calculatePID(reference, state, fightingGravity);
     }
 
     @Override
@@ -176,10 +177,23 @@ public class Arm extends Subsystem {
                 break;
             case BASIC_PID:
 //                if ( !(previousCurrentPos == BulkReading.pMotorArmR && previousRefPos == referencePos) ) {
-                    setArmPower(dynamicPIDPower(referencePos, BulkReading.pMotorArmR));
+
+                if (referencePos != previousRefPos) {
+                    fightingGravity = true;
+                    if (referencePos > 2650) {
+                        if (BulkReading.pMotorArmR < referencePos) {
+                            fightingGravity = false;
+                        }
+                    }else {
+                        if (BulkReading.pMotorArmR > referencePos) {
+                            fightingGravity = false;
+                        }
+                    }
+                }
+                setArmPower(dynamicPIDPower(referencePos, BulkReading.pMotorArmR) + pid.calculateF(referencePos));
 //                }
 //                previousCurrentPos = BulkReading.pMotorArmR;
-//                previousRefPos = referencePos;
+                previousRefPos = referencePos;
                 break;
             case AT_REST:
                 setArmPower(0);
