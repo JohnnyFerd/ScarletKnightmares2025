@@ -41,6 +41,13 @@ public class TwoDriver extends LinearOpMode {
     }
     private ArmControl armControl = ArmControl.REST;
 
+    private enum SlideControl {
+        REST,
+        OFF,
+        MOVE_SLIDE
+    }
+    private SlideControl slideControl = SlideControl.REST;
+
     @Override
     public void runOpMode() throws InterruptedException {
         currentGamepad1 = new Gamepad();
@@ -67,7 +74,7 @@ public class TwoDriver extends LinearOpMode {
                 currentGamepad2.copy(gamepad2);
 
                 drivetrainControls();
-                clawControls();
+//                clawControls();
                 armControls();
 
                 robot.update(true, true);
@@ -76,9 +83,6 @@ public class TwoDriver extends LinearOpMode {
 
     }
 
-    public void riggingControls() {
-        // NOTHING BECAUSE WERE STUPID
-    }
     public void clawControls() {
         if (currentGamepad2.left_bumper && !previousGamepad2.left_bumper) {
             leftClosed = !leftClosed;
@@ -132,6 +136,7 @@ public class TwoDriver extends LinearOpMode {
         previousY = y;
         previousR = r;
     }
+
     public void armControls() {
         switch (armControl) {
             case REST:

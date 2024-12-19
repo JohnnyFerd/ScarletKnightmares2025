@@ -19,9 +19,9 @@ public class Arm extends Subsystem {
     private MotionProfile mp;
     private ArmPIDController pid;
 
-    public static int MAX_VELOCITY = 5000; // enocder ticks per second
-    public static int MAX_ACCELERATION = 6000; // encoder ticks per second
-    public static int MAX_DECELERATION = 1800;
+    public static int MAX_VELOCITY = 3000; // enocder ticks per second
+    public static int MAX_ACCELERATION = 3000; // encoder ticks per second
+    public static int MAX_DECELERATION = 1000;
 
     public static int armPresetRest = -120; // FINAL
     public static int armPresetIntakeSpecimen = 4820; //
@@ -138,7 +138,7 @@ public class Arm extends Subsystem {
 //        }else {
 //
 //        }
-        return pid.calculatePID(reference, state, fightingGravity);
+        return pid.calculatePID(reference, state, fightingGravity) + pid.calculateF(referencePos);
     }
 
     @Override
@@ -170,7 +170,7 @@ public class Arm extends Subsystem {
                 }
 
                 if ( !(previousCurrentPos == BulkReading.pMotorArmR && previousRefPos == refPos) ) {
-                    setArmPower(dynamicPIDPower(refPos, BulkReading.pMotorArmR));
+                    setArmPower(pid.calculatePID(refPos, BulkReading.pMotorArmR, fightingGravity) + pid.calculateF(referencePos));
                 }
                 previousCurrentPos = BulkReading.pMotorArmR;
                 previousRefPos = refPos;
