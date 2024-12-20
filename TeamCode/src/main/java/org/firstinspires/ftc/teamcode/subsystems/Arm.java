@@ -19,9 +19,13 @@ public class Arm extends Subsystem {
     private MotionProfile mp;
     private ArmPIDController pid;
 
-    public static int MAX_VELOCITY = 3000; // enocder ticks per second
-    public static int MAX_ACCELERATION = 3000; // encoder ticks per second
-    public static int MAX_DECELERATION = 1000;
+    public static int DEFAULT_MAX_VELOCITY = 3000; // enocder ticks per second
+    public static int DEFAULT_MAX_ACCELERATION = 3000; // encoder ticks per second
+    public static int DEFAULT_MAX_DECELERATION = 1000;
+
+    private int currentMaxVel = 0;
+    private int currentMaxAcl = 0;
+    private int currentMaxDcl = 0;
 
     public static int armPresetRest = -120; // FINAL
     public static int armPresetIntakeSpecimen = 4820; //
@@ -49,8 +53,9 @@ public class Arm extends Subsystem {
     public static double MAX_POWER = 1;
 
     private double previousPower = 100000;
-    private double previousRefPos = 100000;
+    private double previousInstantRefPos = 100000;
     private double previousCurrentPos = 100000;
+    private double previousRefPos = 10000;
     private boolean fightingGravity = true;
 
     public int pivotCounter = 0;
@@ -75,18 +80,19 @@ public class Arm extends Subsystem {
     // DEFAULT ASYMMETRIC PROFILE
     public void setMotionProfile(int targetPosition) {
         referencePos = targetPosition; // used for manual control later in teleop
-        mp.setProfile(new MotionProfileParameters(BulkReading.pMotorArmR, targetPosition, MAX_ACCELERATION, MAX_VELOCITY, MAX_DECELERATION));
         armState = ArmState.MOTION_PROFILE;
-    }
-    public void setMotionProfile(int targetPosition, int acl, int vel) {
-        referencePos = targetPosition; // used for manual control later in teleop
-        mp.setProfile(new MotionProfileParameters(BulkReading.pMotorArmR, targetPosition, acl, vel));
-        armState = ArmState.MOTION_PROFILE;
+
+        currentMaxAcl = DEFAULT_MAX_ACCELERATION;
+        currentMaxVel = DEFAULT_MAX_VELOCITY;
+        currentMaxDcl = DEFAULT_MAX_DECELERATION;
     }
     public void setMotionProfile(int targetPosition, int acl, int vel, int dcl) {
         referencePos = targetPosition; // used for manual control later in teleop
-        mp.setProfile(new MotionProfileParameters(BulkReading.pMotorArmR, targetPosition, acl, vel, dcl));
         armState = ArmState.MOTION_PROFILE;
+
+        currentMaxAcl = acl;
+        currentMaxVel = vel;
+        currentMaxDcl = dcl;
     }
 
     public MotionProfile getMP() {
@@ -114,7 +120,7 @@ public class Arm extends Subsystem {
             armState = ArmState.BASIC_PID;
         }
         else if (distance < 1000) {
-            setMotionProfile(goalPosition, 5000, 5000, 2300);
+//            setMotionProfile(goalPosition, 5000, 5000, 2300);
         }
         else {
             setMotionProfile(goalPosition);
@@ -162,25 +168,10 @@ public class Arm extends Subsystem {
     public void update() {
         switch(armState) {
             case MOTION_PROFILE:
-                mp.updateState();
-                double refPos = mp.getInstantPosition();
-
-                if (mp.getTimeElapsed() > (mp.getEntireMPTime() / 2.0)) {
-                    pivotQueue();
-                }
-
-                if ( !(previousCurrentPos == BulkReading.pMotorArmR && previousRefPos == refPos) ) {
-                    setArmPower(pid.calculatePID(refPos, BulkReading.pMotorArmR, fightingGravity) + pid.calculateF(referencePos));
-                }
-                previousCurrentPos = BulkReading.pMotorArmR;
-                previousRefPos = refPos;
-                break;
-            case BASIC_PID:
-//                if ( !(previousCurrentPos == BulkReading.pMotorArmR && previousRefPos == referencePos) ) {
-
                 if (referencePos != previousRefPos) {
+                    mp.setProfile(new MotionProfileParameters(BulkReading.pMotorArmR, (int)referencePos, currentMaxAcl, currentMaxVel, currentMaxDcl));
                     fightingGravity = true;
-                    if (referencePos > 2650) {
+                    if (referencePos > 2700) {
                         if (BulkReading.pMotorArmR < referencePos) {
                             fightingGravity = false;
                         }
@@ -190,7 +181,37 @@ public class Arm extends Subsystem {
                         }
                     }
                 }
-                setArmPower(dynamicPIDPower(referencePos, BulkReading.pMotorArmR) + pid.calculateF(referencePos));
+
+                mp.updateState();
+                double instantRefPos = mp.getInstantPosition();
+
+                if (mp.getTimeElapsed() > (mp.getEntireMPTime() / 2.0)) {
+                    pivotQueue();
+                }
+
+                if ( !(previousCurrentPos == BulkReading.pMotorArmR && previousInstantRefPos == instantRefPos) ) {
+                    setArmPower(pid.calculatePID(instantRefPos, BulkReading.pMotorArmR, fightingGravity) + pid.calculateF(referencePos));
+                }
+                previousCurrentPos = BulkReading.pMotorArmR;
+                previousInstantRefPos = instantRefPos;
+                previousRefPos = referencePos;
+                break;
+            case BASIC_PID:
+//                if ( !(previousCurrentPos == BulkReading.pMotorArmR && previousRefPos == referencePos) ) {
+
+                if (referencePos != previousRefPos) {
+                    fightingGravity = true;
+                    if (referencePos > 2700) {
+                        if (BulkReading.pMotorArmR < referencePos) {
+                            fightingGravity = false;
+                        }
+                    }else {
+                        if (BulkReading.pMotorArmR > referencePos) {
+                            fightingGravity = false;
+                        }
+                    }
+                }
+                setArmPower(pid.calculatePID(referencePos, BulkReading.pMotorArmR, fightingGravity) + pid.calculateF(referencePos));
 //                }
 //                previousCurrentPos = BulkReading.pMotorArmR;
                 previousRefPos = referencePos;
@@ -296,6 +317,8 @@ public class Arm extends Subsystem {
         robot.servoPivotR.setPosition(pivotPresetDepositSample);
         previousPivotPos = pivotPresetDepositSample;
     }
+
+
     public void setPivot(double position) {
         robot.servoPivotL.setPosition(position);
         robot.servoPivotR.setPosition(position);

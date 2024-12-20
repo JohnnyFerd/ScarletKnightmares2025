@@ -45,7 +45,7 @@ public class RobotSettings {
     public static boolean CLAW_LWRIST_REVERSED = false;
 
     public static final String SLIDE_MOTOR_NAME = "LinkageArm";
-    public static final boolean SLIDE_MOTOR_REVERSED = false;
+    public static final boolean SLIDE_MOTOR_REVERSED = true;
 
     // ENCODER MAPPING
     public static final int TOTAL_ENCODER_TICKS = 8192;

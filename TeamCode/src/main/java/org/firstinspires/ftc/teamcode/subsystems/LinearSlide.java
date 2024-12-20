@@ -19,14 +19,22 @@ public class LinearSlide extends Subsystem {
     private MotionProfile mp;
     private LinkagePIDController pid;
 
-    public static double p = 0, i = 0, d = 0;
+    public static int DEFAULT_MAX_VELOCITY = 3000; // enocder ticks per second
+    public static int DEFAULT_MAX_ACCELERATION = 3000; // encoder ticks per second
+    public static int DEFAULT_MAX_DECELERATION = 1000;
+
+    private int currentMaxVel = 0;
+    private int currentMaxAcl = 0;
+    private int currentMaxDcl = 0;
 
     private double previousPower = 0;
     public double referencePos = 0;
     public static double MAX_POWER = 0.5;
 
-    private double previousCurrentPos = 10000;
+    private double previousInstantRefPos = 100000;
+    private double previousCurrentPos = 100000;
     private double previousRefPos = 10000;
+    private boolean fightingGravity = true;
 
     public enum SlideState {
         MOTION_PROFILE,
@@ -47,7 +55,7 @@ public class LinearSlide extends Subsystem {
     public void addTelemetry() {
         if (UseTelemetry.SLIDE_TELEMETRY) {
             telemetry.addLine("SLIDE TELEMETRY: ON");
-//            telemetry.addData("    Arm Power", robot.motorArmL.getPower());
+            telemetry.addData("    Slide Power", robot.motorSlide.getPower());
 //            telemetry.addData("    Arm Encoder Position (R)", BulkReading.pMotorLinkage);
 //            telemetry.addData("    Pivot Servo Position", robot.servoPivotR.getPosition());
         }else {
@@ -59,17 +67,32 @@ public class LinearSlide extends Subsystem {
     public void update() {
         switch (slideState) {
             case MOTION_PROFILE:
-                mp.updateState();
-                double refPos = mp.getInstantPosition();
+                if (referencePos != previousRefPos) {
+                    mp.setProfile(new MotionProfileParameters(BulkReading.pMotorArmR, (int)referencePos, currentMaxAcl, currentMaxVel, currentMaxDcl));
+                    fightingGravity = true;
+                    if (referencePos > 2700) {
+                        if (BulkReading.pMotorArmR < referencePos) {
+                            fightingGravity = false;
+                        }
+                    }else {
+                        if (BulkReading.pMotorArmR > referencePos) {
+                            fightingGravity = false;
+                        }
+                    }
+                }
 
-                if ( !(previousCurrentPos == BulkReading.pMotorLinkage && previousRefPos == refPos) ) {
-                    setSlidePower(pid.calculatePID(referencePos, BulkReading.pMotorLinkage));
+                mp.updateState();
+                double instantRefPos = mp.getInstantPosition();
+
+                if ( !(previousCurrentPos == BulkReading.pMotorLinkage && previousRefPos == instantRefPos) ) {
+                    setSlidePower(pid.calculatePID(referencePos, BulkReading.pMotorLinkage) + pid.calculateF(referencePos));
                 }
                 previousCurrentPos = BulkReading.pMotorLinkage;
-                previousRefPos = refPos;
+                previousInstantRefPos = instantRefPos;
+                previousRefPos = referencePos;
                 break;
             case BASIC_PID:
-                double pow = pid.calculatePID(referencePos, BulkReading.pMotorLinkage);
+                double pow = pid.calculatePID(referencePos, BulkReading.pMotorLinkage) + pid.calculateF(referencePos);
                 setSlidePower(pow);
                 break;
             case AT_REST:
@@ -83,6 +106,24 @@ public class LinearSlide extends Subsystem {
 
     }
 
+    // DEFAULT ASYMMETRIC PROFILE
+    public void setMotionProfile(int targetPosition) {
+        referencePos = targetPosition; // used for manual control later in teleop
+        slideState = SlideState.MOTION_PROFILE;
+
+        currentMaxAcl = DEFAULT_MAX_ACCELERATION;
+        currentMaxVel = DEFAULT_MAX_VELOCITY;
+        currentMaxDcl = DEFAULT_MAX_DECELERATION;
+    }
+    public void setMotionProfile(int targetPosition, int acl, int vel, int dcl) {
+        referencePos = targetPosition; // used for manual control later in teleop
+        slideState = SlideState.MOTION_PROFILE;
+
+        currentMaxAcl = acl;
+        currentMaxVel = vel;
+        currentMaxDcl = dcl;
+    }
+
     public void setSlidePower(double power) {
         if (power > MAX_POWER) {
             power = MAX_POWER;
@@ -94,11 +135,5 @@ public class LinearSlide extends Subsystem {
             robot.motorSlide.setPower(power);
         }
         previousPower = power;
-    }
-
-    public void setMotionProfile(int targetPosition, int acl, int vel, int dcl) {
-        referencePos = targetPosition; // used for manual control later in teleop
-        mp.setProfile(new MotionProfileParameters(BulkReading.pMotorLinkage, targetPosition, acl, vel, dcl));
-        slideState = SlideState.MOTION_PROFILE;
     }
 }

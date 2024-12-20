@@ -140,7 +140,6 @@ public class TwoDriver extends LinearOpMode {
     public void armControls() {
         switch (armControl) {
             case REST:
-//                robot.armSubsystem.armState = Arm.ArmState.AT_REST;
                 robot.armSubsystem.setPivotRest();
                 if (currentGamepad2.x && !previousGamepad2.x) {
                     robot.armSubsystem.setDepositSample(true);

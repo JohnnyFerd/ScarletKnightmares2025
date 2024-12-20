@@ -18,25 +18,26 @@ public class LinkagePIDController {
 
     private double p_top = 0, i_top = 0, d_top = 0;
     private double p_horizontal = 0, i_horizontal = 0, d_horizontal = 0;
+    private double f_top = 0, f_horizontal = 0;
 
-    private final double VERTICAL_POS = 2650;
+    private final double VERTICAL_POS = 2700;
 
     public LinkagePIDController() {
         pCoefficients = new InterpLUT();
         iCoefficients = new InterpLUT();
         dCoefficients = new InterpLUT();
 
-        pCoefficients.add(2650, p_top);
-        pCoefficients.add(602, p_horizontal);
-        pCoefficients.add(4698, p_horizontal);
+        pCoefficients.add(675, p_horizontal);
+        pCoefficients.add(VERTICAL_POS, p_top);
+        pCoefficients.add(4750, p_horizontal);
 
-        iCoefficients.add(2650, i_top);
         iCoefficients.add(602, i_horizontal);
-        iCoefficients.add(4698, i_horizontal);
+        iCoefficients.add(VERTICAL_POS, i_top);
+        iCoefficients.add(4750, i_horizontal);
 
-        dCoefficients.add(2650, d_top);
         dCoefficients.add(602, d_horizontal);
-        dCoefficients.add(4698, d_horizontal);
+        dCoefficients.add(VERTICAL_POS, d_top);
+        dCoefficients.add(4750, d_horizontal);
 
         pCoefficients.createLUT();
         iCoefficients.createLUT();
@@ -74,10 +75,10 @@ public class LinkagePIDController {
     public double calculatePID(double reference, double state, int armPosition) {
         double p_gs = 0, i_gs = 0, d_gs = 0;
 
-        if (armPosition < 601) {
-            armPosition = 601;
-        } else if (armPosition > 4697) {
-            armPosition = 4697;
+        if (armPosition < 676) {
+            armPosition = 676;
+        } else if (armPosition > 4749) {
+            armPosition = 4749;
         }
 
         p_gs = pCoefficients.get(armPosition);
@@ -105,12 +106,12 @@ public class LinkagePIDController {
      */
     public double calculateF(double targetPositionArm) {
         // convert target of 375 to 0 degrees
-        double degrees = VERTICAL_POS - targetPositionArm;
-        degrees = degrees / motorEncoderTicks * 360.0;
+//        double degrees = VERTICAL_POS - targetPositionArm;
+//        degrees = degrees / motorEncoderTicks * 360.0;
 
 //        telemetry.addData("FF Power", Kg * Math.sin(Math.toRadians(degrees)));
 
-        return f * Math.cos( Math.toRadians(degrees) );
+        return f * targetPositionArm / 1000.0;
     }
 
 }

@@ -84,7 +84,7 @@ public class ArmMPTest extends LinearOpMode {
             case OFF:
                 telemetry.addLine("MOTORS: OFF");
                 if (currentGamepad1.dpad_up && !previousGamepad1.dpad_up) {
-                    robot.armSubsystem.setMotionProfile(GOAL_POSITION, 1000, 800, 500);
+//                    robot.armSubsystem.setMotionProfile(GOAL_POSITION, 1000, 800, 500);
                     armTestState = ArmTestState.DROP_POS;
                 }
                 break;

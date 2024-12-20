@@ -8,14 +8,14 @@ import org.firstinspires.ftc.teamcode.settings.RobotSettings;
 public class ArmPIDController {
 
     // p = 0.0021, i = 0.000015, d = 0.00015, f = 0;
-    public static double p_FG = 0.0027, i_FG = 0.00000024, d_FG = 0.00003, f = 0.00035;
-    public static double p_G = 0.0014, i_G = 0.00000025, d_G = 0;
+    public static double p_FG = 0.0032, i_FG = 0.0000017, d_FG = 0.00005, f = 0.00035;
+    public static double p_G = 0.0015, i_G = 0.0000023, d_G = 0.000005;
     private final double motorEncoderTicks = RobotSettings.TOTAL_ENCODER_TICKS;
     private double input = 0, output = 0;
     private double integralSum = 0, lastError = 0;
     private double previousTime = 0;
 
-    private final double VERTICAL_POS = 2650;
+    private final double VERTICAL_POS = 2700;
 
     public ArmPIDController() { }
     public ArmPIDController(double p, double i, double d) {

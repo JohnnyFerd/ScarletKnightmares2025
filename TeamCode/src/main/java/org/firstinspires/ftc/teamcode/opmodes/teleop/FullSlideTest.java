@@ -22,9 +22,14 @@ public class FullSlideTest extends LinearOpMode {
     private Gamepad currentGamepad1, currentGamepad2, previousGamepad1, previousGamepad2;
     private JVBoysSoccerRobot robot;
     public static double GOAL_POSITION_ARM = 0;
-    public static int ACL = 400, VEL = 400, DCL = 200;
+    public static int ACL = 3000, VEL = 3000, DCL = 1500;
     public static double GOAL_POSITION_LINKAGE = 0;
     public static int ACL_L = 400, VEL_L = 400, DCL_L = 200;
+
+    public static double PIVOT_SERVO_POSITION_1 = 0, PIVOT_SERVO_POSITION_2 = 0.25;
+
+    private boolean leftClosed = true;
+    private boolean rightClosed = true;
 
     public enum ArmTestState {
         OFF,
@@ -39,6 +44,13 @@ public class FullSlideTest extends LinearOpMode {
         MOTION_PROFILE
     }
     private SlideTestState slideTestState = SlideTestState.OFF;
+
+    public enum PivotTestState {
+        POSITION_1,
+        POSITION_2,
+        CUSTOM
+    }
+    private PivotTestState pivotTestState = PivotTestState.POSITION_1;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -65,14 +77,19 @@ public class FullSlideTest extends LinearOpMode {
                 currentGamepad2.copy(gamepad2);
 
                 armControls();
+                armPivotControls();
                 slideControls();
+                clawControls();
 
                 telemetry.addData("Arm State", armTestState);
                 telemetry.addData("Slide State", slideTestState);
-                telemetry.addData("Encoder Value", BulkReading.pMotorArmR);
-                telemetry.addData("Goal Position", GOAL_POSITION_ARM);
+                telemetry.addData("Pivot State", pivotTestState);
+                telemetry.addData("Encoder Value (Arm)", BulkReading.pMotorArmR);
+                telemetry.addData("Goal Position (Arm)", GOAL_POSITION_ARM);
+                telemetry.addData("Encoder Value (Linkage)", BulkReading.pMotorLinkage);
+                telemetry.addData("Goal Position (Linkage)", GOAL_POSITION_LINKAGE);
 
-                robot.update(true, true);
+                robot.update(true, false);
             }
         }
     }
@@ -110,6 +127,7 @@ public class FullSlideTest extends LinearOpMode {
                 break;
         }
     }
+
     public void slideControls() {
         switch (slideTestState) {
             case OFF:
@@ -141,6 +159,70 @@ public class FullSlideTest extends LinearOpMode {
                 }
                 robot.slideSubsystem.referencePos = GOAL_POSITION_LINKAGE;
                 break;
+        }
+    }
+
+    public void armPivotControls() {
+        switch (pivotTestState) {
+            case POSITION_1:
+                if (currentGamepad1.dpad_up && !currentGamepad1.dpad_up) {
+                    pivotTestState = PivotTestState.POSITION_2;
+                }
+                if (currentGamepad2.right_trigger > 0.01 && currentGamepad2.left_trigger <= 0.01) {
+                    pivotTestState = PivotTestState.CUSTOM;
+                }
+                if (currentGamepad2.left_trigger > 0.01 && currentGamepad2.right_trigger <= 0.01) {
+                    pivotTestState = PivotTestState.CUSTOM;
+                }
+                robot.armSubsystem.setPivot(PIVOT_SERVO_POSITION_1);
+                break;
+            case POSITION_2:
+                if (currentGamepad1.dpad_up && !currentGamepad1.dpad_up) {
+                    pivotTestState = PivotTestState.POSITION_1;
+                }
+                if (currentGamepad2.right_trigger > 0.01 && currentGamepad2.left_trigger <= 0.01) {
+                    pivotTestState = PivotTestState.CUSTOM;
+                }
+                if (currentGamepad2.left_trigger > 0.01 && currentGamepad2.right_trigger <= 0.01) {
+                    pivotTestState = PivotTestState.CUSTOM;
+                }
+                robot.armSubsystem.setPivot(PIVOT_SERVO_POSITION_2);
+                break;
+            case CUSTOM:
+                if (currentGamepad2.right_trigger > 0.01 && currentGamepad2.left_trigger <= 0.01) {
+                    double newPosition = robot.servoPivotR.getPosition() + Arm.pivotSpeedConstant * currentGamepad2.right_trigger;
+                    robot.armSubsystem.setPivot(newPosition);
+                }
+                if (currentGamepad2.left_trigger > 0.01 && currentGamepad2.right_trigger <= 0.01) {
+                    double newPosition = robot.servoPivotR.getPosition() - Arm.pivotSpeedConstant * currentGamepad2.left_trigger;
+                    robot.armSubsystem.setPivot(newPosition);
+                }
+                if (currentGamepad1.dpad_up && !currentGamepad1.dpad_up) {
+                    pivotTestState = PivotTestState.POSITION_1;
+                }
+                break;
+        }
+    }
+
+    public void clawControls() {
+        if (currentGamepad1.left_bumper && !previousGamepad1.left_bumper) {
+            leftClosed = !leftClosed;
+        }
+        if (currentGamepad1.right_bumper && !previousGamepad1.right_bumper) {
+            rightClosed = !rightClosed;
+        }
+
+        if (leftClosed && rightClosed) {
+            robot.clawSubsystem.closeBothClaw();
+        }
+        if (leftClosed && !rightClosed) {
+            robot.clawSubsystem.openRightClaw();
+        }
+        if (rightClosed && !leftClosed) {
+            robot.clawSubsystem.openLeftClaw();
+        }
+        if (!rightClosed && !leftClosed) {
+            robot.clawSubsystem.openBothClaw();
         }
     }
 }
