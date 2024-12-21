@@ -6,6 +6,7 @@ import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Gamepad;
 
 import org.firstinspires.ftc.teamcode.settings.RobotSettings;
@@ -30,6 +31,8 @@ public class FullSlideTest extends LinearOpMode {
 
     private boolean leftClosed = true;
     private boolean rightClosed = true;
+
+    private double previousX = 0, previousY = 0, previousR = 0;
 
     public enum ArmTestState {
         OFF,
@@ -80,6 +83,7 @@ public class FullSlideTest extends LinearOpMode {
                 armPivotControls();
                 slideControls();
                 clawControls();
+                drivetrainControls();
 
                 telemetry.addData("Arm State", armTestState);
                 telemetry.addData("Slide State", slideTestState);
@@ -88,8 +92,10 @@ public class FullSlideTest extends LinearOpMode {
                 telemetry.addData("Goal Position (Arm)", GOAL_POSITION_ARM);
                 telemetry.addData("Encoder Value (Linkage)", BulkReading.pMotorLinkage);
                 telemetry.addData("Goal Position (Linkage)", GOAL_POSITION_LINKAGE);
+                telemetry.addData("Pivot Servo Position (R)", robot.servoPivotR.getPosition());
+                telemetry.addData("Pivot Servo Position (L)", robot.servoPivotL.getPosition());
 
-                robot.update(true, false);
+                robot.update(true, true);
             }
         }
     }
@@ -160,43 +166,48 @@ public class FullSlideTest extends LinearOpMode {
                 robot.slideSubsystem.referencePos = GOAL_POSITION_LINKAGE;
                 break;
         }
+        if (currentGamepad1.left_stick_button && !previousGamepad1.left_stick_button) {
+            robot.motorSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            robot.motorSlide.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        }
     }
 
     public void armPivotControls() {
         switch (pivotTestState) {
             case POSITION_1:
-                if (currentGamepad1.dpad_up && !currentGamepad1.dpad_up) {
+                if (currentGamepad1.dpad_up && !previousGamepad1.dpad_up) {
                     pivotTestState = PivotTestState.POSITION_2;
                 }
-                if (currentGamepad2.right_trigger > 0.01 && currentGamepad2.left_trigger <= 0.01) {
+                if (currentGamepad1.right_trigger > 0.01 && currentGamepad1.left_trigger <= 0.01) {
                     pivotTestState = PivotTestState.CUSTOM;
                 }
-                if (currentGamepad2.left_trigger > 0.01 && currentGamepad2.right_trigger <= 0.01) {
+                if (currentGamepad1.left_trigger > 0.01 && currentGamepad1.right_trigger <= 0.01) {
                     pivotTestState = PivotTestState.CUSTOM;
                 }
                 robot.armSubsystem.setPivot(PIVOT_SERVO_POSITION_1);
                 break;
             case POSITION_2:
-                if (currentGamepad1.dpad_up && !currentGamepad1.dpad_up) {
+                if (currentGamepad1.dpad_up && !previousGamepad1.dpad_up) {
                     pivotTestState = PivotTestState.POSITION_1;
                 }
-                if (currentGamepad2.right_trigger > 0.01 && currentGamepad2.left_trigger <= 0.01) {
+                if (currentGamepad1.right_trigger > 0.01 && currentGamepad1.left_trigger <= 0.01) {
                     pivotTestState = PivotTestState.CUSTOM;
                 }
-                if (currentGamepad2.left_trigger > 0.01 && currentGamepad2.right_trigger <= 0.01) {
+                if (currentGamepad1.left_trigger > 0.01 && currentGamepad1.right_trigger <= 0.01) {
                     pivotTestState = PivotTestState.CUSTOM;
                 }
                 robot.armSubsystem.setPivot(PIVOT_SERVO_POSITION_2);
                 break;
             case CUSTOM:
-                if (currentGamepad2.right_trigger > 0.01 && currentGamepad2.left_trigger <= 0.01) {
-                    double newPosition = robot.servoPivotR.getPosition() + Arm.pivotSpeedConstant * currentGamepad2.right_trigger;
+                if (currentGamepad1.right_trigger > 0.01 && currentGamepad1.left_trigger <= 0.01) {
+                    double newPosition = robot.servoPivotL.getPosition() + Arm.pivotSpeedConstant * currentGamepad1.right_trigger;
                     robot.armSubsystem.setPivot(newPosition);
                 }
-                if (currentGamepad2.left_trigger > 0.01 && currentGamepad2.right_trigger <= 0.01) {
-                    double newPosition = robot.servoPivotR.getPosition() - Arm.pivotSpeedConstant * currentGamepad2.left_trigger;
+                else if (currentGamepad1.left_trigger > 0.01 && currentGamepad1.right_trigger <= 0.01) {
+                    double newPosition = robot.servoPivotR.getPosition() - Arm.pivotSpeedConstant * currentGamepad1.left_trigger;
                     robot.armSubsystem.setPivot(newPosition);
                 }
+
                 if (currentGamepad1.dpad_up && !currentGamepad1.dpad_up) {
                     pivotTestState = PivotTestState.POSITION_1;
                 }
@@ -224,5 +235,42 @@ public class FullSlideTest extends LinearOpMode {
         if (!rightClosed && !leftClosed) {
             robot.clawSubsystem.openBothClaw();
         }
+    }
+
+    public void drivetrainControls() {
+        double x = gamepad1.left_stick_x;
+        double y = gamepad1.left_stick_y * -1;
+        double r = gamepad1.right_stick_x;
+
+        if (currentGamepad1.b && !previousGamepad1.b) {
+            robot.drivetrainSubsystem.isFieldCentric = !robot.drivetrainSubsystem.isFieldCentric;
+        }
+
+        if (currentGamepad1.dpad_right && !previousGamepad1.dpad_right) {
+            robot.drivetrainSubsystem.orthogonalMode = !robot.drivetrainSubsystem.orthogonalMode;
+        }
+
+        if (currentGamepad1.right_trigger > 0.01 || currentGamepad1.left_trigger > 0.01) {
+            x /= 3;
+            y /= 3;
+            r /= 3;
+        }
+
+        if (robot.drivetrainSubsystem.lastAngle != null) {
+            telemetry.addData("LAST ANGLE", robot.drivetrainSubsystem.lastAngle.firstAngle);
+        }
+        telemetry.addData("CURRENT REFERENCE ANGLE", 1);
+        telemetry.addData("X", x);
+        telemetry.addData("Y", y);
+        telemetry.addData("R", r);
+
+        // attempting to save motor calls == faster frequency of command calls
+        if ( !(previousX == x && previousY == y && previousR == r) ) {
+            robot.drivetrainSubsystem.moveXYR(x, y, r);
+        }
+
+        previousX = x;
+        previousY = y;
+        previousR = r;
     }
 }

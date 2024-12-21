@@ -31,18 +31,13 @@ public class RobotSettings {
 
     public static final String ARM_LPIVOT_NAME = "ArmPivotLeft";
     public static final String ARM_RPIVOT_NAME = "ArmPivotRight";
-    public static final boolean ARM_LPIVOT_REVERSED = true;
-    public static final boolean ARM_RPIVOT_REVERSED = false;
+    public static boolean ARM_LPIVOT_REVERSED = false;
+    public static boolean ARM_RPIVOT_REVERSED = true;
 
     public static String CLAW_SERVO_NAME = "ClawServoL";
     public static boolean CLAW_SERVO_REVERSED = false;
     public static String CLAW_SERVO2_NAME = "ClawServoR";
     public static boolean CLAW_SERVO2_REVERSED = true;
-
-    public static String CLAW_RWRIST_NAME = "ClawServoDiffyR";
-    public static boolean CLAW_RWRIST_REVERSED = true;
-    public static String CLAW_LWRIST_NAME = "ClawServoDiffyL";
-    public static boolean CLAW_LWRIST_REVERSED = false;
 
     public static final String SLIDE_MOTOR_NAME = "LinkageArm";
     public static final boolean SLIDE_MOTOR_REVERSED = true;

@@ -16,11 +16,12 @@ public class LinkagePIDController {
 
     private InterpLUT pCoefficients, iCoefficients, dCoefficients;
 
-    private double p_top = 0, i_top = 0, d_top = 0;
-    private double p_horizontal = 0, i_horizontal = 0, d_horizontal = 0;
+    private double p_top = 0.022, i_top = 0.0000007, d_top = 0.000003;
+    private double p_horizontal = 0.0035, i_horizontal = 0.0000000025, d_horizontal = 0.00000012;
     private double f_top = 0, f_horizontal = 0;
+    // f = 0.0035 at top
 
-    private final double VERTICAL_POS = 2700;
+    private final double VERTICAL_POS = 2750;
 
     public LinkagePIDController() {
         pCoefficients = new InterpLUT();
@@ -106,12 +107,12 @@ public class LinkagePIDController {
      */
     public double calculateF(double targetPositionArm) {
         // convert target of 375 to 0 degrees
-//        double degrees = VERTICAL_POS - targetPositionArm;
-//        degrees = degrees / motorEncoderTicks * 360.0;
+        double degrees = VERTICAL_POS - targetPositionArm;
+        degrees = degrees / motorEncoderTicks * 360.0;
 
 //        telemetry.addData("FF Power", Kg * Math.sin(Math.toRadians(degrees)));
 
-        return f * targetPositionArm / 1000.0;
+        return f * Math.cos( Math.toRadians(degrees) );
     }
 
 }

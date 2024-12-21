@@ -19,9 +19,9 @@ public class LinearSlide extends Subsystem {
     private MotionProfile mp;
     private LinkagePIDController pid;
 
-    public static int DEFAULT_MAX_VELOCITY = 3000; // enocder ticks per second
-    public static int DEFAULT_MAX_ACCELERATION = 3000; // encoder ticks per second
-    public static int DEFAULT_MAX_DECELERATION = 1000;
+    public static int DEFAULT_MAX_VELOCITY = 300; // enocder ticks per second
+    public static int DEFAULT_MAX_ACCELERATION = 300; // encoder ticks per second
+    public static int DEFAULT_MAX_DECELERATION = 100;
 
     private int currentMaxVel = 0;
     private int currentMaxAcl = 0;
@@ -85,14 +85,14 @@ public class LinearSlide extends Subsystem {
                 double instantRefPos = mp.getInstantPosition();
 
                 if ( !(previousCurrentPos == BulkReading.pMotorLinkage && previousRefPos == instantRefPos) ) {
-                    setSlidePower(pid.calculatePID(referencePos, BulkReading.pMotorLinkage) + pid.calculateF(referencePos));
+                    setSlidePower(pid.calculatePID(referencePos, BulkReading.pMotorLinkage, BulkReading.pMotorArmR) + pid.calculateF(BulkReading.pMotorArmR));
                 }
                 previousCurrentPos = BulkReading.pMotorLinkage;
                 previousInstantRefPos = instantRefPos;
                 previousRefPos = referencePos;
                 break;
             case BASIC_PID:
-                double pow = pid.calculatePID(referencePos, BulkReading.pMotorLinkage) + pid.calculateF(referencePos);
+                double pow = pid.calculatePID(referencePos, BulkReading.pMotorLinkage, BulkReading.pMotorArmR) + pid.calculateF(BulkReading.pMotorArmR);
                 setSlidePower(pow);
                 break;
             case AT_REST:

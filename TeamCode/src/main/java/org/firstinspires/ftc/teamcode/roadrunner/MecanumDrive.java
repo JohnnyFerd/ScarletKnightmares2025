@@ -62,14 +62,14 @@ public final class MecanumDrive {
                 RobotSettings.USB_FACING_DIR;
 
         // drive model parameters
-        public double inPerTick = 124.0 / 5469.0;
-        public double lateralInPerTick = 62.5 / 2415.0;
-        public double trackWidthTicks = 1218.1797293341328;
+        public double inPerTick = 76.0 / 99260.0;
+        public double lateralInPerTick = 0.0006110944823828576;
+        public double trackWidthTicks = 15138.239391070421;
 
         // feedforward parameters (in tick units)
-        public double kS = 1.2114912989457398;
-        public double kV = 0.004195028313762864;
-        public double kA = 0.00008;
+        public double kS = 0.8883992454985012;
+        public double kV = 0.0001382804345169754;
+        public double kA = 0.000022;
 
         // path profile parameters (in inches)
         public double maxWheelVel = 50;
@@ -81,9 +81,9 @@ public final class MecanumDrive {
         public double maxAngAccel = Math.PI;
 
         // path controller gains
-        public double axialGain = 6.0;
-        public double lateralGain = 3.0;
-        public double headingGain = 4.0; // shared with turn
+        public double axialGain = 4;
+        public double lateralGain = 2.7;
+        public double headingGain = 2.2; // shared with turn
 
         public double axialVelGain = 0.0;
         public double lateralVelGain = 0.0;
@@ -235,7 +235,7 @@ public final class MecanumDrive {
         voltageSensor = hardwareMap.voltageSensor.iterator().next();
 
         // TODO: change to dead wheels if using dead wheels
-        localizer = new DriveLocalizer();
+        localizer = new TwoDeadWheelLocalizer(hardwareMap, lazyImu.get(), PARAMS.inPerTick);
 
         FlightRecorder.write("MECANUM_PARAMS", PARAMS);
     }

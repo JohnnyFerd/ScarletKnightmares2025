@@ -167,6 +167,10 @@ public class JVBoysSoccerRobot {
     public void initSlideHardware() {
         motorSlide = hwMap.get(DcMotorEx.class, RobotSettings.SLIDE_MOTOR_NAME);
         motorSlide.setDirection(RobotSettings.SLIDE_MOTOR_REVERSED ? DcMotor.Direction.REVERSE : DcMotor.Direction.FORWARD);
+
+        motorSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        motorSlide.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     }
 
     public void addTelemetry() {

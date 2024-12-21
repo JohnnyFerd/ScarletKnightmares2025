@@ -171,7 +171,7 @@ public class Arm extends Subsystem {
                 if (referencePos != previousRefPos) {
                     mp.setProfile(new MotionProfileParameters(BulkReading.pMotorArmR, (int)referencePos, currentMaxAcl, currentMaxVel, currentMaxDcl));
                     fightingGravity = true;
-                    if (referencePos > 2700) {
+                    if (referencePos > 2750) {
                         if (BulkReading.pMotorArmR < referencePos) {
                             fightingGravity = false;
                         }
@@ -201,7 +201,7 @@ public class Arm extends Subsystem {
 
                 if (referencePos != previousRefPos) {
                     fightingGravity = true;
-                    if (referencePos > 2700) {
+                    if (referencePos > 2750) {
                         if (BulkReading.pMotorArmR < referencePos) {
                             fightingGravity = false;
                         }
@@ -321,6 +321,12 @@ public class Arm extends Subsystem {
 
     public void setPivot(double position) {
         robot.servoPivotL.setPosition(position);
+        robot.servoPivotR.setPosition(position);
+    }
+    public void setLeftPivot(double position) {
+        robot.servoPivotL.setPosition(position);
+    }
+    public void setRightPivot(double position) {
         robot.servoPivotR.setPosition(position);
     }
 
