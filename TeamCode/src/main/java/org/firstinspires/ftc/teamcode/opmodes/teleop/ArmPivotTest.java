@@ -13,7 +13,6 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.teamcode.settings.RobotSettings;
 import org.firstinspires.ftc.teamcode.subsystems.JVBoysSoccerRobot;
 
-@Config
 @Disabled
 @TeleOp (name = "Arm Pivot Test", group = "Testing")
 public class ArmPivotTest extends LinearOpMode {

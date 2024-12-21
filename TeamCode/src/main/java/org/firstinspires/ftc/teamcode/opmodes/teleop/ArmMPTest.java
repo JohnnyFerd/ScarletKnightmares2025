@@ -15,7 +15,6 @@ import org.firstinspires.ftc.teamcode.subsystems.Arm;
 import org.firstinspires.ftc.teamcode.subsystems.JVBoysSoccerRobot;
 
 @Disabled
-@Config
 @TeleOp (name = "Arm (MP) Test", group = "Testing")
 public class ArmMPTest extends LinearOpMode {
 

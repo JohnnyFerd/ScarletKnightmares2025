@@ -12,7 +12,6 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.teamcode.settings.RobotSettings;
 import org.firstinspires.ftc.teamcode.subsystems.JVBoysSoccerRobot;
 
-@Config
 @Disabled
 @TeleOp (name = "Claw Test", group = "Testing")
 public class ClawTest extends LinearOpMode {

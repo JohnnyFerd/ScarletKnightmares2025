@@ -15,7 +15,6 @@ import org.firstinspires.ftc.teamcode.subsystems.JVBoysSoccerRobot;
 import org.firstinspires.ftc.teamcode.subsystems.LinearSlide;
 import org.firstinspires.ftc.teamcode.util.BulkReading;
 
-
 @Config
 @TeleOp(name = "Full Slide Test", group = "Testing")
 public class FullSlideTest extends LinearOpMode {
@@ -57,6 +56,8 @@ public class FullSlideTest extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
+        RobotSettings.SUPER_TIME.reset();
+
         currentGamepad1 = new Gamepad();
         previousGamepad1 = new Gamepad();
         currentGamepad2 = new Gamepad();

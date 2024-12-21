@@ -34,7 +34,10 @@ public class LinearSlide extends Subsystem {
     private double previousInstantRefPos = 100000;
     private double previousCurrentPos = 100000;
     private double previousRefPos = 10000;
-    private boolean fightingGravity = true;
+
+    public static int slideMaxExtension = 850;
+
+    public static double slideSpeedConstant = 3;
 
     public enum SlideState {
         MOTION_PROFILE,
@@ -69,16 +72,6 @@ public class LinearSlide extends Subsystem {
             case MOTION_PROFILE:
                 if (referencePos != previousRefPos) {
                     mp.setProfile(new MotionProfileParameters(BulkReading.pMotorArmR, (int)referencePos, currentMaxAcl, currentMaxVel, currentMaxDcl));
-                    fightingGravity = true;
-                    if (referencePos > 2700) {
-                        if (BulkReading.pMotorArmR < referencePos) {
-                            fightingGravity = false;
-                        }
-                    }else {
-                        if (BulkReading.pMotorArmR > referencePos) {
-                            fightingGravity = false;
-                        }
-                    }
                 }
 
                 mp.updateState();

@@ -17,7 +17,6 @@ import org.firstinspires.ftc.teamcode.subsystems.JVBoysSoccerRobot;
 import org.firstinspires.ftc.teamcode.util.BulkReading;
 
 @Disabled
-@Config
 @TeleOp (name = "Full Arm Test OLD", group = "Testing")
 public class FullArmTest extends LinearOpMode {
 
