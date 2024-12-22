@@ -32,7 +32,7 @@ public class RedSpecimen extends AutoBase {
 
         initialize();
 
-        PoseStorage.AUTO_SHIFT_YAW = 180.0;
+        PoseStorage.AUTO_SHIFT_YAW = 0;
         drive = new MecanumDrive(hardwareMap, specimenStart);
 
         while (!choicePicked) {
@@ -40,18 +40,17 @@ public class RedSpecimen extends AutoBase {
             currentGamepad.copy(gamepad1);
 
             telemetry.addLine("PICK NUMBER OF SPECIMEN");
-            telemetry.addLine("A = 1, B = 2, X = 3, Y = 4");
+            telemetry.addLine("Press A to increase path counter");
+            telemetry.addLine("Press B to decrease path counter");
+            telemetry.addLine("Press X when ready");
             telemetry.update();
             if (currentGamepad.a && !previousGamepad.a) {
-                pathNumber = 1;
-                choicePicked = true;
+                pathNumber++;
             }
             if (currentGamepad.b && !previousGamepad.b) {
-                pathNumber = 2;
-                choicePicked = true;
+                pathNumber--;
             }
             if (currentGamepad.x && !previousGamepad.x) {
-                pathNumber = 3;
                 choicePicked = true;
             }
             if (isStopRequested()) return;
@@ -89,12 +88,14 @@ public class RedSpecimen extends AutoBase {
                                 new SequentialAction(
                                         moveToBar11,
                                         armLift.depositSpecimen(),
-                                        armLift.pivotDown(),
-                                        new SleepAction(0.75),
+                                        armLift.extendSlide(),
+//                                        armLift.pivotDown(),
+                                        new SleepAction(0.5),
                                         clawSystem.openClaw(),
-                                        new SleepAction(0.75),
+                                        new SleepAction(0.5),
                                         moveToBar21,
                                         clawSystem.closeClaw(),
+                                        armLift.deExtendSlide(),
                                         armLift.restArm(),
                                         moveToObservationZone1,
                                         armLift.stopUpdate()
@@ -107,14 +108,16 @@ public class RedSpecimen extends AutoBase {
                         new ParallelAction(
                                 armLift.updateArmSubsystem(),
                                 new SequentialAction(
-                                        moveToBar12,
+                                        moveToBar11,
                                         armLift.depositSpecimen(),
+                                        armLift.extendSlide(),
+//                                        armLift.pivotDown(),
                                         new SleepAction(0.5),
-                                        armLift.pivotDown(),
-                                        new SleepAction(0.75),
                                         clawSystem.openClaw(),
-                                        moveToBar22,
+                                        new SleepAction(0.5),
+                                        moveToBar21,
                                         clawSystem.closeClaw(),
+                                        armLift.deExtendSlide(),
                                         moveToObservationZone2,
                                         armLift.intakeSpecimen(),
                                         clawSystem.openClaw(),
@@ -123,14 +126,16 @@ public class RedSpecimen extends AutoBase {
                                         new SleepAction(0.5),
                                         clawSystem.closeClaw(),
                                         new SleepAction(0.5),
-                                        armLift.depositSpecimenHigher(), // separate pivot mechanism from arm mechanism here
+                                        armLift.depositSpecimen(),
                                         moveBackToBar12,
-                                        armLift.pivotDown(),
+                                        armLift.extendSlide(),
+//                                        armLift.pivotDown(),
                                         new SleepAction(0.75),
                                         clawSystem.openClaw(),
                                         new SleepAction(0.5),
                                         moveBackToBar22,
                                         clawSystem.closeClaw(),
+                                        armLift.deExtendSlide(),
                                         armLift.restArm(),
                                         moveBackToObservationZone2,
                                         armLift.stopUpdate()
@@ -139,37 +144,37 @@ public class RedSpecimen extends AutoBase {
                 );
                 break;
             case 3:
-                Actions.runBlocking(
-                        new ParallelAction(
-                                armLift.updateArmSubsystem(),
-                                new SequentialAction(
-                                        moveToBar12,
-                                        armLift.depositSpecimen(),
-                                        new SleepAction(0.75),
-                                        armLift.pivotDown(),
-                                        new SleepAction(0.25),
-                                        clawSystem.openClaw(),
-                                        moveToBar22,
-                                        clawSystem.closeClaw(),
-                                        moveToObservationZone2,
-                                        clawSystem.openClaw(),
-                                        armLift.intakeSpecimenGround(),
-                                        new SleepAction(0.5),
-                                        clawSystem.closeClaw(),
-                                        new SleepAction(0.25),
-                                        armLift.depositSpecimen(),
-                                        moveBackToBar12,
-                                        armLift.pivotDown(),
-                                        new SleepAction(0.5),
-                                        clawSystem.openClaw(),
-                                        new SleepAction(0.25),
-                                        clawSystem.closeClaw(),
-                                        armLift.restArm(),
-                                        armLift.stopUpdate(),
-                                        groundSample1
-                                )
-                        )
-                );
+//                Actions.runBlocking(
+//                        new ParallelAction(
+//                                armLift.updateArmSubsystem(),
+//                                new SequentialAction(
+//                                        moveToBar12,
+//                                        armLift.depositSpecimen(),
+//                                        new SleepAction(0.75),
+//                                        armLift.pivotDown(),
+//                                        new SleepAction(0.25),
+//                                        clawSystem.openClaw(),
+//                                        moveToBar22,
+//                                        clawSystem.closeClaw(),
+//                                        moveToObservationZone2,
+//                                        clawSystem.openClaw(),
+//                                        armLift.intakeSpecimenGround(),
+//                                        new SleepAction(0.5),
+//                                        clawSystem.closeClaw(),
+//                                        new SleepAction(0.25),
+//                                        armLift.depositSpecimen(),
+//                                        moveBackToBar12,
+//                                        armLift.pivotDown(),
+//                                        new SleepAction(0.5),
+//                                        clawSystem.openClaw(),
+//                                        new SleepAction(0.25),
+//                                        clawSystem.closeClaw(),
+//                                        armLift.restArm(),
+//                                        armLift.stopUpdate(),
+//                                        groundSample1
+//                                )
+//                        )
+//                );
                 break;
             case 4:
                 break;

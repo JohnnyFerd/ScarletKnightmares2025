@@ -29,7 +29,7 @@ public class Drivetrain extends Subsystem {
         this.telemetry = telemetry;
         this.robot = robot;
 
-        if (PoseStorage.ORIGINAL_INIT_YAW > 10000) {
+        if (!PoseStorage.AUTO_SHIFTED) {
             resetInitYaw();
         }else {
             initYaw = PoseStorage.ORIGINAL_INIT_YAW + PoseStorage.AUTO_SHIFT_YAW;

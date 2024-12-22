@@ -36,6 +36,7 @@ public class LinearSlide extends Subsystem {
     private double previousRefPos = 10000;
 
     public static int slideMaxExtension = 850;
+    public static int slideDeExtension = 0;
 
     public static double slideSpeedConstant = 3;
 

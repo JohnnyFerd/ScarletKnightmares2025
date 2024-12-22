@@ -43,8 +43,8 @@ public class Arm extends Subsystem {
     public static double pivotPresetDepositSample = 0.15;
     public static double pivotDownIncrement = 0.45;
 
-    public static final int autoArmSpecimenPreset = 0;
-    public static final double autoPivotSpecimenPreset = 0.31;
+    public static final int armPresetIntakeSpecimenGround = 0;
+    public static final double pivotPresetIntakeSpecimenGround = 0.31;
 
     private boolean DEPOSIT_SAMPLE = false;
 
@@ -78,7 +78,7 @@ public class Arm extends Subsystem {
         this.telemetry = telemetry;
         this.robot = robot;
         this.mp = new MotionProfile(telemetry);
-        pid = new ArmPIDController();
+        pid = new ArmPIDController(robot);
     }
 
     // DEFAULT ASYMMETRIC PROFILE
@@ -199,7 +199,7 @@ public class Arm extends Subsystem {
                     pivotQueue();
                 }
 
-                // TODO: test the deposit sample preset to see if it automatically extends the slides
+                // TODO: test the deposit sample preset to see if it automatically extends the slides after MP completes
                 if (DEPOSIT_SAMPLE) {
                     if (!mp.isBusy()) {
                         robot.slideSubsystem.referencePos = LinearSlide.slideMaxExtension;
@@ -258,10 +258,10 @@ public class Arm extends Subsystem {
         }
         setMotionProfile(armPresetIntakeSpecimen);
     }
-    public void setAutoIntakeSpecimen() {
-        setMotionProfile(autoArmSpecimenPreset);
-        robot.servoPivotL.setPosition(autoPivotSpecimenPreset);
-        robot.servoPivotR.setPosition(autoPivotSpecimenPreset);
+    public void setIntakeSpecimenGround() {
+        setMotionProfile(armPresetIntakeSpecimenGround);
+        robot.servoPivotL.setPosition(pivotPresetIntakeSpecimenGround);
+        robot.servoPivotR.setPosition(pivotPresetIntakeSpecimenGround);
     }
     public void setIntakeSample(boolean pivotTimed) {
         if (pivotTimed) {
