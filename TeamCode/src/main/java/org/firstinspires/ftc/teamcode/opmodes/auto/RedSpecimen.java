@@ -4,10 +4,10 @@ package org.firstinspires.ftc.teamcode.opmodes.auto;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.ParallelAction;
+import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.SleepAction;
 import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
-import com.acmerobotics.roadrunner.TranslationalVelConstraint;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
@@ -22,10 +22,13 @@ public class RedSpecimen extends AutoBase {
     private int pathNumber = 0;
     private MecanumDrive drive;
 
-    // 1 specimen
     private Action moveToBar11, moveToBar21, moveToObservationZone1;
-    private Action moveToBar12, moveToBar22, moveToObservationZone2, getSpecimen2, moveBackToBar12, moveBackToBar22, moveBackToObservationZone2;
-    private Action groundSample1, groundSample2;
+    private Action depositFirstSpecimen1, depositFirstSpecimen2, pickUpSecondSpecimen1, pickUpSecondSpecimen2, depositSecondSpecimen1, depositSecondSpecimen2, moveBackToObservationZone2;
+    private Action moveToFirstSample, moveToSecondSample;
+    private Action pickUpThirdSpecimen1, pickUpThirdSpecimen2;
+    private Action depositThirdSpecimen1, depositThirdSpecimen2;
+    private Action pickUpFourthSpecimen1, pickUpFourthSpecimen2;
+    private Action depositFourthSpecimen1, depositFourthSpecimen2;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -53,6 +56,7 @@ public class RedSpecimen extends AutoBase {
             if (currentGamepad.x && !previousGamepad.x) {
                 choicePicked = true;
             }
+            telemetry.addData("NUMBER OF SPECIMEN CHOSEN: ", pathNumber);
             if (isStopRequested()) return;
         }
 
@@ -64,7 +68,6 @@ public class RedSpecimen extends AutoBase {
                 twoSpecimenPaths();
                 break;
             case 3:
-                twoSpecimenPathsAlternate();
                 break;
             case 4:
                 break;
@@ -108,34 +111,76 @@ public class RedSpecimen extends AutoBase {
                         new ParallelAction(
                                 armLift.updateArmSubsystem(),
                                 new SequentialAction(
-                                        moveToBar11,
+                                        depositFirstSpecimen1,
                                         armLift.depositSpecimen(),
                                         armLift.extendSlide(),
 //                                        armLift.pivotDown(),
                                         new SleepAction(0.5),
                                         clawSystem.openClaw(),
                                         new SleepAction(0.5),
-                                        moveToBar21,
+                                        depositFirstSpecimen2,
                                         clawSystem.closeClaw(),
                                         armLift.deExtendSlide(),
-                                        moveToObservationZone2,
+                                        pickUpSecondSpecimen1,
                                         armLift.intakeSpecimen(),
                                         clawSystem.openClaw(),
                                         new SleepAction(1),
-                                        getSpecimen2,
+                                        pickUpSecondSpecimen2,
                                         new SleepAction(0.5),
                                         clawSystem.closeClaw(),
                                         new SleepAction(0.5),
                                         armLift.depositSpecimen(),
-                                        moveBackToBar12,
+                                        depositSecondSpecimen1,
                                         armLift.extendSlide(),
 //                                        armLift.pivotDown(),
-                                        new SleepAction(0.75),
+                                        new SleepAction(0.5),
                                         clawSystem.openClaw(),
                                         new SleepAction(0.5),
-                                        moveBackToBar22,
+                                        depositSecondSpecimen2,
                                         clawSystem.closeClaw(),
                                         armLift.deExtendSlide(),
+                                        armLift.restArm(),
+                                        moveToFirstSample,
+                                        moveToSecondSample,
+
+                                        pickUpThirdSpecimen1,
+                                        armLift.intakeSpecimen(),
+                                        clawSystem.openClaw(),
+                                        new SleepAction(1),
+                                        pickUpThirdSpecimen2,
+                                        new SleepAction(0.5),
+                                        clawSystem.closeClaw(),
+                                        new SleepAction(0.5),
+                                        armLift.depositSpecimen(),
+                                        depositThirdSpecimen1,
+                                        armLift.extendSlide(),
+//                                        armLift.pivotDown(),
+                                        new SleepAction(0.5),
+                                        clawSystem.openClaw(),
+                                        new SleepAction(0.5),
+                                        depositThirdSpecimen2,
+                                        clawSystem.closeClaw(),
+                                        armLift.deExtendSlide(),
+
+                                        pickUpFourthSpecimen1,
+                                        armLift.intakeSpecimen(),
+                                        clawSystem.openClaw(),
+                                        new SleepAction(1),
+                                        pickUpFourthSpecimen2,
+                                        new SleepAction(0.5),
+                                        clawSystem.closeClaw(),
+                                        new SleepAction(0.5),
+                                        armLift.depositSpecimen(),
+                                        depositFourthSpecimen1,
+                                        armLift.extendSlide(),
+//                                        armLift.pivotDown(),
+                                        new SleepAction(0.5),
+                                        clawSystem.openClaw(),
+                                        new SleepAction(0.5),
+                                        depositFourthSpecimen2,
+                                        clawSystem.closeClaw(),
+                                        armLift.deExtendSlide(),
+
                                         armLift.restArm(),
                                         moveBackToObservationZone2,
                                         armLift.stopUpdate()
@@ -144,37 +189,6 @@ public class RedSpecimen extends AutoBase {
                 );
                 break;
             case 3:
-//                Actions.runBlocking(
-//                        new ParallelAction(
-//                                armLift.updateArmSubsystem(),
-//                                new SequentialAction(
-//                                        moveToBar12,
-//                                        armLift.depositSpecimen(),
-//                                        new SleepAction(0.75),
-//                                        armLift.pivotDown(),
-//                                        new SleepAction(0.25),
-//                                        clawSystem.openClaw(),
-//                                        moveToBar22,
-//                                        clawSystem.closeClaw(),
-//                                        moveToObservationZone2,
-//                                        clawSystem.openClaw(),
-//                                        armLift.intakeSpecimenGround(),
-//                                        new SleepAction(0.5),
-//                                        clawSystem.closeClaw(),
-//                                        new SleepAction(0.25),
-//                                        armLift.depositSpecimen(),
-//                                        moveBackToBar12,
-//                                        armLift.pivotDown(),
-//                                        new SleepAction(0.5),
-//                                        clawSystem.openClaw(),
-//                                        new SleepAction(0.25),
-//                                        clawSystem.closeClaw(),
-//                                        armLift.restArm(),
-//                                        armLift.stopUpdate(),
-//                                        groundSample1
-//                                )
-//                        )
-//                );
                 break;
             case 4:
                 break;
@@ -196,73 +210,73 @@ public class RedSpecimen extends AutoBase {
     }
 
     public void twoSpecimenPaths() {
-        TrajectoryActionBuilder moveToBar1B = drive.actionBuilder(specimenStart)
+        TrajectoryActionBuilder depositFirstSpecimen1B = drive.actionBuilder(specimenStart)
                 .lineToY(-45.5);
-        TrajectoryActionBuilder moveToBar2B = moveToBar1B.endTrajectory().fresh()
+        TrajectoryActionBuilder depositFirstSpecimen2B = depositFirstSpecimen1B.endTrajectory().fresh()
                 .lineToY(-47);
-        TrajectoryActionBuilder moveToObservationZoneB = moveToBar2B.endTrajectory().fresh()
-                .turn(Math.toRadians(90))
-                .splineTo(new Vector2d(48, -43), Math.toRadians(0))
-                .waitSeconds(0.5)
-                .turn(Math.toRadians(90));
-        TrajectoryActionBuilder getSpecimenB = moveToObservationZoneB.endTrajectory().fresh()
+        TrajectoryActionBuilder pickUpSecondSpecimen1B = depositFirstSpecimen2B.endTrajectory().fresh()
+                .setTangent(Math.toRadians(0)) // beginning tangent
+                .splineToLinearHeading(new Pose2d(36, -52, Math.toRadians(270)), Math.toRadians(0)) // end tangent
+                .waitSeconds(0.5);
+        TrajectoryActionBuilder pickUpSecondSpecimen2B = pickUpSecondSpecimen1B.endTrajectory().fresh()
+                .lineToY(-55);
+        TrajectoryActionBuilder depositSecondSpecimen1B = pickUpSecondSpecimen2B.endTrajectory().fresh()
+                .setTangent(Math.toRadians(180)) // beginning tangent
+                .splineToLinearHeading(new Pose2d(6, -45.5, Math.toRadians(90)), Math.toRadians(180)); // end tangent
+        TrajectoryActionBuilder depositSecondSpecimen2B = depositSecondSpecimen1B.endTrajectory().fresh()
                 .lineToY(-48);
-        TrajectoryActionBuilder moveBackToBar1B = getSpecimenB.endTrajectory().fresh()
-                .turn(Math.toRadians(-90))
-                .setReversed(true)
-                .splineTo(new Vector2d(4, -48), Math.toRadians(90))
-                .lineToY(-45);
-        TrajectoryActionBuilder moveBackToBar2B = moveBackToBar1B.endTrajectory().fresh()
-                .setReversed(false)
+        TrajectoryActionBuilder moveToFirstSampleB = depositSecondSpecimen2B.endTrajectory().fresh()
+                .setTangent(Math.toRadians(270)) // beginning tangent
+                .splineToLinearHeading(new Pose2d(36, -48, Math.toRadians(0)), Math.toRadians(90)) // end tangent;
+                .lineToY(-12)
+                .setTangent(Math.toRadians(0))
+                .splineToConstantHeading(new Vector2d(45, -48), Math.toRadians(270));
+        TrajectoryActionBuilder moveToSecondSampleB = moveToFirstSampleB.endTrajectory().fresh()
+                .lineToY( -12)
+                .setTangent(Math.toRadians(0))
+                .splineToConstantHeading(new Vector2d(54, -48), Math.toRadians(270));
+        TrajectoryActionBuilder pickUpThirdSpecimen1B = moveToSecondSampleB.endTrajectory().fresh()
+                .setTangent(Math.toRadians(180)) // beginning tangent
+                .splineToLinearHeading(new Pose2d(36, -52, Math.toRadians(270)), Math.toRadians(180)); // end tangent
+        TrajectoryActionBuilder pickUpThirdSpecimen2B = pickUpThirdSpecimen1B.endTrajectory().fresh()
+                .lineToY(-55);
+        TrajectoryActionBuilder depositThirdSpecimen1B = pickUpThirdSpecimen2B.endTrajectory().fresh()
+                .setTangent(Math.toRadians(180)) // beginning tangent
+                .splineToLinearHeading(new Pose2d(10, -45.5, Math.toRadians(90)), Math.toRadians(180)); // end tangent;
+        TrajectoryActionBuilder depositThirdSpecimen2B = depositThirdSpecimen1B.endTrajectory().fresh()
                 .lineToY(-48);
-        TrajectoryActionBuilder moveBackToObservationZoneB = moveBackToBar2B.endTrajectory().fresh()
+        TrajectoryActionBuilder pickUpFourthSpecimen1B = depositThirdSpecimen2B.endTrajectory().fresh()
+                .setTangent(Math.toRadians(180)) // beginning tangent
+                .splineToLinearHeading(new Pose2d(36, -52, Math.toRadians(270)), Math.toRadians(180)); // end tangent
+        TrajectoryActionBuilder pickUpFourthSpecimen2B = pickUpFourthSpecimen1B.endTrajectory().fresh()
+                .lineToY(-55);
+        TrajectoryActionBuilder depositFourthSpecimen1B = pickUpFourthSpecimen2B.endTrajectory().fresh()
+                .setTangent(Math.toRadians(180)) // beginning tangent
+                .splineToLinearHeading(new Pose2d(12, -45.5, Math.toRadians(90)), Math.toRadians(180)); // end tangent;
+        TrajectoryActionBuilder depositFourthSpecimen2B = depositFourthSpecimen1B.endTrajectory().fresh()
+                .lineToY(-48);
+
+        TrajectoryActionBuilder moveBackToObservationZoneB = depositFourthSpecimen2B.endTrajectory().fresh()
+                .setTangent(Math.toRadians(0))
                 .splineTo(new Vector2d(60, -60), Math.toRadians(0));
 
-        moveToBar12 = moveToBar1B.build();
-        moveToBar22 = moveToBar2B.build();
-        moveToObservationZone2 = moveToObservationZoneB.build();
-        getSpecimen2 = getSpecimenB.build();
-        moveBackToBar12 = moveBackToBar1B.build();
-        moveBackToBar22 = moveBackToBar2B.build();
+        depositFirstSpecimen1 = depositFirstSpecimen1B.build();
+        depositFirstSpecimen2 = depositFirstSpecimen2B.build();
+        pickUpSecondSpecimen1 = pickUpSecondSpecimen1B.build();
+        pickUpSecondSpecimen2 = pickUpSecondSpecimen2B.build();
+        depositSecondSpecimen1 = depositSecondSpecimen1B.build();
+        depositSecondSpecimen2 = depositSecondSpecimen2B.build();
+        moveToFirstSample = moveToFirstSampleB.build();
+        moveToSecondSample = moveToSecondSampleB.build();
+        pickUpThirdSpecimen1 = pickUpThirdSpecimen1B.build();
+        pickUpThirdSpecimen2 = pickUpThirdSpecimen2B.build();
+        depositThirdSpecimen1 = depositThirdSpecimen1B.build();
+        depositThirdSpecimen2 = depositThirdSpecimen2B.build();
+        pickUpFourthSpecimen1 = pickUpFourthSpecimen1B.build();
+        pickUpFourthSpecimen2 = pickUpFourthSpecimen2B.build();
+        depositFourthSpecimen1 = depositFourthSpecimen1B.build();
+        depositFourthSpecimen2 = depositFourthSpecimen2B.build();
+
         moveBackToObservationZone2 = moveBackToObservationZoneB.build();
-
-    }
-
-    public void twoSpecimenPathsAlternate() {
-        TrajectoryActionBuilder moveToBar1B = drive.actionBuilder(specimenStart)
-                .lineToY(-45.5);
-        TrajectoryActionBuilder moveToBar2B = moveToBar1B.endTrajectory().fresh()
-                .lineToY(-46);
-        TrajectoryActionBuilder moveToObservationZoneB = moveToBar2B.endTrajectory().fresh()
-                .turn(Math.toRadians(-90))
-                .setReversed(true)
-                .splineTo(new Vector2d(26, -60), Math.toRadians(0), new TranslationalVelConstraint(40));
-//        TrajectoryActionBuilder getSpecimenB = moveToObservationZoneB.endTrajectory().fresh()
-//                .lineToX(38);
-        TrajectoryActionBuilder moveBackToBar1B = moveToObservationZoneB.endTrajectory().fresh()
-                .setReversed(false)
-                .splineTo(new Vector2d(2, -50), Math.toRadians(180))
-                .turn(Math.toRadians(90))
-                .lineToY(-48);
-//        TrajectoryActionBuilder moveBackToBar2B = moveBackToBar1B.endTrajectory().fresh()
-//                .lineToY(-50);
-        TrajectoryActionBuilder groundSample1B = moveBackToBar1B.endTrajectory().fresh()
-                .turn(Math.toRadians(90))
-                .lineToX(30)
-                .splineTo(new Vector2d(36, -12), Math.toRadians(90))
-                .setReversed(true)
-                .splineTo(new Vector2d(48, -48), Math.toRadians(270))
-                .lineToY(-60);
-//        TrajectoryActionBuilder moveBackToObservationZoneB = moveBackToBar2B.endTrajectory().fresh()
-//                .splineTo(new Vector2d(60, -60), Math.toRadians(0));
-
-        moveToBar12 = moveToBar1B.build();
-        moveToBar22 = moveToBar2B.build();
-        moveToObservationZone2 = moveToObservationZoneB.build();
-//        getSpecimen2 = getSpecimenB.build();
-        moveBackToBar12 = moveBackToBar1B.build();
-//        moveBackToBar22 = moveBackToBar2B.build();
-        groundSample1 = groundSample1B.build();
-//        moveBackToObservationZone2 = moveBackToObservationZoneB.build();
     }
 }

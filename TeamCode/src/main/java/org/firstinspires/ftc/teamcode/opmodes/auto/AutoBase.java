@@ -27,7 +27,7 @@ public abstract class AutoBase extends LinearOpMode {
     protected Gamepad previousGamepad = new Gamepad();
 
     protected Pose2d specimenStart;
-    protected Pose2d sampleStart = new Pose2d(-36, -54.3, Math.toRadians(90));
+    protected Pose2d sampleStart;
 
     protected JVBoysSoccerRobot robot;
     protected ArmLift armLift;
@@ -45,6 +45,7 @@ public abstract class AutoBase extends LinearOpMode {
         robot = new JVBoysSoccerRobot(hardwareMap, telemetry, true);
 
         specimenStart = new Pose2d(8, -63, Math.toRadians(90));
+        sampleStart = new Pose2d(-24, -63, Math.toRadians(90));
         armLift = new ArmLift();
         clawSystem = new ClawSystem();
 
