@@ -2,13 +2,16 @@ package org.firstinspires.ftc.teamcode.util;
 
 import com.acmerobotics.dashboard.config.Config;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.settings.RobotSettings;
+import org.firstinspires.ftc.teamcode.settings.UseTelemetry;
 import org.firstinspires.ftc.teamcode.subsystems.JVBoysSoccerRobot;
 
 @Config
 public class ArmPIDController {
 
     private JVBoysSoccerRobot robot;
+    private Telemetry telemetry;
     public static double FG_p = 0.0032, FG_i = 0.00000076, FG_d = 0.000025, f = 0.055;
     public static double G_p = 0.0017, G_i = 0.0000013, G_d = 0.000009;
 
@@ -32,8 +35,9 @@ public class ArmPIDController {
 
     private final double VERTICAL_POS = 2750;
 
-    public ArmPIDController(JVBoysSoccerRobot robot) {
+    public ArmPIDController(JVBoysSoccerRobot robot, Telemetry telemetry) {
         this.robot = robot;
+        this.telemetry = telemetry;
     }
 
     private double distance = Math.abs(robot.armSubsystem.referencePos - BulkReading.pMotorArmR);
@@ -86,6 +90,13 @@ public class ArmPIDController {
                 d = FG_d;
             }
         }
+
+        if (UseTelemetry.ARM_TELEMETRY) {
+            telemetry.addData("Arm P Value", p);
+            telemetry.addData("Arm I Value", i);
+            telemetry.addData("Arm D Value", d);
+        }
+
         output = (error * p) + (derivative * d) + (integralSum * i);
         previousRefPos = reference;
         return output;

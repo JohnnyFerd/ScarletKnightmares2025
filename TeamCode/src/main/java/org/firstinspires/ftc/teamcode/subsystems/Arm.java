@@ -78,7 +78,7 @@ public class Arm extends Subsystem {
         this.telemetry = telemetry;
         this.robot = robot;
         this.mp = new MotionProfile(telemetry);
-        pid = new ArmPIDController(robot);
+        pid = new ArmPIDController(robot, telemetry);
     }
 
     // DEFAULT ASYMMETRIC PROFILE

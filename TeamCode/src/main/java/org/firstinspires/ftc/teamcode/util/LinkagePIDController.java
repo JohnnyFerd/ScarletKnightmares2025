@@ -3,10 +3,14 @@ package org.firstinspires.ftc.teamcode.util;
 import com.acmerobotics.dashboard.config.Config;
 import com.arcrobotics.ftclib.util.InterpLUT;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.settings.RobotSettings;
+import org.firstinspires.ftc.teamcode.settings.UseTelemetry;
 
 @Config
 public class LinkagePIDController {
+
+    private Telemetry telemetry;
 
     public static double p = 0, i = 0, d = 0, f = 0;
     private final double motorEncoderTicks = 1140;
@@ -23,7 +27,8 @@ public class LinkagePIDController {
 
     private final double VERTICAL_POS = 2750;
 
-    public LinkagePIDController() {
+    public LinkagePIDController(Telemetry telemetry) {
+        this.telemetry = telemetry;
         pCoefficients = new InterpLUT();
         iCoefficients = new InterpLUT();
         dCoefficients = new InterpLUT();
@@ -44,15 +49,15 @@ public class LinkagePIDController {
         iCoefficients.createLUT();
         dCoefficients.createLUT();
     }
-    public LinkagePIDController(double p, double i, double d) {
-        this();
+    public LinkagePIDController(Telemetry telemetry, double p, double i, double d) {
+        this(telemetry);
         this.p = p;
         this.i = i;
         this.d = d;
         f = 0;
     }
-    public LinkagePIDController(double p, double i, double d, double f) {
-        this();
+    public LinkagePIDController(Telemetry telemetry, double p, double i, double d, double f) {
+        this(telemetry);
         this.p = p;
         this.i = i;
         this.d = d;
@@ -93,6 +98,12 @@ public class LinkagePIDController {
         lastError = error;
 
         previousTime = RobotSettings.SUPER_TIME.seconds();
+
+        if (UseTelemetry.SLIDE_TELEMETRY) {
+            telemetry.addData("Slide P Value", p_gs);
+            telemetry.addData("Slide I Value", i_gs);
+            telemetry.addData("Slide D Value", d_gs);
+        }
 
         double output = 0;
         output = (error * p_gs) + (derivative * d_gs) + (integralSum * i_gs);

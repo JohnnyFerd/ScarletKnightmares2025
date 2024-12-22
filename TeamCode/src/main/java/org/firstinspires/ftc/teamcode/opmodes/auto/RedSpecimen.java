@@ -20,6 +20,7 @@ public class RedSpecimen extends AutoBase {
 
     private boolean choicePicked = false;
     private int pathNumber = 0;
+    private double timeDelay = 0;
     private MecanumDrive drive;
 
     private Action moveToBar11, moveToBar21, moveToObservationZone1;
@@ -45,6 +46,7 @@ public class RedSpecimen extends AutoBase {
             telemetry.addLine("PICK NUMBER OF SPECIMEN");
             telemetry.addLine("Press A to increase path counter");
             telemetry.addLine("Press B to decrease path counter");
+            telemetry.addLine("Press DPAD UP and DPAD DOWN to add starting delay");
             telemetry.addLine("Press X when ready");
             telemetry.update();
             if (currentGamepad.a && !previousGamepad.a) {
@@ -56,7 +58,17 @@ public class RedSpecimen extends AutoBase {
             if (currentGamepad.x && !previousGamepad.x) {
                 choicePicked = true;
             }
+            if (currentGamepad.dpad_up && !previousGamepad.dpad_up) {
+                timeDelay += 0.5;
+            }
+            if (currentGamepad.dpad_down && !previousGamepad.dpad_down) {
+                timeDelay -= 0.5;
+                if (timeDelay < 0) {
+                    timeDelay = 0;
+                }
+            }
             telemetry.addData("NUMBER OF SPECIMEN CHOSEN: ", pathNumber);
+            telemetry.addData("Time Delay: ", timeDelay);
             if (isStopRequested()) return;
         }
 
@@ -86,6 +98,7 @@ public class RedSpecimen extends AutoBase {
         switch (pathNumber) {
             case 1:
                 Actions.runBlocking(
+                        new SleepAction(timeDelay),
                         new ParallelAction(
                                 armLift.updateArmSubsystem(),
                                 new SequentialAction(

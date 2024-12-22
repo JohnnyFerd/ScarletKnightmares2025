@@ -14,6 +14,7 @@ public class RedSample extends AutoBase {
 
     private boolean choicePicked = false;
     private boolean preloadSample = true;
+    private double timeDelay = 0;
     private MecanumDrive drive;
 
     private Action depositFirstSample, pickUpSecondSample, depositSecondSample, pickUpThirdSample, depositThirdSample, pickUpFourthSample, depositFourthSample;
@@ -33,6 +34,7 @@ public class RedSample extends AutoBase {
 
             telemetry.addLine("PICK PRELOAD");
             telemetry.addLine("Press A to switch");
+            telemetry.addLine("Press DPAD UP and DPAD DOWN to add starting delay");
             telemetry.addLine("Press X when ready");
             telemetry.update();
             if (currentGamepad.a && !previousGamepad.a) {
@@ -41,7 +43,17 @@ public class RedSample extends AutoBase {
             if (currentGamepad.x && !previousGamepad.x) {
                 choicePicked = true;
             }
+            if (currentGamepad.dpad_up && !previousGamepad.dpad_up) {
+                timeDelay += 0.5;
+            }
+            if (currentGamepad.dpad_down && !previousGamepad.dpad_down) {
+                timeDelay -= 0.5;
+                if (timeDelay < 0) {
+                    timeDelay = 0;
+                }
+            }
             telemetry.addData("PRELOAD: ", preloadSample ? "Sample" : "Specimen");
+            telemetry.addData("Time Delay: ", timeDelay);
             if (isStopRequested()) return;
         }
 
@@ -55,10 +67,12 @@ public class RedSample extends AutoBase {
         Actions.runBlocking(clawSystem.closeClaw());
 
         waitForStart();
+        telemetry.clear();
         if (isStopRequested()) return;
 
         if (preloadSample) {
             Actions.runBlocking(
+                    new SleepAction(timeDelay),
                     new ParallelAction(
                             armLift.updateArmSubsystem(),
                             new SequentialAction(

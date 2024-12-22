@@ -52,7 +52,7 @@ public class LinearSlide extends Subsystem {
         this.telemetry = telemetry;
         this.robot = robot;
         this.mp = new MotionProfile(telemetry);
-        pid = new LinkagePIDController();
+        pid = new LinkagePIDController(telemetry);
     }
 
     @Override
