@@ -64,7 +64,7 @@ public class Arm extends Subsystem {
 
     public int pivotCounter = 0;
 
-    public double referencePos = 0; // for the basic_pid state
+    public static double referencePos = 0; // for the basic_pid state
 
     public enum ArmState {
         MOTION_PROFILE,
@@ -179,7 +179,6 @@ public class Arm extends Subsystem {
         switch(armState) {
             case MOTION_PROFILE:
                 if (referencePos != previousRefPos) {
-                    mp.setProfile(new MotionProfileParameters(BulkReading.pMotorArmR, (int)referencePos, currentMaxAcl, currentMaxVel, currentMaxDcl));
                     fightingGravity = true;
                     if (referencePos > 2750) {
                         if (BulkReading.pMotorArmR < referencePos) {
@@ -189,6 +188,11 @@ public class Arm extends Subsystem {
                         if (BulkReading.pMotorArmR > referencePos) {
                             fightingGravity = false;
                         }
+                    }
+                    if (fightingGravity) {
+                        mp.setProfile(new MotionProfileParameters(BulkReading.pMotorArmR, (int)referencePos, currentMaxAcl, currentMaxVel, currentMaxDcl));
+                    }else {
+                        mp.setProfile(new MotionProfileParameters(BulkReading.pMotorArmR, (int)referencePos, currentMaxDcl, currentMaxVel));
                     }
                 }
 

@@ -98,105 +98,110 @@ public class RedSpecimen extends AutoBase {
         switch (pathNumber) {
             case 1:
                 Actions.runBlocking(
-                        new SleepAction(timeDelay),
-                        new ParallelAction(
-                                armLift.updateArmSubsystem(),
-                                new SequentialAction(
-                                        moveToBar11,
-                                        armLift.depositSpecimen(),
-                                        armLift.extendSlide(),
-//                                        armLift.pivotDown(),
-                                        new SleepAction(0.5),
-                                        clawSystem.openClaw(),
-                                        new SleepAction(0.5),
-                                        moveToBar21,
-                                        clawSystem.closeClaw(),
-                                        armLift.deExtendSlide(),
-                                        armLift.restArm(),
-                                        moveToObservationZone1,
-                                        armLift.stopUpdate()
+                        new SequentialAction(
+                                new SleepAction(timeDelay),
+                                new ParallelAction(
+                                        armLift.updateArmSubsystem(),
+                                        new SequentialAction(
+                                                moveToBar11,
+//                                                armLift.depositSpecimen(),
+//                                                armLift.extendSlide(),
+        //                                        armLift.pivotDown(),
+                                                new SleepAction(0.5),
+//                                                clawSystem.openClaw(),
+                                                new SleepAction(0.5),
+                                                moveToBar21,
+//                                                clawSystem.closeClaw(),
+//                                                armLift.deExtendSlide(),
+//                                                armLift.restArm(),
+                                                moveToObservationZone1,
+                                                armLift.stopUpdate()
+                                        )
                                 )
                         )
                 );
                 break;
             case 2:
                 Actions.runBlocking(
-                        new ParallelAction(
-                                armLift.updateArmSubsystem(),
-                                new SequentialAction(
-                                        depositFirstSpecimen1,
-                                        armLift.depositSpecimen(),
-                                        armLift.extendSlide(),
-//                                        armLift.pivotDown(),
-                                        new SleepAction(0.5),
-                                        clawSystem.openClaw(),
-                                        new SleepAction(0.5),
-                                        depositFirstSpecimen2,
-                                        clawSystem.closeClaw(),
-                                        armLift.deExtendSlide(),
-                                        pickUpSecondSpecimen1,
-                                        armLift.intakeSpecimen(),
-                                        clawSystem.openClaw(),
-                                        new SleepAction(1),
-                                        pickUpSecondSpecimen2,
-                                        new SleepAction(0.5),
-                                        clawSystem.closeClaw(),
-                                        new SleepAction(0.5),
-                                        armLift.depositSpecimen(),
-                                        depositSecondSpecimen1,
-                                        armLift.extendSlide(),
-//                                        armLift.pivotDown(),
-                                        new SleepAction(0.5),
-                                        clawSystem.openClaw(),
-                                        new SleepAction(0.5),
-                                        depositSecondSpecimen2,
-                                        clawSystem.closeClaw(),
-                                        armLift.deExtendSlide(),
-                                        armLift.restArm(),
-                                        moveToFirstSample,
-                                        moveToSecondSample,
+                        new SequentialAction(
+                                new SleepAction(timeDelay),
+                                new ParallelAction(
+                                        armLift.updateArmSubsystem(),
+                                        new SequentialAction(
+                                                depositFirstSpecimen1,
+//                                                armLift.depositSpecimen(),
+//                                                armLift.extendSlide(),
+        //                                        armLift.pivotDown(),
+                                                new SleepAction(0.5),
+//                                                clawSystem.openClaw(),
+                                                new SleepAction(0.5),
+                                                depositFirstSpecimen2,
+//                                                clawSystem.closeClaw(),
+//                                                armLift.deExtendSlide(),
+                                                pickUpSecondSpecimen1,
+//                                                armLift.intakeSpecimen(),
+//                                                clawSystem.openClaw(),
+                                                new SleepAction(1),
+                                                pickUpSecondSpecimen2,
+                                                new SleepAction(0.5),
+//                                                clawSystem.closeClaw(),
+                                                new SleepAction(0.5),
+//                                                armLift.depositSpecimen(),
+                                                depositSecondSpecimen1,
+//                                                armLift.extendSlide(),
+        //                                        armLift.pivotDown(),
+                                                new SleepAction(0.5),
+//                                                clawSystem.openClaw(),
+                                                new SleepAction(0.5),
+                                                depositSecondSpecimen2,
+//                                                clawSystem.closeClaw(),
+//                                                armLift.deExtendSlide(),
+//                                                armLift.restArm(),
+                                                moveToFirstSample,
+                                                moveToSecondSample,
 
-                                        pickUpThirdSpecimen1,
-                                        armLift.intakeSpecimen(),
-                                        clawSystem.openClaw(),
-                                        new SleepAction(1),
-                                        pickUpThirdSpecimen2,
-                                        new SleepAction(0.5),
-                                        clawSystem.closeClaw(),
-                                        new SleepAction(0.5),
-                                        armLift.depositSpecimen(),
-                                        depositThirdSpecimen1,
-                                        armLift.extendSlide(),
-//                                        armLift.pivotDown(),
-                                        new SleepAction(0.5),
-                                        clawSystem.openClaw(),
-                                        new SleepAction(0.5),
-                                        depositThirdSpecimen2,
-                                        clawSystem.closeClaw(),
-                                        armLift.deExtendSlide(),
+                                                pickUpThirdSpecimen1,
+//                                                armLift.intakeSpecimen(),
+//                                                clawSystem.openClaw(),
+                                                new SleepAction(1),
+                                                pickUpThirdSpecimen2,
+                                                new SleepAction(0.5),
+//                                                clawSystem.closeClaw(),
+                                                new SleepAction(0.5),
+//                                                armLift.depositSpecimen(),
+                                                depositThirdSpecimen1,
+//                                                armLift.extendSlide(),
+        //                                        armLift.pivotDown(),
+                                                new SleepAction(0.5),
+//                                                clawSystem.openClaw(),
+                                                new SleepAction(0.5),
+                                                depositThirdSpecimen2,
+//                                                clawSystem.closeClaw(),
+//                                                armLift.deExtendSlide(),
 
-                                        pickUpFourthSpecimen1,
-                                        armLift.intakeSpecimen(),
-                                        clawSystem.openClaw(),
-                                        new SleepAction(1),
-                                        pickUpFourthSpecimen2,
-                                        new SleepAction(0.5),
-                                        clawSystem.closeClaw(),
-                                        new SleepAction(0.5),
-                                        armLift.depositSpecimen(),
-                                        depositFourthSpecimen1,
-                                        armLift.extendSlide(),
-//                                        armLift.pivotDown(),
-                                        new SleepAction(0.5),
-                                        clawSystem.openClaw(),
-                                        new SleepAction(0.5),
-                                        depositFourthSpecimen2,
-                                        clawSystem.closeClaw(),
-                                        armLift.deExtendSlide(),
+                                                pickUpFourthSpecimen1,
+//                                                armLift.intakeSpecimen(),
+//                                                clawSystem.openClaw(),
+                                                new SleepAction(1),
+                                                pickUpFourthSpecimen2,
+                                                new SleepAction(0.5),
+//                                                clawSystem.closeClaw(),
+                                                new SleepAction(0.5),
+//                                                armLift.depositSpecimen(),
+                                                depositFourthSpecimen1,
+//                                                armLift.extendSlide(),
+        //                                        armLift.pivotDown(),
+                                                new SleepAction(0.5),
+//                                                clawSystem.openClaw(),
+                                                new SleepAction(0.5),
+                                                depositFourthSpecimen2,
+//                                                clawSystem.closeClaw(),
+//                                                armLift.deExtendSlide(),
 
-                                        armLift.restArm(),
-                                        moveBackToObservationZone2,
-                                        armLift.stopUpdate()
+//                                                armLift.restArm(),
+                                                moveBackToObservationZone2,
+                                                armLift.stopUpdate()
+                                        )
                                 )
                         )
                 );
@@ -224,20 +229,20 @@ public class RedSpecimen extends AutoBase {
 
     public void twoSpecimenPaths() {
         TrajectoryActionBuilder depositFirstSpecimen1B = drive.actionBuilder(specimenStart)
-                .lineToY(-45.5);
+                .lineToY(-39);
         TrajectoryActionBuilder depositFirstSpecimen2B = depositFirstSpecimen1B.endTrajectory().fresh()
-                .lineToY(-47);
+                .lineToY(-41);
         TrajectoryActionBuilder pickUpSecondSpecimen1B = depositFirstSpecimen2B.endTrajectory().fresh()
                 .setTangent(Math.toRadians(0)) // beginning tangent
                 .splineToLinearHeading(new Pose2d(36, -52, Math.toRadians(270)), Math.toRadians(0)) // end tangent
                 .waitSeconds(0.5);
         TrajectoryActionBuilder pickUpSecondSpecimen2B = pickUpSecondSpecimen1B.endTrajectory().fresh()
-                .lineToY(-55);
+                .strafeTo(new Vector2d(36, -55));
         TrajectoryActionBuilder depositSecondSpecimen1B = pickUpSecondSpecimen2B.endTrajectory().fresh()
                 .setTangent(Math.toRadians(180)) // beginning tangent
-                .splineToLinearHeading(new Pose2d(6, -45.5, Math.toRadians(90)), Math.toRadians(180)); // end tangent
+                .splineToLinearHeading(new Pose2d(6, -39, Math.toRadians(90)), Math.toRadians(180)); // end tangent
         TrajectoryActionBuilder depositSecondSpecimen2B = depositSecondSpecimen1B.endTrajectory().fresh()
-                .lineToY(-48);
+                .strafeTo(new Vector2d(6, -41));
         TrajectoryActionBuilder moveToFirstSampleB = depositSecondSpecimen2B.endTrajectory().fresh()
                 .setTangent(Math.toRadians(270)) // beginning tangent
                 .splineToLinearHeading(new Pose2d(36, -48, Math.toRadians(0)), Math.toRadians(90)) // end tangent;
@@ -252,22 +257,22 @@ public class RedSpecimen extends AutoBase {
                 .setTangent(Math.toRadians(180)) // beginning tangent
                 .splineToLinearHeading(new Pose2d(36, -52, Math.toRadians(270)), Math.toRadians(180)); // end tangent
         TrajectoryActionBuilder pickUpThirdSpecimen2B = pickUpThirdSpecimen1B.endTrajectory().fresh()
-                .lineToY(-55);
+                .strafeTo(new Vector2d(36, -55));
         TrajectoryActionBuilder depositThirdSpecimen1B = pickUpThirdSpecimen2B.endTrajectory().fresh()
                 .setTangent(Math.toRadians(180)) // beginning tangent
-                .splineToLinearHeading(new Pose2d(10, -45.5, Math.toRadians(90)), Math.toRadians(180)); // end tangent;
+                .splineToLinearHeading(new Pose2d(10, -39, Math.toRadians(90)), Math.toRadians(180)); // end tangent;
         TrajectoryActionBuilder depositThirdSpecimen2B = depositThirdSpecimen1B.endTrajectory().fresh()
-                .lineToY(-48);
+                .strafeTo(new Vector2d(10, -41));
         TrajectoryActionBuilder pickUpFourthSpecimen1B = depositThirdSpecimen2B.endTrajectory().fresh()
                 .setTangent(Math.toRadians(180)) // beginning tangent
                 .splineToLinearHeading(new Pose2d(36, -52, Math.toRadians(270)), Math.toRadians(180)); // end tangent
         TrajectoryActionBuilder pickUpFourthSpecimen2B = pickUpFourthSpecimen1B.endTrajectory().fresh()
-                .lineToY(-55);
+                .strafeTo(new Vector2d(36, -55));
         TrajectoryActionBuilder depositFourthSpecimen1B = pickUpFourthSpecimen2B.endTrajectory().fresh()
                 .setTangent(Math.toRadians(180)) // beginning tangent
-                .splineToLinearHeading(new Pose2d(12, -45.5, Math.toRadians(90)), Math.toRadians(180)); // end tangent;
+                .splineToLinearHeading(new Pose2d(4, -39, Math.toRadians(90)), Math.toRadians(180)); // end tangent;
         TrajectoryActionBuilder depositFourthSpecimen2B = depositFourthSpecimen1B.endTrajectory().fresh()
-                .lineToY(-48);
+                .strafeTo(new Vector2d(4, -41));
 
         TrajectoryActionBuilder moveBackToObservationZoneB = depositFourthSpecimen2B.endTrajectory().fresh()
                 .setTangent(Math.toRadians(0))

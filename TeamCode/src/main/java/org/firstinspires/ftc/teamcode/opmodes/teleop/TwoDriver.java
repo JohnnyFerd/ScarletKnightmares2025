@@ -32,6 +32,8 @@ public class TwoDriver extends LinearOpMode {
     private boolean leftClosed = true;
     private boolean rightClosed = true;
 
+    private boolean extended = false;
+
     private enum ArmControl {
         GOING_TO_REST,
         GOING_TO_REST2,
@@ -191,10 +193,14 @@ public class TwoDriver extends LinearOpMode {
                 if (currentGamepad2.b && !previousGamepad2.b) {
                     robot.armSubsystem.setIntakeSpecimen(true);
                 }
-                // TODO: test this threshold value of 400 to see if the extension hits the ground
                 if (currentGamepad2.dpad_down && !previousGamepad2.dpad_down) {
-                    if (BulkReading.pMotorArmR > 400) {
+                    if (BulkReading.pMotorArmR > 350 && !extended) {
                         robot.slideSubsystem.referencePos = LinearSlide.slideMaxExtension;
+                        extended = true;
+                    }
+                    if (extended) {
+                        robot.slideSubsystem.referencePos = 0;
+                        extended = false;
                     }
                 }
 
@@ -231,6 +237,7 @@ public class TwoDriver extends LinearOpMode {
                     }else if (robot.slideSubsystem.slideState == LinearSlide.SlideState.BASIC_PID) {
                         robot.slideSubsystem.referencePos = robot.slideSubsystem.referencePos + LinearSlide.slideSpeedConstant * currentGamepad2.left_stick_y * -1;
                     }
+                    extended = true;
                 }
 
                 break;

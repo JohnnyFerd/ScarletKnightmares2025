@@ -62,14 +62,14 @@ public final class MecanumDrive {
                 RobotSettings.USB_FACING_DIR;
 
         // drive model parameters
-        public double inPerTick = 76.0 / 99260.0;
-        public double lateralInPerTick = 0.0006110944823828576;
-        public double trackWidthTicks = 15138.239391070421;
+        public double inPerTick = 76.0 / 99260.0; // 0.000765966066
+        public double lateralInPerTick = 0.0005934019729348373; // 0.0006110944823828576
+        public double trackWidthTicks = 15377.940468326908;
 
         // feedforward parameters (in tick units)
-        public double kS = 0.8883992454985012;
-        public double kV = 0.0001382804345169754;
-        public double kA = 0.000022;
+        public double kS = 0.8358997929937129;
+        public double kV = 0.00013926612755485014;
+        public double kA = 0.000021;
 
         // path profile parameters (in inches)
         public double maxWheelVel = 50;

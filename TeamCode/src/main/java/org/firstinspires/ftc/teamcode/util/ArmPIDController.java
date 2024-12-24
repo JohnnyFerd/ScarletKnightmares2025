@@ -5,6 +5,7 @@ import com.acmerobotics.dashboard.config.Config;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.settings.RobotSettings;
 import org.firstinspires.ftc.teamcode.settings.UseTelemetry;
+import org.firstinspires.ftc.teamcode.subsystems.Arm;
 import org.firstinspires.ftc.teamcode.subsystems.JVBoysSoccerRobot;
 
 @Config
@@ -13,34 +14,40 @@ public class ArmPIDController {
     private JVBoysSoccerRobot robot;
     private Telemetry telemetry;
     public static double FG_p = 0.0032, FG_i = 0.00000076, FG_d = 0.000025, f = 0.055;
-    public static double G_p = 0.0017, G_i = 0.0000013, G_d = 0.000009;
+    public static double G_p = 0.0032, G_i = 0.00000076, G_d = 0.000025;
+    // public static double G_p = 0.0017, G_i = 0.0000013, G_d = 0.000009;
+
 
     // Distance of 0-150 ticks
-    public static double FG_p100 = 0, FG_i100 = 0, FG_d100 = 0;
-    public static double G_p100 = 0, G_i100 = 0, G_d100 = 0;
+    public final static double FG_p100 = 0.0041, FG_i100 = 0.000004, FG_d100 = 0;
+    public final static double G_p100 = 0.0031, G_i100 = 0.0000045, G_d100 = 0;
+
+    // gravity = gain schedule
+    // increment of distance
 
     // Distance of 150-350 ticks
-    public static double FG_p400 = 0, FG_i400 = 0, FG_d400 = 0;
-    public static double G_p400 = 0, G_i400 = 0, G_d400 = 0;
+    public final static double FG_p400 = 0, FG_i400 = 0, FG_d400 = 0;
+    public final static double G_p400 = 0, G_i400 = 0, G_d400 = 0;
 
     // TODO: fine tune these threshold values for changing pid values for most accuracy
-    public static int THRESHOLD1 = 150;
-    public static int THRESHOLD2 = 400;
+    public static int THRESHOLD1 = -1;
+    public static int THRESHOLD2 = -1;
 
     private final double motorEncoderTicks = RobotSettings.TOTAL_ENCODER_TICKS;
     private double integralSum = 0, lastError = 0;
     private double previousTime = 0;
 
     private double previousRefPos = 100000;
+    private double distance = 0;
 
     private final double VERTICAL_POS = 2750;
+
 
     public ArmPIDController(JVBoysSoccerRobot robot, Telemetry telemetry) {
         this.robot = robot;
         this.telemetry = telemetry;
+        distance = Math.abs(Arm.referencePos - BulkReading.pMotorArmR);
     }
-
-    private double distance = Math.abs(robot.armSubsystem.referencePos - BulkReading.pMotorArmR);
     public double calculatePID(double reference, double state, boolean fightingGravity) {
         double p;
         double i;

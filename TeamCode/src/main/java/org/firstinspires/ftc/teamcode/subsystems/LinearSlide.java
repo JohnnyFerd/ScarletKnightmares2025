@@ -38,7 +38,7 @@ public class LinearSlide extends Subsystem {
     public static int slideMaxExtension = 850;
     public static int slideDeExtension = 0;
 
-    public static double slideSpeedConstant = 3;
+    public static double slideSpeedConstant = 6;
 
     public enum SlideState {
         MOTION_PROFILE,
@@ -60,7 +60,7 @@ public class LinearSlide extends Subsystem {
         if (UseTelemetry.SLIDE_TELEMETRY) {
             telemetry.addLine("SLIDE TELEMETRY: ON");
             telemetry.addData("    Slide Power", robot.motorSlide.getPower());
-//            telemetry.addData("    Arm Encoder Position (R)", BulkReading.pMotorLinkage);
+            telemetry.addData("    Slide Encoder Position", BulkReading.pMotorLinkage);
 //            telemetry.addData("    Pivot Servo Position", robot.servoPivotR.getPosition());
         }else {
             telemetry.addLine("SLIDE TELEMETRY: OFF");

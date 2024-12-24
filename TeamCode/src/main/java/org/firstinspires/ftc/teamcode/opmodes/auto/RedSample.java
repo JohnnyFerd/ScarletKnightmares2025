@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.opmodes.auto;
 
+import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
@@ -7,9 +8,12 @@ import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.SleepAction;
 import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
 import com.acmerobotics.roadrunner.ftc.Actions;
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 import org.firstinspires.ftc.teamcode.roadrunner.MecanumDrive;
 
+@Config
+@Autonomous (name = "Red Sample", group = "Testing")
 public class RedSample extends AutoBase {
 
     private boolean choicePicked = false;
@@ -72,71 +76,73 @@ public class RedSample extends AutoBase {
 
         if (preloadSample) {
             Actions.runBlocking(
-                    new SleepAction(timeDelay),
-                    new ParallelAction(
-                            armLift.updateArmSubsystem(),
-                            new SequentialAction(
-                                    depositFirstSample,
-                                    armLift.depositSample(),
-                                    armLift.extendSlide(),
-                                    new SleepAction(0.5),
-                                    clawSystem.openClaw(),
-                                    new SleepAction(0.5),
-                                    new ParallelAction(
-                                            new SequentialAction(
-                                                    new SleepAction(0.25),
-                                                    armLift.deExtendSlide(),
-                                                    armLift.intakeSample()
+                    new SequentialAction(
+                            new SleepAction(timeDelay),
+                            new ParallelAction(
+                                    armLift.updateArmSubsystem(),
+                                    new SequentialAction(
+                                            depositFirstSample,
+                                            armLift.depositSample(),
+                                            armLift.extendSlide(),
+                                            new SleepAction(0.5),
+                                            clawSystem.openClaw(),
+                                            new SleepAction(0.5),
+                                            new ParallelAction(
+                                                    new SequentialAction(
+                                                            new SleepAction(0.25),
+                                                            armLift.deExtendSlide(),
+                                                            armLift.intakeSample()
+                                                    ),
+                                                    pickUpSecondSample
                                             ),
-                                            pickUpSecondSample
-                                    ),
-                                    armLift.extendSlide(),
-                                    new SleepAction(0.25),
-                                    clawSystem.closeClaw(),
-                                    depositSecondSample,
-                                    armLift.depositSample(),
-                                    armLift.extendSlide(),
-                                    new SleepAction(0.5),
-                                    clawSystem.openClaw(),
+                                            armLift.extendSlide(),
+                                            new SleepAction(0.25),
+                                            clawSystem.closeClaw(),
+                                            depositSecondSample,
+                                            armLift.depositSample(),
+                                            armLift.extendSlide(),
+                                            new SleepAction(0.5),
+                                            clawSystem.openClaw(),
 
-                                    new SleepAction(0.5),
-                                    new ParallelAction(
-                                            new SequentialAction(
-                                                    new SleepAction(0.25),
-                                                    armLift.deExtendSlide(),
-                                                    armLift.intakeSample()
+                                            new SleepAction(0.5),
+                                            new ParallelAction(
+                                                    new SequentialAction(
+                                                            new SleepAction(0.25),
+                                                            armLift.deExtendSlide(),
+                                                            armLift.intakeSample()
+                                                    ),
+                                                    pickUpThirdSample
                                             ),
-                                            pickUpThirdSample
-                                    ),
-                                    armLift.extendSlide(),
-                                    new SleepAction(0.25),
-                                    clawSystem.closeClaw(),
-                                    depositThirdSample,
-                                    armLift.depositSample(),
-                                    armLift.extendSlide(),
-                                    new SleepAction(0.5),
-                                    clawSystem.openClaw(),
+                                            armLift.extendSlide(),
+                                            new SleepAction(0.25),
+                                            clawSystem.closeClaw(),
+                                            depositThirdSample,
+                                            armLift.depositSample(),
+                                            armLift.extendSlide(),
+                                            new SleepAction(0.5),
+                                            clawSystem.openClaw(),
 
-                                    new SleepAction(0.5),
-                                    new ParallelAction(
-                                            new SequentialAction(
-                                                    new SleepAction(0.25),
-                                                    armLift.deExtendSlide(),
-                                                    armLift.intakeSample()
+                                            new SleepAction(0.5),
+                                            new ParallelAction(
+                                                    new SequentialAction(
+                                                            new SleepAction(0.25),
+                                                            armLift.deExtendSlide(),
+                                                            armLift.intakeSample()
+                                                    ),
+                                                    pickUpFourthSample
                                             ),
-                                            pickUpFourthSample
-                                    ),
-                                    armLift.extendSlide(),
-                                    new SleepAction(0.25),
-                                    clawSystem.closeClaw(),
-                                    depositFourthSample,
-                                    armLift.depositSample(),
-                                    armLift.extendSlide(),
-                                    new SleepAction(0.5),
-                                    clawSystem.openClaw(),
-                                    armLift.deExtendSlide(),
-                                    armLift.restArm(),
-                                    armLift.stopUpdate()
+                                            armLift.extendSlide(),
+                                            new SleepAction(0.25),
+                                            clawSystem.closeClaw(),
+                                            depositFourthSample,
+                                            armLift.depositSample(),
+                                            armLift.extendSlide(),
+                                            new SleepAction(0.5),
+                                            clawSystem.openClaw(),
+                                            armLift.deExtendSlide(),
+                                            armLift.restArm(),
+                                            armLift.stopUpdate()
+                                    )
                             )
                     )
             );
