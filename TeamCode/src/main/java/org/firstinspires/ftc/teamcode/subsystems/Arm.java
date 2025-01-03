@@ -23,7 +23,7 @@ public class Arm extends Subsystem {
     // TODO: tune the different pid values based on increments of distance
 
     public static int DEFAULT_MAX_VELOCITY = 6000; // enocder ticks per second
-    public static int DEFAULT_MAX_ACCELERATION = 5000; // encoder ticks per second
+    public static int DEFAULT_MAX_ACCELERATION = 5500; // encoder ticks per second
     public static int DEFAULT_MAX_DECELERATION = 1800;
 
     private int currentMaxVel = 0;
@@ -31,9 +31,9 @@ public class Arm extends Subsystem {
     private int currentMaxDcl = 0;
 
     public static int armPresetRest = -80; //
-    public static int armPresetIntakeSpecimen = 310; //
-    public static int armPresetIntakeSample = 400; //
-    public static int armPresetDepositSpecimen = 1500; //
+    public static int armPresetIntakeSpecimen = 500; //
+    public static int armPresetIntakeSample = 500; //
+    public static int armPresetDepositSpecimen = 4000; //
     public static int armPreset1DepositSample = 2750; //
 
     public static double pivotPresetRest = 0.95;
@@ -41,8 +41,8 @@ public class Arm extends Subsystem {
     public static double pivotPresetIntakeSample = 0.05;
     public static double pivotPresetDepositSpecimen = 0.4;
     public static double pivotPresetDepositSample = 0.4;
-    public static double pivotDownIncrement = 0.4;
-    public static double SERVO_LIMIT = 0.1;
+    public static double pivotDownIncrement = -0.4;
+    public static double SERVO_LIMIT = 0;
 
     public static final int armPresetIntakeSpecimenGround = 0;
     public static final double pivotPresetIntakeSpecimenGround = 0.31;
