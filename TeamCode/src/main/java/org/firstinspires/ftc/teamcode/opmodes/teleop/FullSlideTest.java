@@ -23,10 +23,8 @@ public class FullSlideTest extends LinearOpMode {
     private JVBoysSoccerRobot robot;
     public static double GOAL_POSITION_ARM = 0;
     public static int ACL = 3000, VEL = 3000, DCL = 1500;
-    public static double GOAL_POSITION_LINKAGE = 0;
-    public static int ACL_L = 400, VEL_L = 400, DCL_L = 200;
 
-    public static double PIVOT_SERVO_POSITION_1 = 0, PIVOT_SERVO_POSITION_2 = 0.25;
+    public static double PIVOT_SERVO_POSITION_1 = 1, PIVOT_SERVO_POSITION_2 = 0;
 
     private boolean leftClosed = true;
     private boolean rightClosed = true;
@@ -82,7 +80,6 @@ public class FullSlideTest extends LinearOpMode {
 
                 armControls();
                 armPivotControls();
-                slideControls();
                 clawControls();
                 drivetrainControls();
 
@@ -91,8 +88,6 @@ public class FullSlideTest extends LinearOpMode {
                 telemetry.addData("Pivot State", pivotTestState);
                 telemetry.addData("Encoder Value (Arm)", BulkReading.pMotorArmR);
                 telemetry.addData("Goal Position (Arm)", GOAL_POSITION_ARM);
-                telemetry.addData("Encoder Value (Linkage)", BulkReading.pMotorLinkage);
-                telemetry.addData("Goal Position (Linkage)", GOAL_POSITION_LINKAGE);
                 telemetry.addData("Pivot Servo Position (R)", robot.servoPivotR.getPosition());
                 telemetry.addData("Pivot Servo Position (L)", robot.servoPivotL.getPosition());
 
@@ -132,44 +127,6 @@ public class FullSlideTest extends LinearOpMode {
                 }
                 robot.armSubsystem.referencePos = GOAL_POSITION_ARM;
                 break;
-        }
-    }
-
-    public void slideControls() {
-        switch (slideTestState) {
-            case OFF:
-                if (currentGamepad1.a && !previousGamepad1.a) {
-                    slideTestState = SlideTestState.PID_TO_POSITION;
-                    robot.slideSubsystem.slideState = LinearSlide.SlideState.BASIC_PID;
-                }
-                if (currentGamepad1.b && !previousGamepad1.b) {
-                    slideTestState = SlideTestState.MOTION_PROFILE;
-                    robot.slideSubsystem.setMotionProfile((int) GOAL_POSITION_LINKAGE, ACL, VEL, DCL);
-                }
-                robot.slideSubsystem.referencePos = GOAL_POSITION_LINKAGE;
-                break;
-            case PID_TO_POSITION:
-                if (currentGamepad1.a && !previousGamepad1.a) {
-                    slideTestState = SlideTestState.OFF;
-                    robot.slideSubsystem.slideState = LinearSlide.SlideState.AT_REST;
-                }
-                robot.slideSubsystem.referencePos = GOAL_POSITION_LINKAGE;
-                break;
-            case MOTION_PROFILE:
-                if (currentGamepad1.b && !previousGamepad1.b) {
-                    slideTestState = SlideTestState.OFF;
-                    robot.slideSubsystem.slideState = LinearSlide.SlideState.AT_REST;
-                }
-                if (currentGamepad1.a && !previousGamepad1.a) {
-                    slideTestState = SlideTestState.PID_TO_POSITION;
-                    robot.slideSubsystem.slideState = LinearSlide.SlideState.BASIC_PID;
-                }
-                robot.slideSubsystem.referencePos = GOAL_POSITION_LINKAGE;
-                break;
-        }
-        if (currentGamepad1.left_stick_button && !previousGamepad1.left_stick_button) {
-            robot.motorSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            robot.motorSlide.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         }
     }
 

@@ -13,25 +13,9 @@ public class ArmPIDController {
 
     private JVBoysSoccerRobot robot;
     private Telemetry telemetry;
-    public static double FG_p = 0.0032, FG_i = 0.00000076, FG_d = 0.000025, f = 0.055;
-    public static double G_p = 0.0032, G_i = 0.00000076, G_d = 0.000025;
-    // public static double G_p = 0.0017, G_i = 0.0000013, G_d = 0.000009;
-
-
-    // Distance of 0-150 ticks
-    public final static double FG_p100 = 0.0041, FG_i100 = 0.000004, FG_d100 = 0;
-    public final static double G_p100 = 0.0031, G_i100 = 0.0000045, G_d100 = 0;
-
-    // gravity = gain schedule
-    // increment of distance
-
-    // Distance of 150-350 ticks
-    public final static double FG_p400 = 0, FG_i400 = 0, FG_d400 = 0;
-    public final static double G_p400 = 0, G_i400 = 0, G_d400 = 0;
-
-    // TODO: fine tune these threshold values for changing pid values for most accuracy
-    public static int THRESHOLD1 = -1;
-    public static int THRESHOLD2 = -1;
+    public static double FG_p = 0.0028, FG_i = 0.0000028, FG_d = 0.000000002, f = 0.004;
+    public static double G_p = 0.0028, G_i = 0.0000028, G_d = 0;
+    //  public static double G_p = 0.0032, G_i = 0.00000076, G_d = 0.000025;
 
     private final double motorEncoderTicks = RobotSettings.TOTAL_ENCODER_TICKS;
     private double integralSum = 0, lastError = 0;
@@ -68,35 +52,15 @@ public class ArmPIDController {
             distance = Math.abs(state - reference);
         }
 //        distance = Math.abs(previousRefPos - reference);
-        if (!fightingGravity) {
-            if (distance <= THRESHOLD1) {
-                p = G_p100;
-                i = G_i100;
-                d = G_d100;
-            }else if (distance <= THRESHOLD2) {
-                p = G_p400;
-                i = G_i400;
-                d = G_d400;
-            }else {
-                p = G_p;
-                i = G_i;
-                d = G_d;
-            }
-        }else {
-            if (distance <= THRESHOLD1) {
-                p = FG_p100;
-                i = FG_i100;
-                d = FG_d100;
-            }else if (distance <= THRESHOLD2) {
-                p = FG_p400;
-                i = FG_i400;
-                d = FG_d400;
-            }else {
-                p = FG_p;
-                i = FG_i;
-                d = FG_d;
-            }
-        }
+//        if (!fightingGravity) {
+//            p = G_p;
+//            i = G_i;
+//            d = G_d;
+//        }else {
+            p = FG_p;
+            i = FG_i;
+            d = FG_d;
+//        }
 
         if (UseTelemetry.ARM_TELEMETRY) {
             telemetry.addData("Arm P Value", p);

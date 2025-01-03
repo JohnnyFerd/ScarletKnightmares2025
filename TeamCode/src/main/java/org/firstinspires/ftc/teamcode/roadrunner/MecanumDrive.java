@@ -62,28 +62,28 @@ public final class MecanumDrive {
                 RobotSettings.USB_FACING_DIR;
 
         // drive model parameters
-        public double inPerTick = 76.0 / 99260.0; // 0.000765966066
-        public double lateralInPerTick = 0.0005934019729348373; // 0.0006110944823828576
-        public double trackWidthTicks = 15377.940468326908;
+        public double inPerTick = 53.4 / 69880.0; // 76.0 / 99260.0
+        public double lateralInPerTick = 0.0005963834250116767; // 0.0005934019729348373
+        public double trackWidthTicks = 15718.396240909573; // 15377.940468326908
 
         // feedforward parameters (in tick units)
-        public double kS = 0.8358997929937129;
-        public double kV = 0.00013926612755485014;
-        public double kA = 0.000021;
+        public double kS = 0.8206984479225161;
+        public double kV = 0.00013731585961029374;
+        public double kA = 0.00002;
 
         // path profile parameters (in inches)
-        public double maxWheelVel = 50;
-        public double minProfileAccel = -30;
-        public double maxProfileAccel = 50;
+        public double maxWheelVel = 30;
+        public double minProfileAccel = -10;
+        public double maxProfileAccel = 30;
 
         // turn profile parameters (in radians)
         public double maxAngVel = Math.PI; // shared with path
         public double maxAngAccel = Math.PI;
 
         // path controller gains
-        public double axialGain = 4;
-        public double lateralGain = 2.7;
-        public double headingGain = 2.2; // shared with turn
+        public double axialGain = 3.5;
+        public double lateralGain = 2.2;
+        public double headingGain = 2.1; // shared with turn
 
         public double axialVelGain = 0.0;
         public double lateralVelGain = 0.0;

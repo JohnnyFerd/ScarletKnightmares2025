@@ -22,26 +22,27 @@ public class Arm extends Subsystem {
     // TODO: test downwards motion profile on the arm with extremely small acl, dcl, vel to see if there is still that unsmooth motion
     // TODO: tune the different pid values based on increments of distance
 
-    public static int DEFAULT_MAX_VELOCITY = 3000; // enocder ticks per second
-    public static int DEFAULT_MAX_ACCELERATION = 3000; // encoder ticks per second
-    public static int DEFAULT_MAX_DECELERATION = 1000;
+    public static int DEFAULT_MAX_VELOCITY = 6000; // enocder ticks per second
+    public static int DEFAULT_MAX_ACCELERATION = 5000; // encoder ticks per second
+    public static int DEFAULT_MAX_DECELERATION = 1800;
 
     private int currentMaxVel = 0;
     private int currentMaxAcl = 0;
     private int currentMaxDcl = 0;
 
     public static int armPresetRest = -80; //
-    public static int armPresetIntakeSpecimen = 0; //
-    public static int armPresetIntakeSample = 300; //
+    public static int armPresetIntakeSpecimen = 310; //
+    public static int armPresetIntakeSample = 400; //
     public static int armPresetDepositSpecimen = 1500; //
     public static int armPreset1DepositSample = 2750; //
 
-    public static double pivotPresetRest = 0;
-    public static double pivotPresetIntakeSpecimen = 0.31;
-    public static double pivotPresetIntakeSample = 0.45;
-    public static double pivotPresetDepositSpecimen = 0.35;
-    public static double pivotPresetDepositSample = 0.15;
-    public static double pivotDownIncrement = 0.45;
+    public static double pivotPresetRest = 0.95;
+    public static double pivotPresetIntakeSpecimen = 0.365;
+    public static double pivotPresetIntakeSample = 0.05;
+    public static double pivotPresetDepositSpecimen = 0.4;
+    public static double pivotPresetDepositSample = 0.4;
+    public static double pivotDownIncrement = 0.4;
+    public static double SERVO_LIMIT = 0.1;
 
     public static final int armPresetIntakeSpecimenGround = 0;
     public static final double pivotPresetIntakeSpecimenGround = 0.31;

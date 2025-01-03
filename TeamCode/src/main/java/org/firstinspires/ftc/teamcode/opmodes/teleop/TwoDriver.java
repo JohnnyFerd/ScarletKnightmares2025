@@ -44,13 +44,6 @@ public class TwoDriver extends LinearOpMode {
     }
     private ArmControl armControl = ArmControl.REST;
 
-    private enum SlideControl {
-        REST,
-        OFF,
-        MOVE_SLIDE
-    }
-    private SlideControl slideControl = SlideControl.REST;
-
     @Override
     public void runOpMode() throws InterruptedException {
         RobotSettings.SUPER_TIME.reset();
@@ -177,9 +170,7 @@ public class TwoDriver extends LinearOpMode {
                     leftClosed = true;
                     rightClosed = true;
                     robot.armSubsystem.setRest();
-                    robot.slideSubsystem.referencePos = 0;
                     armControl = ArmControl.GOING_TO_REST;
-                    robot.slideSubsystem.slideState = LinearSlide.SlideState.BASIC_PID;
                 }
                 if (currentGamepad2.x && !previousGamepad2.x) {
                     robot.armSubsystem.setDepositSample(true);
@@ -193,23 +184,19 @@ public class TwoDriver extends LinearOpMode {
                 if (currentGamepad2.b && !previousGamepad2.b) {
                     robot.armSubsystem.setIntakeSpecimen(true);
                 }
-                if (currentGamepad2.dpad_down && !previousGamepad2.dpad_down) {
-                    if (BulkReading.pMotorArmR > 350 && !extended) {
-                        robot.slideSubsystem.referencePos = LinearSlide.slideMaxExtension;
-                        extended = true;
-                    }
-                    if (extended) {
-                        robot.slideSubsystem.referencePos = 0;
-                        extended = false;
-                    }
-                }
 
                 if (currentGamepad2.right_trigger > 0.01 && currentGamepad2.left_trigger <= 0.01) {
                     double newPosition = robot.servoPivotR.getPosition() + Arm.pivotSpeedConstant * currentGamepad2.right_trigger;
+                    if (newPosition < Arm.SERVO_LIMIT) {
+                        newPosition = Arm.SERVO_LIMIT;
+                    }
                     robot.armSubsystem.setPivot(newPosition);
                 }
                 if (currentGamepad2.left_trigger > 0.01 && currentGamepad2.right_trigger <= 0.01) {
                     double newPosition = robot.servoPivotR.getPosition() - Arm.pivotSpeedConstant * currentGamepad2.left_trigger;
+                    if (newPosition < Arm.SERVO_LIMIT) {
+                        newPosition = Arm.SERVO_LIMIT;
+                    }
                     robot.armSubsystem.setPivot(newPosition);
                 }
 

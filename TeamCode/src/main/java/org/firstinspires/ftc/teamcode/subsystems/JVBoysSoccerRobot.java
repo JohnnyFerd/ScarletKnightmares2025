@@ -67,7 +67,7 @@ public class JVBoysSoccerRobot {
         armSubsystem = new Arm(hwMap, telemetry, this);
         slideSubsystem = new LinearSlide(hwMap, telemetry, this);
 
-        subsystems = Arrays.asList(drivetrainSubsystem, armSubsystem, clawSubsystem, slideSubsystem);
+        subsystems = Arrays.asList(drivetrainSubsystem, armSubsystem, clawSubsystem);
         BR = new BulkReading(this);
     }
 

@@ -45,7 +45,7 @@ public class BulkReading {
 //
 //            pMotorArmL = robot.motorArmL.getCurrentPosition();
             pMotorArmR = robot.motorArmR.getCurrentPosition();
-            pMotorLinkage = robot.motorSlide.getCurrentPosition();
+            pMotorLinkage = 0;
 //            pSlide = robot
         }
     }
