@@ -24,23 +24,26 @@ public class Arm extends Subsystem {
 
     public static int DEFAULT_MAX_VELOCITY = 6000; // enocder ticks per second
     public static int DEFAULT_MAX_ACCELERATION = 5500; // encoder ticks per second
-    public static int DEFAULT_MAX_DECELERATION = 1800;
+    public static int DEFAULT_MAX_DECELERATION = 1600;
 
     private int currentMaxVel = 0;
     private int currentMaxAcl = 0;
     private int currentMaxDcl = 0;
 
-    public static int armPresetRest = -80; //
-    public static int armPresetIntakeSpecimen = 500; //
-    public static int armPresetIntakeSample = 500; //
-    public static int armPresetDepositSpecimen = 4000; //
+    public static int armPresetRest = -10; //
+    public static int armPresetIntakeSpecimen = 475; //
+    public static int armPresetIntakeSample = 4810; //
+    public static int armPresetDepositSpecimen = 3815; //
+    public static int armPresetDepositSpecimenAuto = 3500;
     public static int armPreset1DepositSample = 2750; //
+    public static int armPresetIntakeSampleAuto = 5115;
 
     public static double pivotPresetRest = 0.95;
-    public static double pivotPresetIntakeSpecimen = 0.365;
-    public static double pivotPresetIntakeSample = 0.05;
-    public static double pivotPresetDepositSpecimen = 0.4;
+    public static double pivotPresetIntakeSpecimen = 0.474;
+    public static double pivotPresetIntakeSample = 0.686;
+    public static double pivotPresetDepositSpecimen = 0.383;
     public static double pivotPresetDepositSample = 0.4;
+
     public static double pivotDownIncrement = -0.4;
     public static double SERVO_LIMIT = 0;
 
@@ -86,6 +89,7 @@ public class Arm extends Subsystem {
     public void setMotionProfile(int targetPosition) {
         referencePos = targetPosition; // used for manual control later in teleop
         armState = ArmState.MOTION_PROFILE;
+        this.mp.setBusy(true);
 
         currentMaxAcl = DEFAULT_MAX_ACCELERATION;
         currentMaxVel = DEFAULT_MAX_VELOCITY;
@@ -94,6 +98,7 @@ public class Arm extends Subsystem {
     public void setMotionProfile(int targetPosition, int acl, int vel, int dcl) {
         referencePos = targetPosition; // used for manual control later in teleop
         armState = ArmState.MOTION_PROFILE;
+        this.mp.setBusy(true);
 
         currentMaxAcl = acl;
         currentMaxVel = vel;

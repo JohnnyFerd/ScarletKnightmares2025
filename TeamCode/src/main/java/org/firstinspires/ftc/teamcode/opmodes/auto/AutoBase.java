@@ -19,6 +19,7 @@ import org.firstinspires.ftc.teamcode.settings.RobotSettings;
 import org.firstinspires.ftc.teamcode.subsystems.Arm;
 import org.firstinspires.ftc.teamcode.subsystems.JVBoysSoccerRobot;
 import org.firstinspires.ftc.teamcode.subsystems.LinearSlide;
+import org.firstinspires.ftc.teamcode.util.BulkReading;
 
 @Config
 public abstract class AutoBase extends LinearOpMode {
@@ -33,10 +34,13 @@ public abstract class AutoBase extends LinearOpMode {
     protected ArmLift armLift;
     protected ClawSystem clawSystem;
 
-    public static int DEPOSIT_SPECIMEN_POS = Arm.armPresetDepositSpecimen;
-    public static int INTAKE_SPECIMEN_POS = Arm.armPresetIntakeSpecimen;
+    public static int DEPOSIT_SPECIMEN_POS = 4050;
+    public static int DEPOSIT_SPECIMEN_DOWN = 3500;
+    public static int INTAKE_SPECIMEN_POS = 4850;
+    public static int INTAKE_SPECIMEN_DOWN = 5150;
     public static int DEPOSIT_SAMPLE_POS = Arm.armPreset1DepositSample;
     public static int INTAKE_SAMPLE_POS = Arm.armPresetIntakeSample;
+    public static double PIVOT_INTAKE_POS = 0.636;
 
     protected boolean isBlue = false;
 
@@ -44,8 +48,8 @@ public abstract class AutoBase extends LinearOpMode {
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
         robot = new JVBoysSoccerRobot(hardwareMap, telemetry, true);
 
-        specimenStart = new Pose2d(8, -63, Math.toRadians(90));
-        sampleStart = new Pose2d(-24, -63, Math.toRadians(90));
+        specimenStart = new Pose2d(8, -63, Math.toRadians(270));
+        sampleStart = new Pose2d(-24, -63, Math.toRadians(270));
         armLift = new ArmLift();
         clawSystem = new ClawSystem();
 
@@ -68,7 +72,9 @@ public abstract class AutoBase extends LinearOpMode {
                 return false;
             }
         }
-        public Action extendSlide() { return new ExtendSlide(); }
+        public Action extendSlide() {
+            return new ExtendSlide();
+        }
 
         public class DeExtendSlide implements Action {
             @Override
@@ -93,9 +99,10 @@ public abstract class AutoBase extends LinearOpMode {
                 if (stopUpdate) {
                     return false;
                 }else {
-                    robot.armSubsystem.armState = Arm.ArmState.MOTION_PROFILE;
+//                    robot.armSubsystem.armState = Arm.ArmState.MOTION_PROFILE;
                     robot.armSubsystem.update();
                     robot.BR.readAll();
+                    telemetryPacket.put("MOTOR POSITION", BulkReading.pMotorArmR);
                     return true;
                 }
             }
@@ -127,6 +134,7 @@ public abstract class AutoBase extends LinearOpMode {
 //                robot.armSubsystem.armState = Arm.ArmState.MOTION_PROFILE;
 //                robot.armSubsystem.update();
                 if (!robot.armSubsystem.getMP().isBusy()) {
+                    DEPOSIT_SPECIMEN_POS = 4000;
                     return false;
                 }
                 return true;
@@ -136,16 +144,18 @@ public abstract class AutoBase extends LinearOpMode {
             return new DepositSpecimen();
         }
 
-        public class PivotDown implements Action {
+        public class DepositSpecimenDown implements Action {
             @Override
             public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-                robot.armSubsystem.setPivot(Arm.pivotPresetDepositSpecimen - Arm.pivotDownIncrement);
+                Arm.referencePos = DEPOSIT_SPECIMEN_DOWN;
+                robot.armSubsystem.armState = Arm.ArmState.BASIC_PID;
                 return false;
             }
         }
-        public Action pivotDown() {
-            return new PivotDown();
+        public Action depositSpecimenDown() {
+            return new DepositSpecimenDown();
         }
+
 
         public class IntakeSpecimen implements Action {
             private boolean initialized = false;
@@ -153,7 +163,7 @@ public abstract class AutoBase extends LinearOpMode {
             public boolean run(@NonNull TelemetryPacket telemetryPacket) {
                 if (!initialized) {
                     robot.armSubsystem.setMotionProfile(INTAKE_SPECIMEN_POS);
-                    robot.armSubsystem.setPivotIntakeSpecimen();
+                    robot.armSubsystem.setPivot(PIVOT_INTAKE_POS);
                     initialized = true;
                 }
                 if (!robot.armSubsystem.getMP().isBusy()) {
@@ -166,22 +176,16 @@ public abstract class AutoBase extends LinearOpMode {
             return new IntakeSpecimen();
         }
 
-        public class IntakeSpecimenGround implements Action {
-            private boolean initialized = false;
+        public class IntakeSpecimenDown implements Action {
             @Override
             public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-                if (!initialized) {
-                    robot.armSubsystem.setIntakeSpecimenGround();
-                    initialized = true;
-                }
-                if (!robot.armSubsystem.getMP().isBusy()) {
-                    return false;
-                }
-                return true;
+                Arm.referencePos = INTAKE_SPECIMEN_DOWN;
+                robot.armSubsystem.armState = Arm.ArmState.BASIC_PID;
+                return false;
             }
         }
-        public Action intakeSpecimenGround() {
-            return new IntakeSpecimenGround();
+        public Action intakeSpecimenDown() {
+            return new IntakeSpecimenDown();
         }
 
         public class DepositSample implements Action {
@@ -227,6 +231,7 @@ public abstract class AutoBase extends LinearOpMode {
             public boolean run(@NonNull TelemetryPacket telemetryPacket) {
                 if (!initialized) {
                     initialized = true;
+                    robot.armSubsystem.armState = Arm.ArmState.MOTION_PROFILE;
                     robot.armSubsystem.setRest();
                 }
                 if (!robot.armSubsystem.getMP().isBusy()) {

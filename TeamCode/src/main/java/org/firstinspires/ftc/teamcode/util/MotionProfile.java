@@ -49,6 +49,10 @@ public class MotionProfile {
         telemetry.addData("    Reference Velocity", instantVel);
         telemetry.addData("    Reference Acceleration", instantAcl);
     }
+
+    public void setBusy(boolean busy) {
+        isBusy = busy;
+    }
     
     public void setProfile(MotionProfileParameters parameters) {
         isBusy = true;
