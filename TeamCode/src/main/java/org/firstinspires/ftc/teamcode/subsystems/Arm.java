@@ -22,29 +22,30 @@ public class Arm extends Subsystem {
     // TODO: test downwards motion profile on the arm with extremely small acl, dcl, vel to see if there is still that unsmooth motion
     // TODO: tune the different pid values based on increments of distance
 
-    public static int DEFAULT_MAX_VELOCITY = 6000; // enocder ticks per second
-    public static int DEFAULT_MAX_ACCELERATION = 5500; // encoder ticks per second
-    public static int DEFAULT_MAX_DECELERATION = 1600;
+    public static int DEFAULT_MAX_VELOCITY = 12000; // enocder ticks per second
+    public static int DEFAULT_MAX_ACCELERATION = 12000; // encoder ticks per second
+    public static int DEFAULT_MAX_DECELERATION = 1800;
 
     private int currentMaxVel = 0;
     private int currentMaxAcl = 0;
     private int currentMaxDcl = 0;
 
     public static int armPresetRest = -10; //
-    public static int armPresetIntakeSpecimen = 475; //
-    public static int armPresetIntakeSample = 4810; //
-    public static int armPresetDepositSpecimen = 3815; //
-    public static int armPresetDepositSpecimenAuto = 3500;
+    public static int armPresetIntakeSpecimen = 4810; //
+    public static int armLowerConstant = 250;
+    public static int armPresetIntakeSpecimenAuto = 5075;
+    public static int armPresetIntakeSample = 4850; //
+    public static int armPresetIntakeSampleAuto = 5125;
+    public static int armPresetDepositSpecimen = 3965; //
+    public static int armPresetDepositSpecimenAuto = 3520;
     public static int armPreset1DepositSample = 2750; //
-    public static int armPresetIntakeSampleAuto = 5115;
 
     public static double pivotPresetRest = 0.95;
-    public static double pivotPresetIntakeSpecimen = 0.474;
-    public static double pivotPresetIntakeSample = 0.686;
+    public static double pivotPresetIntakeSpecimen = 0.705;
+    public static double pivotPresetIntakeSample = 0.705;
     public static double pivotPresetDepositSpecimen = 0.383;
     public static double pivotPresetDepositSample = 0.4;
 
-    public static double pivotDownIncrement = -0.4;
     public static double SERVO_LIMIT = 0;
 
     public static final int armPresetIntakeSpecimenGround = 0;

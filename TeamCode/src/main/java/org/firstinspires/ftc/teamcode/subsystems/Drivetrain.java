@@ -24,16 +24,18 @@ public class Drivetrain extends Subsystem {
     public boolean isFieldCentric = true;
     public boolean orthogonalMode = false;
 
+    public static double MAX_SPEED = 0.8;
+
     public Drivetrain(HardwareMap hwMap, Telemetry telemetry, JVBoysSoccerRobot robot) {
         this.hwMap = hwMap;
         this.telemetry = telemetry;
         this.robot = robot;
 
-        if (!PoseStorage.AUTO_SHIFTED) {
+//        if (!PoseStorage.AUTO_SHIFTED) {
             resetInitYaw();
-        }else {
-            initYaw = PoseStorage.ORIGINAL_INIT_YAW + PoseStorage.AUTO_SHIFT_YAW;
-        }
+//        }else {
+//            initYaw = PoseStorage.ORIGINAL_INIT_YAW + PoseStorage.AUTO_SHIFT_YAW;
+//        }
 //        lastAngle = robot.imu.getRobotOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
 //        initYaw = PoseStorage.originalInitYaw + PoseStorage.AUTO_SHIFT_DEGREES; // b/c auto started with back facing front
     }
@@ -114,6 +116,11 @@ public class Drivetrain extends Subsystem {
             powerBL /= power + Math.abs(r);
             powerBR /= power + Math.abs(r);
         }
+
+        powerFL *= MAX_SPEED;
+        powerBR *= MAX_SPEED;
+        powerFR *= MAX_SPEED;
+        powerBL *= MAX_SPEED;
 
         robot.motorBL.setPower(powerBL);
         robot.motorBR.setPower(powerBR);

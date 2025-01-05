@@ -73,6 +73,9 @@ public class JVBoysSoccerRobot {
 
     public JVBoysSoccerRobot(HardwareMap hwMap, Telemetry telemetry, boolean isAuto) {
         if (isAuto) {
+            Arm.DEFAULT_MAX_ACCELERATION = 14000;
+            Arm.DEFAULT_MAX_VELOCITY = 14000;
+            Arm.DEFAULT_MAX_DECELERATION = 2000;
             this.hwMap = hwMap;
             this.telemetry = telemetry;
 

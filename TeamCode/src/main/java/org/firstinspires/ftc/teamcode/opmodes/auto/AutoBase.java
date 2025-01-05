@@ -34,13 +34,16 @@ public abstract class AutoBase extends LinearOpMode {
     protected ArmLift armLift;
     protected ClawSystem clawSystem;
 
-    public static int DEPOSIT_SPECIMEN_POS = 4050;
+    public static int DEPOSIT_SPECIMEN_POS = 4000;
     public static int DEPOSIT_SPECIMEN_DOWN = 3500;
-    public static int INTAKE_SPECIMEN_POS = 4850;
-    public static int INTAKE_SPECIMEN_DOWN = 5150;
+    public static int INTAKE_SPECIMEN_POS = 4810;
+    public static int INTAKE_SPECIMEN_DOWN = 5115;
     public static int DEPOSIT_SAMPLE_POS = Arm.armPreset1DepositSample;
     public static int INTAKE_SAMPLE_POS = Arm.armPresetIntakeSample;
-    public static double PIVOT_INTAKE_POS = 0.636;
+    public static double PIVOT_INTAKE_POS = 0.705;
+
+    public static int INTAKE_SPECIMEN_WALL = 575;
+    public static double PIVOT_INTAKE_SPECIMEN_WALL = 0.50;
 
     protected boolean isBlue = false;
 
@@ -134,7 +137,7 @@ public abstract class AutoBase extends LinearOpMode {
 //                robot.armSubsystem.armState = Arm.ArmState.MOTION_PROFILE;
 //                robot.armSubsystem.update();
                 if (!robot.armSubsystem.getMP().isBusy()) {
-                    DEPOSIT_SPECIMEN_POS = 4000;
+                    DEPOSIT_SPECIMEN_POS = 3950;
                     return false;
                 }
                 return true;
@@ -186,6 +189,19 @@ public abstract class AutoBase extends LinearOpMode {
         }
         public Action intakeSpecimenDown() {
             return new IntakeSpecimenDown();
+        }
+
+        public class IntakeSpecimenWall implements Action {
+            @Override
+            public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                Arm.referencePos = INTAKE_SPECIMEN_WALL;
+                robot.armSubsystem.armState = Arm.ArmState.BASIC_PID;
+                robot.armSubsystem.setPivot(PIVOT_INTAKE_SPECIMEN_WALL);
+                return false;
+            }
+        }
+        public Action intakeSpecimenWall() {
+            return new IntakeSpecimenWall();
         }
 
         public class DepositSample implements Action {
