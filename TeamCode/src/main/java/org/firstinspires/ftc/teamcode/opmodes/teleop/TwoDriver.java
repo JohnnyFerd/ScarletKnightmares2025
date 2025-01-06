@@ -150,9 +150,9 @@ public class TwoDriver extends LinearOpMode {
         }
 
         if (currentGamepad1.right_trigger > 0.01 || currentGamepad1.left_trigger > 0.01) {
-            x /= 2.25;
-            y /= 2.25;
-            r /= 2.25;
+            x /= 3.0;
+            y /= 3.0;
+            r /= 3.0;
         }
 
         // attempting to save motor calls == faster frequency of command calls
@@ -405,7 +405,7 @@ public class TwoDriver extends LinearOpMode {
                 if (RobotSettings.SUPER_TIME.seconds() - intakeSampleTime > 0.25) {
                     robot.armSubsystem.armState = Arm.ArmState.BASIC_PID;
 //                    Arm.referencePos = Arm.armPresetIntakeSampleAuto;
-                    Arm.referencePos = BulkReading.pMotorArmR + Arm.armLowerConstant;
+                    Arm.referencePos = BulkReading.pMotorArmR + Arm.armLowerConstantSample;
                     armControl = ArmControl.INTAKE_SAMPLE2;
                 }
                 break;
@@ -501,7 +501,7 @@ public class TwoDriver extends LinearOpMode {
                 if (RobotSettings.SUPER_TIME.seconds() - intakeSampleTime > 0.25) {
                     robot.armSubsystem.armState = Arm.ArmState.BASIC_PID;
 //                    Arm.referencePos = Arm.armPresetIntakeSpecimenAuto;
-                    Arm.referencePos = BulkReading.pMotorArmR + Arm.armLowerConstant;
+                    Arm.referencePos = BulkReading.pMotorArmR + Arm.armLowerConstantSpecimen;
                     armControl = ArmControl.INTAKE_SPECIMEN2;
                 }
                 break;

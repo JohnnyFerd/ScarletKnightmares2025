@@ -22,26 +22,31 @@ public class Arm extends Subsystem {
     // TODO: test downwards motion profile on the arm with extremely small acl, dcl, vel to see if there is still that unsmooth motion
     // TODO: tune the different pid values based on increments of distance
 
-    public static int DEFAULT_MAX_VELOCITY = 12000; // enocder ticks per second
-    public static int DEFAULT_MAX_ACCELERATION = 12000; // encoder ticks per second
-    public static int DEFAULT_MAX_DECELERATION = 1800;
+    public static int DEFAULT_MAX_VELOCITY = 10000; // enocder ticks per second
+    public static int DEFAULT_MAX_ACCELERATION = 10000; // encoder ticks per second
+    public static int DEFAULT_MAX_DECELERATION = 1500;
 
     private int currentMaxVel = 0;
     private int currentMaxAcl = 0;
     private int currentMaxDcl = 0;
 
     public static int armPresetRest = -10; //
-    public static int armPresetIntakeSpecimen = 4810; //
-    public static int armLowerConstant = 250;
+//    public static int armPresetIntakeSpecimen = 4810;
+    public static int armPresetIntakeSpecimen = 590; //
+
+    public static int armLowerConstantSample = 250;
+    public static int armLowerConstantSpecimen = 250;
+
     public static int armPresetIntakeSpecimenAuto = 5075;
-    public static int armPresetIntakeSample = 4850; //
+    public static int armPresetIntakeSample = 5025; //
     public static int armPresetIntakeSampleAuto = 5125;
-    public static int armPresetDepositSpecimen = 3965; //
+    public static int armPresetDepositSpecimen = 4025; //
     public static int armPresetDepositSpecimenAuto = 3520;
     public static int armPreset1DepositSample = 2750; //
 
     public static double pivotPresetRest = 0.95;
-    public static double pivotPresetIntakeSpecimen = 0.705;
+//    public static double pivotPresetIntakeSpecimen = 0.705;
+    public static double pivotPresetIntakeSpecimen = 0.485;
     public static double pivotPresetIntakeSample = 0.705;
     public static double pivotPresetDepositSpecimen = 0.383;
     public static double pivotPresetDepositSample = 0.4;
@@ -186,21 +191,7 @@ public class Arm extends Subsystem {
         switch(armState) {
             case MOTION_PROFILE:
                 if (referencePos != previousRefPos) {
-                    fightingGravity = true;
-                    if (referencePos > 2750) {
-                        if (BulkReading.pMotorArmR < referencePos) {
-                            fightingGravity = false;
-                        }
-                    }else {
-                        if (BulkReading.pMotorArmR > referencePos) {
-                            fightingGravity = false;
-                        }
-                    }
-                    if (fightingGravity) {
-                        mp.setProfile(new MotionProfileParameters(BulkReading.pMotorArmR, (int)referencePos, currentMaxAcl, currentMaxVel, currentMaxDcl));
-                    }else {
-                        mp.setProfile(new MotionProfileParameters(BulkReading.pMotorArmR, (int)referencePos, currentMaxDcl, currentMaxVel));
-                    }
+                    mp.setProfile(new MotionProfileParameters(BulkReading.pMotorArmR, (int)referencePos, currentMaxAcl, currentMaxVel, currentMaxDcl));
                 }
 
                 mp.updateState();

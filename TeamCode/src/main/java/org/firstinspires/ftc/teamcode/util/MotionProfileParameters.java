@@ -9,6 +9,7 @@ public class MotionProfileParameters {
     private int maxDeceleration;
 
     public MotionProfileParameters(int start, int end, int maxAcceleration, int maxVelocity) {
+        isAsymmetric = false;
         this.start = start;
         this.end = end;
         this.maxAcceleration = maxAcceleration;

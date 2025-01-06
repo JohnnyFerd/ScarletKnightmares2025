@@ -24,7 +24,7 @@ public class Drivetrain extends Subsystem {
     public boolean isFieldCentric = true;
     public boolean orthogonalMode = false;
 
-    public static double MAX_SPEED = 0.8;
+    public static double MAX_SPEED = 1.0;
 
     public Drivetrain(HardwareMap hwMap, Telemetry telemetry, JVBoysSoccerRobot robot) {
         this.hwMap = hwMap;

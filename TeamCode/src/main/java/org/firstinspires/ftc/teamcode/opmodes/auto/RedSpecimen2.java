@@ -173,6 +173,7 @@ public class RedSpecimen2 extends AutoBase {
                                                 clawSystem.openClaw(),
                                                 new SleepAction(0.3),
                                                 armLift.restArm(),
+                                                clawSystem.closeClaw(),
 
                                                 moveBackToObservationZone2,
                                                 armLift.stopUpdate()
@@ -232,6 +233,7 @@ public class RedSpecimen2 extends AutoBase {
                                                 clawSystem.openClaw(),
                                                 new SleepAction(0.3),
                                                 armLift.restArm(),
+                                                clawSystem.closeClaw(),
 
                                                 moveBackToObservationZone2,
                                                 armLift.stopUpdate()
@@ -264,11 +266,11 @@ public class RedSpecimen2 extends AutoBase {
         TrajectoryActionBuilder depositFirstSpecimen1B = drive.actionBuilder(specimenStart)
                 .lineToY(-58);
         TrajectoryActionBuilder depositFirstSpecimen2B = depositFirstSpecimen1B.endTrajectory().fresh()
-                .lineToY(-51);
+                .lineToY(-50.5);
         TrajectoryActionBuilder pickUpSecondSpecimen1B = depositFirstSpecimen2B.endTrajectory().fresh()
-                .strafeToLinearHeading(new Vector2d(28, -65), Math.toRadians(180));
+                .strafeToLinearHeading(new Vector2d(29, -65), Math.toRadians(180));
         TrajectoryActionBuilder pickUpSecondSpecimen2B = pickUpSecondSpecimen1B.endTrajectory().fresh()
-                .strafeTo(new Vector2d(28, -65));
+                .strafeTo(new Vector2d(29, -65));
         TrajectoryActionBuilder depositSecondSpecimen1B = pickUpSecondSpecimen2B.endTrajectory().fresh()
                 .strafeToLinearHeading(new Vector2d(2, -58), Math.toRadians(270));
         TrajectoryActionBuilder depositSecondSpecimen2B = depositSecondSpecimen1B.endTrajectory().fresh()

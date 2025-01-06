@@ -34,10 +34,11 @@ public abstract class AutoBase extends LinearOpMode {
     protected ArmLift armLift;
     protected ClawSystem clawSystem;
 
-    public static int DEPOSIT_SPECIMEN_POS = 4000;
+    public static int DEPOSIT_SPECIMEN_POS = 4050;
+    public static int DEPOSIT_SPECIMEN_SECOND = 3985;
     public static int DEPOSIT_SPECIMEN_DOWN = 3500;
-    public static int INTAKE_SPECIMEN_POS = 4810;
-    public static int INTAKE_SPECIMEN_DOWN = 5115;
+    public static int INTAKE_SPECIMEN_POS = 4950;
+    public static int INTAKE_SPECIMEN_DOWN = 5230;
     public static int DEPOSIT_SAMPLE_POS = Arm.armPreset1DepositSample;
     public static int INTAKE_SAMPLE_POS = Arm.armPresetIntakeSample;
     public static double PIVOT_INTAKE_POS = 0.705;
@@ -48,6 +49,7 @@ public abstract class AutoBase extends LinearOpMode {
     protected boolean isBlue = false;
 
     public void initialize() {
+        DEPOSIT_SPECIMEN_POS = 4050;
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
         robot = new JVBoysSoccerRobot(hardwareMap, telemetry, true);
 
@@ -137,7 +139,7 @@ public abstract class AutoBase extends LinearOpMode {
 //                robot.armSubsystem.armState = Arm.ArmState.MOTION_PROFILE;
 //                robot.armSubsystem.update();
                 if (!robot.armSubsystem.getMP().isBusy()) {
-                    DEPOSIT_SPECIMEN_POS = 3950;
+                    DEPOSIT_SPECIMEN_POS = DEPOSIT_SPECIMEN_SECOND;
                     return false;
                 }
                 return true;
