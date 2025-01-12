@@ -47,7 +47,6 @@ public class ArmPIDController {
 
         double output;
 
-        // TODO: Check if this works or not
         if (previousRefPos != reference) {
             distance = Math.abs(state - reference);
         }

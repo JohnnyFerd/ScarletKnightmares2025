@@ -19,36 +19,33 @@ public class Arm extends Subsystem {
     private MotionProfile mp;
     private ArmPIDController pid;
 
-    // TODO: test downwards motion profile on the arm with extremely small acl, dcl, vel to see if there is still that unsmooth motion
-    // TODO: tune the different pid values based on increments of distance
-
-    public static int DEFAULT_MAX_VELOCITY = 10000; // enocder ticks per second
-    public static int DEFAULT_MAX_ACCELERATION = 10000; // encoder ticks per second
-    public static int DEFAULT_MAX_DECELERATION = 1500;
+    public static int DEFAULT_MAX_VELOCITY = 12000; // enocder ticks per second
+    public static int DEFAULT_MAX_ACCELERATION = 12000; // encoder ticks per second
+    public static int DEFAULT_MAX_DECELERATION =  1700;
 
     private int currentMaxVel = 0;
     private int currentMaxAcl = 0;
     private int currentMaxDcl = 0;
 
-    public static int armPresetRest = -10; //
+    public static int armPresetRest = -20; //
 //    public static int armPresetIntakeSpecimen = 4810;
-    public static int armPresetIntakeSpecimen = 590; //
+    public static int armPresetIntakeSpecimen = 300; //
 
     public static int armLowerConstantSample = 250;
     public static int armLowerConstantSpecimen = 250;
-
     public static int armPresetIntakeSpecimenAuto = 5075;
-    public static int armPresetIntakeSample = 5025; //
+
+    public static int armPresetIntakeSample = 4550; //
     public static int armPresetIntakeSampleAuto = 5125;
-    public static int armPresetDepositSpecimen = 4025; //
-    public static int armPresetDepositSpecimenAuto = 3520;
+    public static int armPresetDepositSpecimen = 3350; //
+    public static int armPresetDepositSpecimenAuto = 2900;
     public static int armPreset1DepositSample = 2750; //
 
-    public static double pivotPresetRest = 0.95;
+    public static double pivotPresetRest = 1.00;
 //    public static double pivotPresetIntakeSpecimen = 0.705;
-    public static double pivotPresetIntakeSpecimen = 0.485;
-    public static double pivotPresetIntakeSample = 0.705;
-    public static double pivotPresetDepositSpecimen = 0.383;
+    public static double pivotPresetIntakeSpecimen = 0.657;
+    public static double pivotPresetIntakeSample = 0.88;
+    public static double pivotPresetDepositSpecimen = 0.566;
     public static double pivotPresetDepositSample = 0.4;
 
     public static double SERVO_LIMIT = 0;
@@ -56,9 +53,6 @@ public class Arm extends Subsystem {
     public static final int armPresetIntakeSpecimenGround = 0;
     public static final double pivotPresetIntakeSpecimenGround = 0.31;
 
-    private boolean DEPOSIT_SAMPLE = false;
-
-    public boolean pivotDown = false;
     public double previousPivotPos = 0;
 
     public static final double pivotSpeedConstant = 0.005;
@@ -201,14 +195,6 @@ public class Arm extends Subsystem {
                     pivotQueue();
                 }
 
-                // TODO: test the deposit sample preset to see if it automatically extends the slides after MP completes
-                if (DEPOSIT_SAMPLE) {
-                    if (!mp.isBusy()) {
-                        robot.slideSubsystem.referencePos = LinearSlide.slideMaxExtension;
-                        DEPOSIT_SAMPLE = false;
-                    }
-                }
-
                 if ( !(previousCurrentPos == BulkReading.pMotorArmR && previousInstantRefPos == instantRefPos) ) {
                     setArmPower(pid.calculatePID(instantRefPos, BulkReading.pMotorArmR, fightingGravity) + pid.calculateF(referencePos));
                 }
@@ -290,7 +276,6 @@ public class Arm extends Subsystem {
             setPivotDepositSample();
             pivotCounter = 0;
         }
-        DEPOSIT_SAMPLE = true;
         setMotionProfile(armPreset1DepositSample);
     }
 

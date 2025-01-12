@@ -30,30 +30,30 @@ public abstract class AutoBase extends LinearOpMode {
     protected Pose2d specimenStart;
     protected Pose2d sampleStart;
 
+    protected double specimenStartX = 8, specimenStartY = -63, specimenStartHeading = Math.toRadians(270);
+
     protected JVBoysSoccerRobot robot;
     protected ArmLift armLift;
     protected ClawSystem clawSystem;
 
-    public static int DEPOSIT_SPECIMEN_POS = 4050;
-    public static int DEPOSIT_SPECIMEN_SECOND = 3985;
-    public static int DEPOSIT_SPECIMEN_DOWN = 3500;
-    public static int INTAKE_SPECIMEN_POS = 4950;
-    public static int INTAKE_SPECIMEN_DOWN = 5230;
+    public static int DEPOSIT_SPECIMEN_FIRST = 3400;
+    public static int DEPOSIT_SPECIMEN_POS = DEPOSIT_SPECIMEN_FIRST;
+    public static int DEPOSIT_SPECIMEN_SECOND = 3415;
+    public static int DEPOSIT_SPECIMEN_DOWN = 2900;
+    public static int INTAKE_SPECIMEN_POS = 280;
+    public static int INTAKE_SPECIMEN_DOWN = 280;
     public static int DEPOSIT_SAMPLE_POS = Arm.armPreset1DepositSample;
     public static int INTAKE_SAMPLE_POS = Arm.armPresetIntakeSample;
-    public static double PIVOT_INTAKE_POS = 0.705;
-
-    public static int INTAKE_SPECIMEN_WALL = 575;
-    public static double PIVOT_INTAKE_SPECIMEN_WALL = 0.50;
+    public static double PIVOT_INTAKE_POS = 0.657;
 
     protected boolean isBlue = false;
 
     public void initialize() {
-        DEPOSIT_SPECIMEN_POS = 4050;
+        DEPOSIT_SPECIMEN_POS = DEPOSIT_SPECIMEN_FIRST;
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
         robot = new JVBoysSoccerRobot(hardwareMap, telemetry, true);
 
-        specimenStart = new Pose2d(8, -63, Math.toRadians(270));
+        specimenStart = new Pose2d(specimenStartX, specimenStartY, specimenStartHeading);
         sampleStart = new Pose2d(-24, -63, Math.toRadians(270));
         armLift = new ArmLift();
         clawSystem = new ClawSystem();
@@ -179,31 +179,6 @@ public abstract class AutoBase extends LinearOpMode {
         }
         public Action intakeSpecimen() {
             return new IntakeSpecimen();
-        }
-
-        public class IntakeSpecimenDown implements Action {
-            @Override
-            public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-                Arm.referencePos = INTAKE_SPECIMEN_DOWN;
-                robot.armSubsystem.armState = Arm.ArmState.BASIC_PID;
-                return false;
-            }
-        }
-        public Action intakeSpecimenDown() {
-            return new IntakeSpecimenDown();
-        }
-
-        public class IntakeSpecimenWall implements Action {
-            @Override
-            public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-                Arm.referencePos = INTAKE_SPECIMEN_WALL;
-                robot.armSubsystem.armState = Arm.ArmState.BASIC_PID;
-                robot.armSubsystem.setPivot(PIVOT_INTAKE_SPECIMEN_WALL);
-                return false;
-            }
-        }
-        public Action intakeSpecimenWall() {
-            return new IntakeSpecimenWall();
         }
 
         public class DepositSample implements Action {
