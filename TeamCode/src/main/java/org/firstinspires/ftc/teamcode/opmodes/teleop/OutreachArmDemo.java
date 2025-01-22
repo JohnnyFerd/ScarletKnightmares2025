@@ -11,7 +11,6 @@ import com.qualcomm.robotcore.hardware.Gamepad;
 import org.firstinspires.ftc.teamcode.settings.RobotSettings;
 import org.firstinspires.ftc.teamcode.subsystems.Arm;
 import org.firstinspires.ftc.teamcode.subsystems.JVBoysSoccerRobot;
-import org.firstinspires.ftc.teamcode.subsystems.LinearSlide;
 import org.firstinspires.ftc.teamcode.util.BulkReading;
 
 @Config
@@ -29,11 +28,6 @@ public class OutreachArmDemo extends LinearOpMode {
         MOTION_PROFILE
     }
     private ArmTestState armTestState = ArmTestState.OFF;
-
-    public enum SlideTestState {
-        OFF,
-    }
-    private SlideTestState slideTestState = SlideTestState.OFF;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -60,10 +54,8 @@ public class OutreachArmDemo extends LinearOpMode {
                 currentGamepad2.copy(gamepad2);
 
                 armControls();
-                slideControls();
 
                 telemetry.addData("Arm State", armTestState);
-                telemetry.addData("Slide State", slideTestState);
                 telemetry.addData("Encoder Value", BulkReading.pMotorArmR);
                 telemetry.addData("Goal Position", GOAL_POSITION_ARM);
 
@@ -91,13 +83,6 @@ public class OutreachArmDemo extends LinearOpMode {
                     robot.armSubsystem.setMotionProfile((int) GOAL_POSITION_BOTTOM, ACL, VEL, DCL);
                 }
                 robot.armSubsystem.referencePos = GOAL_POSITION_ARM;
-                break;
-        }
-    }
-    public void slideControls() {
-        switch (slideTestState) {
-            case OFF:
-                    robot.slideSubsystem.slideState = LinearSlide.SlideState.AT_REST;
                 break;
         }
     }

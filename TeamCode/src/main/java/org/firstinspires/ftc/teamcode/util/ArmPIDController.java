@@ -13,9 +13,8 @@ public class ArmPIDController {
 
     private JVBoysSoccerRobot robot;
     private Telemetry telemetry;
-    public static double FG_p = 0.0028, FG_i = 0.0000028, FG_d = 0.000000002, f = 0.004;
-    public static double G_p = 0.0028, G_i = 0.0000028, G_d = 0;
-    //  public static double G_p = 0.0032, G_i = 0.00000076, G_d = 0.000025;
+    public static double p_BIG = 0.0028, i_BIG = 0.0000028, d_BIG = 0.000000002, f = 0.004;
+    public static double p_SMALL = 0, i_SMALL = 0, d_SMALL = 0;
 
     private final double motorEncoderTicks = RobotSettings.TOTAL_ENCODER_TICKS;
     private double integralSum = 0, lastError = 0;
@@ -32,11 +31,13 @@ public class ArmPIDController {
         this.telemetry = telemetry;
         distance = Math.abs(Arm.referencePos - BulkReading.pMotorArmR);
     }
-    public double calculatePID(double reference, double state, boolean fightingGravity) {
-        double p;
-        double i;
-        double d;
-
+    public double calculatePIDSmall(double reference, double state) {
+        return calculatePID(reference, state, p_SMALL, i_SMALL, d_SMALL);
+    }
+    public double calculatePIDBig(double reference, double state) {
+        return calculatePID(reference, state, p_BIG, i_BIG, d_BIG);
+    }
+    public double calculatePID(double reference, double state, double p, double i, double d) {
         double currentTime = RobotSettings.SUPER_TIME.seconds();
         double error = reference - state;
         integralSum += error * (currentTime - previousTime);
@@ -44,29 +45,12 @@ public class ArmPIDController {
         lastError = error;
 
         previousTime = RobotSettings.SUPER_TIME.seconds();
-
         double output;
-
-        if (previousRefPos != reference) {
-            distance = Math.abs(state - reference);
-        }
-//        distance = Math.abs(previousRefPos - reference);
-//        if (!fightingGravity) {
-//            p = G_p;
-//            i = G_i;
-//            d = G_d;
-//        }else {
-            p = FG_p;
-            i = FG_i;
-            d = FG_d;
-//        }
-
         if (UseTelemetry.ARM_TELEMETRY) {
             telemetry.addData("Arm P Value", p);
             telemetry.addData("Arm I Value", i);
             telemetry.addData("Arm D Value", d);
         }
-
         output = (error * p) + (derivative * d) + (integralSum * i);
         previousRefPos = reference;
         return output;

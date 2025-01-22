@@ -83,24 +83,24 @@ public class RedSample extends AutoBase {
                                     new SequentialAction(
                                             depositFirstSample,
                                             armLift.depositSample(),
-                                            armLift.extendSlide(),
+//                                            armLift.extendSlide(),
                                             new SleepAction(0.5),
                                             clawSystem.openClaw(),
                                             new SleepAction(0.5),
                                             new ParallelAction(
                                                     new SequentialAction(
                                                             new SleepAction(0.25),
-                                                            armLift.deExtendSlide(),
+//                                                            armLift.deExtendSlide(),
                                                             armLift.intakeSample()
                                                     ),
                                                     pickUpSecondSample
                                             ),
-                                            armLift.extendSlide(),
+//                                            armLift.extendSlide(),
                                             new SleepAction(0.25),
                                             clawSystem.closeClaw(),
                                             depositSecondSample,
                                             armLift.depositSample(),
-                                            armLift.extendSlide(),
+//                                            armLift.extendSlide(),
                                             new SleepAction(0.5),
                                             clawSystem.openClaw(),
 
@@ -108,17 +108,17 @@ public class RedSample extends AutoBase {
                                             new ParallelAction(
                                                     new SequentialAction(
                                                             new SleepAction(0.25),
-                                                            armLift.deExtendSlide(),
+//                                                            armLift.deExtendSlide(),
                                                             armLift.intakeSample()
                                                     ),
                                                     pickUpThirdSample
                                             ),
-                                            armLift.extendSlide(),
+//                                            armLift.extendSlide(),
                                             new SleepAction(0.25),
                                             clawSystem.closeClaw(),
                                             depositThirdSample,
                                             armLift.depositSample(),
-                                            armLift.extendSlide(),
+//                                            armLift.extendSlide(),
                                             new SleepAction(0.5),
                                             clawSystem.openClaw(),
 
@@ -126,20 +126,20 @@ public class RedSample extends AutoBase {
                                             new ParallelAction(
                                                     new SequentialAction(
                                                             new SleepAction(0.25),
-                                                            armLift.deExtendSlide(),
+//                                                            armLift.deExtendSlide(),
                                                             armLift.intakeSample()
                                                     ),
                                                     pickUpFourthSample
                                             ),
-                                            armLift.extendSlide(),
+//                                            armLift.extendSlide(),
                                             new SleepAction(0.25),
                                             clawSystem.closeClaw(),
                                             depositFourthSample,
                                             armLift.depositSample(),
-                                            armLift.extendSlide(),
+//                                            armLift.extendSlide(),
                                             new SleepAction(0.5),
                                             clawSystem.openClaw(),
-                                            armLift.deExtendSlide(),
+//                                            armLift.deExtendSlide(),
                                             armLift.restArm(),
                                             armLift.stopUpdate()
                                     )

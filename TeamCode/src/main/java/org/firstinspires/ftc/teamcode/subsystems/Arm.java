@@ -13,6 +13,8 @@ import org.firstinspires.ftc.teamcode.util.ArmPIDController;
 @Config
 public class Arm extends Subsystem {
 
+    // TODO: make a large and small PID similar to Pedro Pathing, make it so if value is the same for 10 loops, switch to small pid and be able to check if this works
+
     private HardwareMap hwMap;
     private Telemetry telemetry;
     private JVBoysSoccerRobot robot;
@@ -33,29 +35,26 @@ public class Arm extends Subsystem {
 
     public static int armLowerConstantSample = 250;
     public static int armLowerConstantSpecimen = 250;
-    public static int armPresetIntakeSpecimenAuto = 5075;
 
     public static int armPresetIntakeSample = 4550; //
-    public static int armPresetIntakeSampleAuto = 5125;
+    
     public static int armPresetDepositSpecimen = 3350; //
     public static int armPresetDepositSpecimenAuto = 2900;
     public static int armPreset1DepositSample = 2750; //
 
     public static double pivotPresetRest = 1.00;
-//    public static double pivotPresetIntakeSpecimen = 0.705;
     public static double pivotPresetIntakeSpecimen = 0.657;
     public static double pivotPresetIntakeSample = 0.88;
     public static double pivotPresetDepositSpecimen = 0.566;
     public static double pivotPresetDepositSample = 0.4;
-
-    public static double SERVO_LIMIT = 0;
 
     public static final int armPresetIntakeSpecimenGround = 0;
     public static final double pivotPresetIntakeSpecimenGround = 0.31;
 
     public double previousPivotPos = 0;
 
-    public static final double pivotSpeedConstant = 0.005;
+    public static final double pivotSpeedConstant = 0.012;
+    public static final double wristSpeedConstant = 0.008;
     public static final double armSpeedConstant = 8;
 
     public static double MAX_POWER = 1;
@@ -64,11 +63,16 @@ public class Arm extends Subsystem {
     private double previousInstantRefPos = 100000;
     private double previousCurrentPos = 100000;
     private double previousRefPos = 10000;
-    private boolean fightingGravity = true;
 
     public int pivotCounter = 0;
 
     public static double referencePos = 0; // for the basic_pid state
+    
+    public static double PID_ENCODER_DISTANCE_THRESHOLD = 100; // if within 100 ticks, switch to small pid
+    public static double PID_LOOP_THRESHOLD = 10; // if state has been the same for 10 loops, assume its reached steady state and move to small pid
+    public static boolean PID_BIG = true;
+    public static boolean TWO_PID = true;
+    private int pidCounter = 0;
 
     public enum ArmState {
         MOTION_PROFILE,
@@ -76,6 +80,7 @@ public class Arm extends Subsystem {
         AT_REST
     }
     public ArmState armState = ArmState.AT_REST;
+    private ArmState previousArmState = ArmState.AT_REST;
 
     public Arm(HardwareMap hwMap, Telemetry telemetry, JVBoysSoccerRobot robot) {
         this.hwMap = hwMap;
@@ -137,26 +142,6 @@ public class Arm extends Subsystem {
         }
     }
 
-    /**
-     * Changes PID constants for power calculation dynamically based on goal distance
-     * @param reference
-     * @param state
-     * @return
-     */
-    public double dynamicPIDPower(double reference, double state) {
-//        double distance = Math.abs(reference - state);
-//        if (distance < 300) {
-//
-//        }else if (distance < 1000) {
-//
-//        }else if (distance < 2000) {
-//
-//        }else {
-//
-//        }
-        return pid.calculatePID(reference, state, fightingGravity) + pid.calculateF(referencePos);
-    }
-
     @Override
     public void addTelemetry() {
         if (UseTelemetry.MOTION_PROFILE_TELEMETRY) {
@@ -169,6 +154,7 @@ public class Arm extends Subsystem {
             telemetry.addData("    Arm Power", robot.motorArmL.getPower());
             telemetry.addData("    Arm Encoder Position (R)", BulkReading.pMotorArmR);
             telemetry.addData("    Pivot Servo Position", robot.servoPivotR.getPosition());
+            telemetry.addData("    Wrist Servo Position", robot.servoWrist.getPosition());
         }else {
             telemetry.addLine("ARM TELEMETRY: OFF");
         }
@@ -182,6 +168,10 @@ public class Arm extends Subsystem {
 //        if (referencePos < -1000) {
 //            referencePos = -1000;
 //        }
+        if (previousArmState != armState) { // idk if this is needed bc of how negligible the ticks are but whatever
+            PID_BIG = true;
+            pidCounter = 0;
+        }
         switch(armState) {
             case MOTION_PROFILE:
                 if (referencePos != previousRefPos) {
@@ -196,35 +186,76 @@ public class Arm extends Subsystem {
                 }
 
                 if ( !(previousCurrentPos == BulkReading.pMotorArmR && previousInstantRefPos == instantRefPos) ) {
-                    setArmPower(pid.calculatePID(instantRefPos, BulkReading.pMotorArmR, fightingGravity) + pid.calculateF(referencePos));
+                    double ffPower = pid.calculateF(referencePos);
+                    if (TWO_PID) {
+                        if (instantRefPos != previousInstantRefPos) {
+                            PID_BIG = true;
+                            pidCounter = 0;
+                            // every time we change reference positions, we assume were doing big pid first
+                        }
+
+                        if (PID_BIG) {
+                            setArmPower(ffPower + pid.calculatePIDBig(referencePos, BulkReading.pMotorArmR));
+                            // currently assuming big pid at first
+                            if (previousCurrentPos == BulkReading.pMotorArmR) {
+                                // only if we have 10 consecutive same pos, we assume it converged
+                                pidCounter++;
+                            }else {
+                                pidCounter = 0;
+                            }
+                            if (pidCounter > PID_LOOP_THRESHOLD) { // assume converged, switch to small pid
+                                PID_BIG = false;
+                                pidCounter = 0;
+                            }
+                        }else {
+                            setArmPower(ffPower + pid.calculatePIDSmall(referencePos, BulkReading.pMotorArmR));
+                        }
+                    }else {
+                        setArmPower(ffPower + pid.calculatePIDBig(referencePos, BulkReading.pMotorArmR));
+                    }
                 }
                 previousCurrentPos = BulkReading.pMotorArmR;
                 previousInstantRefPos = instantRefPos;
                 previousRefPos = referencePos;
                 break;
             case BASIC_PID:
-//                if ( !(previousCurrentPos == BulkReading.pMotorArmR && previousRefPos == referencePos) ) {
-                if (referencePos != previousRefPos) {
-                    fightingGravity = true;
-                    if (referencePos > 2750) {
-                        if (BulkReading.pMotorArmR < referencePos) {
-                            fightingGravity = false;
+                if ( !(previousCurrentPos == BulkReading.pMotorArmR && previousRefPos == referencePos) ) {
+                    double ffPower = pid.calculateF(referencePos);
+                    if (TWO_PID) {
+                        if (referencePos != previousInstantRefPos) {
+                            PID_BIG = true;
+                            pidCounter = 0;
+                            // every time we change reference positions, we assume were doing big pid first
+                        }
+
+                        if (PID_BIG) {
+                            setArmPower(ffPower + pid.calculatePIDBig(referencePos, BulkReading.pMotorArmR));
+                            // currently assuming big pid at first
+                            if (previousCurrentPos == BulkReading.pMotorArmR) {
+                                // only if we have 10 consecutive same pos, we assume it converged
+                                pidCounter++;
+                            }else {
+                                pidCounter = 0;
+                            }
+                            if (pidCounter > PID_LOOP_THRESHOLD) { // assume converged, switch to small pid
+                                PID_BIG = false;
+                                pidCounter = 0;
+                            }
+                        }else {
+                            setArmPower(ffPower + pid.calculatePIDSmall(referencePos, BulkReading.pMotorArmR));
                         }
                     }else {
-                        if (BulkReading.pMotorArmR > referencePos) {
-                            fightingGravity = false;
-                        }
+                        setArmPower(ffPower + pid.calculatePIDBig(referencePos, BulkReading.pMotorArmR));
                     }
                 }
-                setArmPower(pid.calculatePID(referencePos, BulkReading.pMotorArmR, fightingGravity) + pid.calculateF(referencePos));
-//                }
-//                previousCurrentPos = BulkReading.pMotorArmR;
+                previousCurrentPos = BulkReading.pMotorArmR;
                 previousRefPos = referencePos;
                 break;
             case AT_REST:
                 setArmPower(0);
                 break;
         }
+        previousArmState = armState;
     }
 
     @Override

@@ -12,6 +12,9 @@ public class RobotSettings {
 
     public static ElapsedTime SUPER_TIME = new ElapsedTime();
 
+    public static int ARM_VERTICAL_THRESHOLD = 2750;
+    public static double RIGGING_POWER = 0.5;
+
     // DRIVETRAIN
 
     public static final String FL_NAME = "FL";
@@ -34,13 +37,18 @@ public class RobotSettings {
     public static boolean ARM_LPIVOT_REVERSED = false;
     public static boolean ARM_RPIVOT_REVERSED = true;
 
-    public static String CLAW_SERVO_NAME = "ClawServoL";
-    public static boolean CLAW_SERVO_REVERSED = false;
-    public static String CLAW_SERVO2_NAME = "ClawServoR";
-    public static boolean CLAW_SERVO2_REVERSED = true;
+    public static final String CLAW_SERVOL_NAME = "ClawServoL";
+    public static boolean CLAW_SERVOL_REVERSED = false;
+    public static final String CLAW_SERVOR_NAME = "ClawServoR";
+    public static boolean CLAW_SERVOR_REVERSED = true;
 
-    public static final String SLIDE_MOTOR_NAME = "LinkageArm";
-    public static final boolean SLIDE_MOTOR_REVERSED = true;
+    public static final String CLAW_WRIST_SERVO = "ClawWrist";
+    public static boolean CLAW_WRIST_REVERSED = false;
+
+    public static final String RIGGING_LEFT = "RigLeft";
+    public static final String RIGGING_RIGHT = "RigRight";
+    public static boolean RIGGING_LEFT_REVERSED = false;
+    public static boolean RIGGING_RIGHT_REVERSED = true;
 
     // ENCODER MAPPING
     public static final int TOTAL_ENCODER_TICKS = 8192;

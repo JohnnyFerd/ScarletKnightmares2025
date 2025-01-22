@@ -27,6 +27,7 @@ public class BulkReading {
     public BulkReading(JVBoysSoccerRobot robot, boolean isAuto) {
         this(robot);
         this.isAuto = isAuto;
+        // test
     }
 
     public void readAll() {

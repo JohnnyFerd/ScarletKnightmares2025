@@ -18,7 +18,6 @@ import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.teamcode.settings.RobotSettings;
 import org.firstinspires.ftc.teamcode.subsystems.Arm;
 import org.firstinspires.ftc.teamcode.subsystems.JVBoysSoccerRobot;
-import org.firstinspires.ftc.teamcode.subsystems.LinearSlide;
 import org.firstinspires.ftc.teamcode.util.BulkReading;
 
 @Config
@@ -69,27 +68,7 @@ public abstract class AutoBase extends LinearOpMode {
     public class ArmLift {
         private boolean stopUpdate = false;
 
-        public class ExtendSlide implements Action {
-            @Override
-            public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-                robot.slideSubsystem.slideState = LinearSlide.SlideState.BASIC_PID;
-                robot.slideSubsystem.referencePos = LinearSlide.slideMaxExtension;
-                return false;
-            }
-        }
-        public Action extendSlide() {
-            return new ExtendSlide();
-        }
 
-        public class DeExtendSlide implements Action {
-            @Override
-            public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-                robot.slideSubsystem.slideState = LinearSlide.SlideState.BASIC_PID;
-                robot.slideSubsystem.referencePos = LinearSlide.slideDeExtension;
-                return false;
-            }
-        }
-        public Action deExtendSlide() { return new DeExtendSlide(); }
 
         public class UpdateArmSubsystem implements Action {
             private boolean initialized = false;

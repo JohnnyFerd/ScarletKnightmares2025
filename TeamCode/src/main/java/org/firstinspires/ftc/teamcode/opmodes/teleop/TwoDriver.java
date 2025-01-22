@@ -11,7 +11,6 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.firstinspires.ftc.teamcode.settings.RobotSettings;
 import org.firstinspires.ftc.teamcode.subsystems.Arm;
 import org.firstinspires.ftc.teamcode.subsystems.JVBoysSoccerRobot;
-import org.firstinspires.ftc.teamcode.subsystems.LinearSlide;
 import org.firstinspires.ftc.teamcode.util.BulkReading;
 
 @TeleOp (name="TWO DRIVER", group="FINAL")
@@ -70,8 +69,6 @@ public class TwoDriver extends LinearOpMode {
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
         robot = new JVBoysSoccerRobot(hwMap, telemetry);
 
-        robot.slideSubsystem.slideState = LinearSlide.SlideState.BASIC_PID;
-
         telemetry.addData("Status", "Initialized");
         telemetry.addData("Elapsed time", RobotSettings.SUPER_TIME.toString());
         telemetry.update();
@@ -89,6 +86,7 @@ public class TwoDriver extends LinearOpMode {
                 drivetrainControls();
                 clawControls();
                 armControls();
+                riggingControls();
 
                 telemetry.addData("ARM STATE", armControl);
 
@@ -98,8 +96,34 @@ public class TwoDriver extends LinearOpMode {
 
     }
 
+    public void riggingControls() {
+        if (currentGamepad1.x) {
+            if (currentGamepad1.left_bumper) {
+                robot.motorRigL.setPower(-1 * RobotSettings.RIGGING_POWER);
+            }else {
+                robot.motorRigL.setPower(0);
+            }
+            if (currentGamepad1.right_bumper) {
+                robot.motorRigR.setPower(-1 * RobotSettings.RIGGING_POWER);
+            }else {
+                robot.motorRigR.setPower(0);
+            }
+        }else {
+            if (currentGamepad1.left_bumper) {
+                robot.motorRigL.setPower(RobotSettings.RIGGING_POWER);
+            }else {
+                robot.motorRigL.setPower(0);
+            }
+            if (currentGamepad1.right_bumper) {
+                robot.motorRigR.setPower(RobotSettings.RIGGING_POWER);
+            }else {
+                robot.motorRigR.setPower(0);
+            }
+        }
+    }
+
     public void clawControls() {
-        if (BulkReading.pMotorArmR > 2750) {
+        if (BulkReading.pMotorArmR > RobotSettings.ARM_VERTICAL_THRESHOLD) {
             reversed = true;
         }else {
             reversed = false;
@@ -226,16 +250,10 @@ public class TwoDriver extends LinearOpMode {
 
                 if (currentGamepad2.right_trigger > 0.01 && currentGamepad2.left_trigger <= 0.01) {
                     double newPosition = robot.servoPivotR.getPosition() + Arm.pivotSpeedConstant * currentGamepad2.right_trigger;
-                    if (newPosition < Arm.SERVO_LIMIT) {
-                        newPosition = Arm.SERVO_LIMIT;
-                    }
                     robot.armSubsystem.setPivot(newPosition);
                 }
                 if (currentGamepad2.left_trigger > 0.01 && currentGamepad2.right_trigger <= 0.01) {
                     double newPosition = robot.servoPivotR.getPosition() - Arm.pivotSpeedConstant * currentGamepad2.left_trigger;
-                    if (newPosition < Arm.SERVO_LIMIT) {
-                        newPosition = Arm.SERVO_LIMIT;
-                    }
                     robot.armSubsystem.setPivot(newPosition);
                 }
 
@@ -246,6 +264,10 @@ public class TwoDriver extends LinearOpMode {
                     }else if (robot.armSubsystem.armState == Arm.ArmState.BASIC_PID) {
                         robot.armSubsystem.referencePos = robot.armSubsystem.referencePos + Arm.armSpeedConstant * currentGamepad2.right_stick_y * -1;
                     }
+                }
+                if (Math.abs(currentGamepad2.left_stick_y) > 0.01) {
+                    double newPosition = robot.servoWrist.getPosition() - Arm.wristSpeedConstant * currentGamepad2.left_stick_y;
+                    robot.servoWrist.setPosition(newPosition);
                 }
                 break;
             case DEPOSIT_SPECIMEN_DEFAULT:
@@ -282,16 +304,10 @@ public class TwoDriver extends LinearOpMode {
 
                 if (currentGamepad2.right_trigger > 0.01 && currentGamepad2.left_trigger <= 0.01) {
                     double newPosition = robot.servoPivotR.getPosition() + Arm.pivotSpeedConstant * currentGamepad2.right_trigger;
-                    if (newPosition < Arm.SERVO_LIMIT) {
-                        newPosition = Arm.SERVO_LIMIT;
-                    }
                     robot.armSubsystem.setPivot(newPosition);
                 }
                 if (currentGamepad2.left_trigger > 0.01 && currentGamepad2.right_trigger <= 0.01) {
                     double newPosition = robot.servoPivotR.getPosition() - Arm.pivotSpeedConstant * currentGamepad2.left_trigger;
-                    if (newPosition < Arm.SERVO_LIMIT) {
-                        newPosition = Arm.SERVO_LIMIT;
-                    }
                     robot.armSubsystem.setPivot(newPosition);
                 }
 
@@ -380,16 +396,10 @@ public class TwoDriver extends LinearOpMode {
                 }
                 if (currentGamepad2.right_trigger > 0.01 && currentGamepad2.left_trigger <= 0.01) {
                     double newPosition = robot.servoPivotR.getPosition() + Arm.pivotSpeedConstant * currentGamepad2.right_trigger;
-                    if (newPosition < Arm.SERVO_LIMIT) {
-                        newPosition = Arm.SERVO_LIMIT;
-                    }
                     robot.armSubsystem.setPivot(newPosition);
                 }
                 if (currentGamepad2.left_trigger > 0.01 && currentGamepad2.right_trigger <= 0.01) {
                     double newPosition = robot.servoPivotR.getPosition() - Arm.pivotSpeedConstant * currentGamepad2.left_trigger;
-                    if (newPosition < Arm.SERVO_LIMIT) {
-                        newPosition = Arm.SERVO_LIMIT;
-                    }
                     robot.armSubsystem.setPivot(newPosition);
                 }
                 if (Math.abs(currentGamepad2.right_stick_y) > 0.01) {
@@ -476,16 +486,10 @@ public class TwoDriver extends LinearOpMode {
                 }
                 if (currentGamepad2.right_trigger > 0.01 && currentGamepad2.left_trigger <= 0.01) {
                     double newPosition = robot.servoPivotR.getPosition() + Arm.pivotSpeedConstant * currentGamepad2.right_trigger;
-                    if (newPosition < Arm.SERVO_LIMIT) {
-                        newPosition = Arm.SERVO_LIMIT;
-                    }
                     robot.armSubsystem.setPivot(newPosition);
                 }
                 if (currentGamepad2.left_trigger > 0.01 && currentGamepad2.right_trigger <= 0.01) {
                     double newPosition = robot.servoPivotR.getPosition() - Arm.pivotSpeedConstant * currentGamepad2.left_trigger;
-                    if (newPosition < Arm.SERVO_LIMIT) {
-                        newPosition = Arm.SERVO_LIMIT;
-                    }
                     robot.armSubsystem.setPivot(newPosition);
                 }
                 if (Math.abs(currentGamepad2.right_stick_y) > 0.01) {

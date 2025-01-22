@@ -4,7 +4,6 @@ import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -35,7 +34,6 @@ public class JVBoysSoccerRobot {
     public Drivetrain drivetrainSubsystem;
     public Arm armSubsystem;
     public Claw clawSubsystem;
-    public LinearSlide slideSubsystem;
 
     // Hardware
     public DcMotorEx motorFL, motorFR, motorBL, motorBR; // mecanum motors when swerve doesn't work
@@ -45,6 +43,9 @@ public class JVBoysSoccerRobot {
     public Servo servoWristDiffyL, servoWristDiffyR;
     public Servo servoClawL;
     public Servo servoClawR;
+    public Servo servoWrist;
+
+    public DcMotorEx motorRigL, motorRigR;
 
     private int hertzCounter = 0;
     private double previousTime = 0;
@@ -65,7 +66,6 @@ public class JVBoysSoccerRobot {
         drivetrainSubsystem = new Drivetrain(hwMap, telemetry, this);
         clawSubsystem = new Claw(hwMap, telemetry, this);
         armSubsystem = new Arm(hwMap, telemetry, this);
-        slideSubsystem = new LinearSlide(hwMap, telemetry, this);
 
         subsystems = Arrays.asList(drivetrainSubsystem, armSubsystem, clawSubsystem);
         BR = new BulkReading(this);
@@ -89,7 +89,6 @@ public class JVBoysSoccerRobot {
             initIMU();
             initArmHardware();
             initClawHardware();
-            initSlideHardware();
             clawSubsystem = new Claw(hwMap, telemetry, this);
             armSubsystem = new Arm(hwMap, telemetry, this);
             subsystems = Arrays.asList(clawSubsystem, armSubsystem);
@@ -111,7 +110,15 @@ public class JVBoysSoccerRobot {
         initDrivetrainHardware();
         initArmHardware();
         initClawHardware();
-        initSlideHardware();
+        initRiggingHardware();
+    }
+
+    public void initRiggingHardware() {
+        motorRigL = hwMap.get(DcMotorEx.class, RobotSettings.RIGGING_LEFT);
+        motorRigR = hwMap.get(DcMotorEx.class, RobotSettings.RIGGING_RIGHT);
+
+        motorRigL.setDirection(RobotSettings.RIGGING_LEFT_REVERSED ? DcMotor.Direction.REVERSE : DcMotor.Direction.FORWARD);
+        motorRigR.setDirection(RobotSettings.RIGGING_RIGHT_REVERSED ? DcMotor.Direction.REVERSE : DcMotor.Direction.FORWARD);
     }
 
     public void initDrivetrainHardware() {
@@ -160,20 +167,14 @@ public class JVBoysSoccerRobot {
 //        servoWristDiffyL.setDirection(RobotSettings.CLAW_LWRIST_REVERSED ? Servo.Direction.REVERSE : Servo.Direction.FORWARD);
 //        servoWristDiffyR.setDirection(RobotSettings.CLAW_RWRIST_REVERSED ? Servo.Direction.REVERSE : Servo.Direction.FORWARD);
 
-        servoClawL = hwMap.servo.get(RobotSettings.CLAW_SERVO_NAME);
-        servoClawL.setDirection(RobotSettings.CLAW_SERVO_REVERSED ? Servo.Direction.REVERSE : Servo.Direction.FORWARD);
+        servoClawL = hwMap.servo.get(RobotSettings.CLAW_SERVOL_NAME);
+        servoClawL.setDirection(RobotSettings.CLAW_SERVOL_REVERSED ? Servo.Direction.REVERSE : Servo.Direction.FORWARD);
 
-        servoClawR = hwMap.servo.get(RobotSettings.CLAW_SERVO2_NAME);
-        servoClawR.setDirection(RobotSettings.CLAW_SERVO2_REVERSED ? Servo.Direction.REVERSE : Servo.Direction.FORWARD);
-    }
+        servoClawR = hwMap.servo.get(RobotSettings.CLAW_SERVOR_NAME);
+        servoClawR.setDirection(RobotSettings.CLAW_SERVOR_REVERSED ? Servo.Direction.REVERSE : Servo.Direction.FORWARD);
 
-    public void initSlideHardware() {
-        motorSlide = hwMap.get(DcMotorEx.class, RobotSettings.SLIDE_MOTOR_NAME);
-        motorSlide.setDirection(RobotSettings.SLIDE_MOTOR_REVERSED ? DcMotor.Direction.REVERSE : DcMotor.Direction.FORWARD);
-
-        motorSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
-        motorSlide.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        servoWrist = hwMap.servo.get(RobotSettings.CLAW_WRIST_SERVO);
+        servoWrist.setDirection(RobotSettings.CLAW_WRIST_REVERSED ? Servo.Direction.REVERSE : Servo.Direction.FORWARD);
     }
 
     public void addTelemetry() {
