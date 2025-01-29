@@ -1,0 +1,51 @@
+<?xml version='1.0' encoding='UTF-8' standalone='yes' ?> <!--This is the xml declaration and can be copy-pasted-->
+
+<!--This declares the robot class, and can be copy-pasted.-->
+<Robot type="FirstInspires-FTC">
+
+    <!--This line declares the Control Hub Portal which contains both hubs. It can be copy-pasted-->
+    <LynxUsbDevice name="Control Hub Portal" serialNumber="(embedded)" parentModuleAddress="173">
+
+        <!--This line declares the Expansion Hub. We use RS485 connection, so we declare it with a port.-->
+        <LynxModule name="Expansion Hub 4" port="4">
+
+            <!--Configure hardware devices here-->
+            <TetrixMotor name="ArmRight" port="0"/>
+            <TetrixMotor name="ArmLeft" port="1"/>
+            <TetrixMotor name="RigRight" port="2"/>
+            <TetrixMotor name="RigLeft" port="3"/>
+
+            <!--This line signifies that the Expansion Hub configuration has ended.-->
+        </LynxModule>
+
+        <!--This line declares the Control Hub and can be copy-pasted.-->
+        <LynxModule name="Control Hub" port="173">
+
+            <!--Configure hardware devices here-->
+            <RevRobotics20HDHexMotor name="FR" port="0"/>
+            <RevRobotics20HDHexMotor name="BR" port="1"/>
+            <RevRobotics20HDHexMotor name="FL" port="2"/>
+            <RevRobotics20HDHexMotor name="BL" port="3"/>
+
+            <Servo name="ArmPivotLeft" port="0"/>
+            <Servo name="ArmPivotRight" port="1"/>
+            <Servo name="ClawServoR" port="2"/>
+            <Servo name="ClawServoL" port="3"/>
+            <Servo name="ClawWrist" port="4"/>
+
+            <!--This is a GoBilda Pinpoint Computer. Use this to configure your pinpoint if you are using one of the pinpoint localizers.-->
+            <goBILDAPinpoint name="pinpoint" port="0" bus="3"/>
+
+            <!--This is the built-in Control Hub IMU. Use this if you are using one of the Control Hub IMU localizers.-->
+            <ControlHubImuBHI260AP name="imu" port="0" bus="0"/>
+
+            <!--This line signifies that the Control Hub configuration has ended.-->
+        </LynxModule>
+
+        <!--This line signifies that the Control Hub Portal configuration has ended.-->
+    </LynxUsbDevice>
+
+    <!--Put other devices here. Most teams don't need to worry about this unless they are using things like webcams that don't go in the main ports.-->
+
+    <!--This line signifies that the robot configuration has ended-->
+</Robot>

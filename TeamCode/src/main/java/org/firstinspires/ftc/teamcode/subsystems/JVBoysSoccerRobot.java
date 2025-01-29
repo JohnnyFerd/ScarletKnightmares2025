@@ -38,9 +38,7 @@ public class JVBoysSoccerRobot {
     // Hardware
     public DcMotorEx motorFL, motorFR, motorBL, motorBR; // mecanum motors when swerve doesn't work
     public DcMotorEx motorArmL, motorArmR;
-    public DcMotorEx motorSlide;
     public Servo servoPivotL, servoPivotR;
-    public Servo servoWristDiffyL, servoWristDiffyR;
     public Servo servoClawL;
     public Servo servoClawR;
     public Servo servoWrist;

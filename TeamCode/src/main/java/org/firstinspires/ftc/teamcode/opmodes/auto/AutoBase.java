@@ -68,8 +68,6 @@ public abstract class AutoBase extends LinearOpMode {
     public class ArmLift {
         private boolean stopUpdate = false;
 
-
-
         public class UpdateArmSubsystem implements Action {
             private boolean initialized = false;
 
