@@ -21,6 +21,8 @@ public class Drivetrain extends Subsystem {
     private double initYaw;
     private double powerFL, powerFR, powerBL, powerBR;
 
+    private double prevPowerFL, prevPowerFR, prevPowerBL, prevPowerBR;
+
     public boolean isFieldCentric = true;
     public boolean orthogonalMode = false;
 
@@ -30,6 +32,11 @@ public class Drivetrain extends Subsystem {
         this.hwMap = hwMap;
         this.telemetry = telemetry;
         this.robot = robot;
+
+        prevPowerFL = -5;
+        prevPowerBL = -5;
+        prevPowerBR = -5;
+        prevPowerFR = -5;
 
 //        if (!PoseStorage.AUTO_SHIFTED) {
             resetInitYaw();
@@ -122,10 +129,22 @@ public class Drivetrain extends Subsystem {
         powerFR *= MAX_SPEED;
         powerBL *= MAX_SPEED;
 
-        robot.motorBL.setPower(powerBL);
-        robot.motorBR.setPower(powerBR);
-        robot.motorFL.setPower(powerFL);
-        robot.motorFR.setPower(powerFR);
+        if (prevPowerBR != powerBR) {
+            robot.motorBR.setPower(powerBR);
+        }
+        if (prevPowerBL != powerBL) {
+            robot.motorBL.setPower(powerBL);
+        }
+        if (prevPowerFL != powerFL) {
+            robot.motorFL.setPower(powerFL);
+        }
+        if (prevPowerFR != powerFR) {
+            robot.motorFR.setPower(powerFR);
+        }
+        prevPowerBR = powerBR;
+        prevPowerBL = powerBL;
+        prevPowerFL = powerFL;
+        prevPowerFR = powerFR;
     }
 
     @Override

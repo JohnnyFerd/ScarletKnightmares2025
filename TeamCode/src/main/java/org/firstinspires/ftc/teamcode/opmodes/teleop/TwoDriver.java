@@ -1,18 +1,21 @@
 package org.firstinspires.ftc.teamcode.opmodes.teleop;
 
 import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.settings.RobotSettings;
 import org.firstinspires.ftc.teamcode.subsystems.Arm;
 import org.firstinspires.ftc.teamcode.subsystems.JVBoysSoccerRobot;
 import org.firstinspires.ftc.teamcode.util.BulkReading;
 
+@Config
 @TeleOp (name="TWO DRIVER", group="FINAL")
 public class TwoDriver extends LinearOpMode {
 
@@ -27,7 +30,12 @@ public class TwoDriver extends LinearOpMode {
     private double previousX = 0, previousY = 0, previousR = 0;
     private double resetTime = 0;
 
+    public static double pickupTime1 = 0.2, pickupTime2 = 0.2, pickupTime3 = 0.05;
+
     private double intakeSampleTime = 0;
+
+    private double currentDepositTime = 0;
+    private boolean depositDelay = false;
 
     private boolean reversed = false;
 
@@ -36,6 +44,11 @@ public class TwoDriver extends LinearOpMode {
 
     private boolean leftClosed = true;
     private boolean rightClosed = true;
+
+    private boolean wrist0 = true;
+
+    private ElapsedTime elapsedTime = new ElapsedTime();
+    private int loopCounter = 0;
 
     private enum ArmControl {
         GOING_TO_REST,
@@ -49,9 +62,6 @@ public class TwoDriver extends LinearOpMode {
         INTAKE_SAMPLE2,
         INTAKE_SAMPLE3,
         INTAKE_SPECIMEN_DEFAULT,
-        INTAKE_SPECIMEN1,
-        INTAKE_SPECIMEN2,
-        INTAKE_SPECIMEN3,
         DEPOSIT_SPECIMEN_DEFAULT
     }
     private ArmControl armControl = ArmControl.REST;
@@ -77,6 +87,7 @@ public class TwoDriver extends LinearOpMode {
 
         if (opModeIsActive()) {
             telemetry.clear();
+            RobotSettings.SUPER_TIME.reset();
             while (opModeIsActive()) {
                 previousGamepad1.copy(currentGamepad1);
                 currentGamepad1.copy(gamepad1);
@@ -90,10 +101,20 @@ public class TwoDriver extends LinearOpMode {
 
                 telemetry.addData("ARM STATE", armControl);
 
+                loopTimes();
+
                 robot.update(true, true);
             }
         }
 
+    }
+
+    public void loopTimes() {
+        loopCounter++;
+
+        telemetry.addData("Loop Time", elapsedTime.milliseconds());
+        telemetry.addData("Average Loop Time", RobotSettings.SUPER_TIME.milliseconds() / loopCounter);
+        elapsedTime.reset();
     }
 
     public void riggingControls() {
@@ -193,6 +214,7 @@ public class TwoDriver extends LinearOpMode {
         switch (armControl) {
             case REST:
                 robot.armSubsystem.setPivotRest();
+                robot.servoWrist.setPosition(Arm.clawWrist0);
                 if (currentGamepad2.x && !previousGamepad2.x) {
                     robot.armSubsystem.setDepositSample(true);
                     armControl = ArmControl.MOVE_ARM;
@@ -299,7 +321,14 @@ public class TwoDriver extends LinearOpMode {
                 // shoot arm up
                 if (currentGamepad2.dpad_down && !previousGamepad2.dpad_down) {
                     robot.armSubsystem.armState = Arm.ArmState.BASIC_PID;
-                    Arm.referencePos = Arm.armPresetDepositSpecimenAuto;
+                    Arm.referencePos = Arm.armPresetDepositSpecimen - Arm.armLowerConstantSpecimen;
+                    currentDepositTime = RobotSettings.SUPER_TIME.seconds();
+                    depositDelay = true;
+                }
+                if (depositDelay == true && RobotSettings.SUPER_TIME.seconds() > currentDepositTime + Arm.automaticDepositTimeDelay) {
+                    depositDelay = false;
+                    leftClosed = false;
+                    rightClosed = false;
                 }
 
                 if (currentGamepad2.right_trigger > 0.01 && currentGamepad2.left_trigger <= 0.01) {
@@ -319,10 +348,19 @@ public class TwoDriver extends LinearOpMode {
                         robot.armSubsystem.referencePos = robot.armSubsystem.referencePos + Arm.armSpeedConstant * currentGamepad2.right_stick_y * -1;
                     }
                 }
+                if (Math.abs(currentGamepad2.left_stick_y) > 0.01) {
+                    double newPosition = robot.servoWrist.getPosition() - Arm.wristSpeedConstant * currentGamepad2.left_stick_y;
+                    robot.servoWrist.setPosition(newPosition);
+                }
                 break;
             case OFF:
                 break;
             case GOING_TO_REST:
+                if (Math.abs(currentGamepad2.right_stick_y) > 0.01 || Math.abs(currentGamepad2.left_stick_y) > 0.01) {
+                    robot.armSubsystem.referencePos = BulkReading.pMotorArmR;
+                    robot.armSubsystem.armState = Arm.ArmState.BASIC_PID;
+                    armControl = ArmControl.MOVE_ARM;
+                }
                 if (!robot.armSubsystem.getMP().isBusy()) {
                     resetTime = RobotSettings.SUPER_TIME.seconds();
                     armControl = ArmControl.GOING_TO_REST2;
@@ -371,16 +409,19 @@ public class TwoDriver extends LinearOpMode {
                 if (currentGamepad2.x && !previousGamepad2.x) {
                     robot.armSubsystem.setDepositSample(true);
                     armControl = ArmControl.MOVE_ARM;
+                    wrist0 = true;
                 }
                 if (currentGamepad2.y && !previousGamepad2.y) {
                     robot.armSubsystem.setDepositSpecimen(true);
                     armControl = ArmControl.DEPOSIT_SPECIMEN_DEFAULT;
+                    wrist0 = true;
                 }
                 if (currentGamepad2.b && !previousGamepad2.b) {
                     leftClosed = false;
                     rightClosed = false;
                     robot.armSubsystem.setIntakeSpecimen(true);
                     armControl = ArmControl.INTAKE_SPECIMEN_DEFAULT;
+                    wrist0 = true;
                 }
                 if (currentGamepad2.a && !previousGamepad2.a) {
                     leftClosed = false;
@@ -393,6 +434,7 @@ public class TwoDriver extends LinearOpMode {
                     rightClosed = true;
                     robot.armSubsystem.setRest();
                     armControl = ArmControl.GOING_TO_REST;
+                    wrist0 = true;
                 }
                 if (currentGamepad2.right_trigger > 0.01 && currentGamepad2.left_trigger <= 0.01) {
                     double newPosition = robot.servoPivotR.getPosition() + Arm.pivotSpeedConstant * currentGamepad2.right_trigger;
@@ -410,9 +452,21 @@ public class TwoDriver extends LinearOpMode {
                         robot.armSubsystem.referencePos = robot.armSubsystem.referencePos + Arm.armSpeedConstant * currentGamepad2.right_stick_y * -1;
                     }
                 }
+                if (Math.abs(currentGamepad2.left_stick_y) > 0.01) {
+                    double newPosition = robot.servoWrist.getPosition() - Arm.wristSpeedConstant * currentGamepad2.left_stick_y;
+                    robot.servoWrist.setPosition(newPosition);
+                }
+                if (currentGamepad2.back && !previousGamepad2.back) {
+                    wrist0 = !wrist0;
+                    if (wrist0) {
+                        robot.servoWrist.setPosition(Arm.clawWrist0);
+                    }else {
+                        robot.servoWrist.setPosition(Arm.clawWrist90);
+                    }
+                }
                 break;
             case INTAKE_SAMPLE1:
-                if (RobotSettings.SUPER_TIME.seconds() - intakeSampleTime > 0.25) {
+                if (RobotSettings.SUPER_TIME.seconds() - intakeSampleTime > pickupTime1) {
                     robot.armSubsystem.armState = Arm.ArmState.BASIC_PID;
 //                    Arm.referencePos = Arm.armPresetIntakeSampleAuto;
                     Arm.referencePos = BulkReading.pMotorArmR + Arm.armLowerConstantSample;
@@ -420,44 +474,20 @@ public class TwoDriver extends LinearOpMode {
                 }
                 break;
             case INTAKE_SAMPLE2:
-                if (RobotSettings.SUPER_TIME.seconds() - intakeSampleTime > 0.4) {
+                if (RobotSettings.SUPER_TIME.seconds() - intakeSampleTime > pickupTime2) {
                     leftClosed = oneSidedLeft;
                     rightClosed = oneSidedRight;
                     armControl = ArmControl.INTAKE_SAMPLE3;
                 }
                 break;
             case INTAKE_SAMPLE3:
-                if (RobotSettings.SUPER_TIME.seconds() - intakeSampleTime > 0.85) {
+                if (RobotSettings.SUPER_TIME.seconds() - intakeSampleTime > pickupTime3) {
                     Arm.referencePos = Arm.armPresetIntakeSample;
                     robot.armSubsystem.armState = Arm.ArmState.BASIC_PID;
                     armControl = ArmControl.INTAKE_SAMPLE_DEFAULT;
                 }
                 break;
             case INTAKE_SPECIMEN_DEFAULT:
-                if (currentGamepad2.dpad_down && !previousGamepad2.dpad_down) {
-                    intakeSampleTime = RobotSettings.SUPER_TIME.seconds();
-                    armControl = ArmControl.INTAKE_SPECIMEN1;
-                    oneSidedLeft = true;
-                    oneSidedRight = true;
-                    leftClosed = false;
-                    rightClosed = false;
-                }
-                if (currentGamepad2.dpad_left && !previousGamepad2.dpad_left) {
-                    intakeSampleTime = RobotSettings.SUPER_TIME.seconds();
-                    armControl = ArmControl.INTAKE_SPECIMEN1;
-                    oneSidedLeft = false;
-                    oneSidedRight = true;
-                    leftClosed = false;
-                    rightClosed = false;
-                }
-                if (currentGamepad2.dpad_right && !previousGamepad2.dpad_right) {
-                    intakeSampleTime = RobotSettings.SUPER_TIME.seconds();
-                    armControl = ArmControl.INTAKE_SPECIMEN1;
-                    oneSidedLeft = true;
-                    oneSidedRight = false;
-                    leftClosed = false;
-                    rightClosed = false;
-                }
                 if (currentGamepad2.x && !previousGamepad2.x) {
                     robot.armSubsystem.setDepositSample(true);
                     armControl = ArmControl.MOVE_ARM;
@@ -500,27 +530,9 @@ public class TwoDriver extends LinearOpMode {
                         robot.armSubsystem.referencePos = robot.armSubsystem.referencePos + Arm.armSpeedConstant * currentGamepad2.right_stick_y * -1;
                     }
                 }
-                break;
-            case INTAKE_SPECIMEN1:
-                if (RobotSettings.SUPER_TIME.seconds() - intakeSampleTime > 0.25) {
-                    robot.armSubsystem.armState = Arm.ArmState.BASIC_PID;
-//                    Arm.referencePos = Arm.armPresetIntakeSpecimenAuto;
-                    Arm.referencePos = BulkReading.pMotorArmR + Arm.armLowerConstantSpecimen;
-                    armControl = ArmControl.INTAKE_SPECIMEN2;
-                }
-                break;
-            case INTAKE_SPECIMEN2:
-                if (RobotSettings.SUPER_TIME.seconds() - intakeSampleTime > 0.4) {
-                    leftClosed = oneSidedLeft;
-                    rightClosed = oneSidedRight;
-                    armControl = ArmControl.INTAKE_SPECIMEN3;
-                }
-                break;
-            case INTAKE_SPECIMEN3:
-                if (RobotSettings.SUPER_TIME.seconds() - intakeSampleTime > 0.85) {
-                    Arm.referencePos = Arm.armPresetIntakeSpecimen;
-                    robot.armSubsystem.armState = Arm.ArmState.BASIC_PID;
-                    armControl = ArmControl.INTAKE_SPECIMEN_DEFAULT;
+                if (Math.abs(currentGamepad2.left_stick_y) > 0.01) {
+                    double newPosition = robot.servoWrist.getPosition() - Arm.wristSpeedConstant * currentGamepad2.left_stick_y;
+                    robot.servoWrist.setPosition(newPosition);
                 }
                 break;
         }

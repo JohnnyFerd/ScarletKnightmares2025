@@ -81,13 +81,15 @@ public class FullSlideTest extends LinearOpMode {
                 clawControls();
                 drivetrainControls();
 
-                telemetry.addData("Arm State", armTestState);
+                telemetry.addData("Arm Test State", armTestState);
+                telemetry.addData("Arm State", robot.armSubsystem.armState);
                 telemetry.addData("Slide State", slideTestState);
                 telemetry.addData("Pivot State", pivotTestState);
                 telemetry.addData("Encoder Value (Arm)", BulkReading.pMotorArmR);
                 telemetry.addData("Goal Position (Arm)", GOAL_POSITION_ARM);
                 telemetry.addData("Pivot Servo Position (R)", robot.servoPivotR.getPosition());
                 telemetry.addData("Pivot Servo Position (L)", robot.servoPivotL.getPosition());
+                telemetry.addData("Claw Wrist Position", robot.servoWrist.getPosition());
 
                 robot.update(true, true);
             }
@@ -162,6 +164,14 @@ public class FullSlideTest extends LinearOpMode {
                 else if (currentGamepad1.left_trigger > 0.01 && currentGamepad1.right_trigger <= 0.01) {
                     double newPosition = robot.servoPivotR.getPosition() - Arm.pivotSpeedConstant * currentGamepad1.left_trigger;
                     robot.armSubsystem.setPivot(newPosition);
+                }
+
+                if (currentGamepad1.left_stick_button) {
+                    double newPosition = robot.servoWrist.getPosition() + (Arm.pivotSpeedConstant / 4.0);
+                    robot.servoWrist.setPosition(newPosition);
+                }else if (currentGamepad1.right_stick_button) {
+                    double newPosition = robot.servoWrist.getPosition() - (Arm.pivotSpeedConstant / 4.0);
+                    robot.servoWrist.setPosition(newPosition);
                 }
 
                 if (currentGamepad1.dpad_up && !currentGamepad1.dpad_up) {

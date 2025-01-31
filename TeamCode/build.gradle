@@ -38,7 +38,9 @@ repositories {
     maven {
         url = 'https://www.matthewo.tech/maven/'
     }
-
+    maven {
+        url = 'https://repo.dairy.foundation/releases'
+    }
 }
 
 dependencies {

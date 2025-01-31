@@ -7,7 +7,7 @@
     <LynxUsbDevice name="Control Hub Portal" serialNumber="(embedded)" parentModuleAddress="173">
 
         <!--This line declares the Expansion Hub. We use RS485 connection, so we declare it with a port.-->
-        <LynxModule name="Expansion Hub 4" port="4">
+        <LynxModule name="Expansion Hub 4" port="2">
 
             <!--Configure hardware devices here-->
             <TetrixMotor name="ArmRight" port="0"/>
@@ -37,7 +37,7 @@
             <goBILDAPinpoint name="pinpoint" port="0" bus="3"/>
 
             <!--This is the built-in Control Hub IMU. Use this if you are using one of the Control Hub IMU localizers.-->
-            <ControlHubImuBHI260AP name="imu" port="0" bus="0"/>
+            <ControlHubImuBNO055 name="imu" port="0" bus="0"/>
 
             <!--This line signifies that the Control Hub configuration has ended.-->
         </LynxModule>

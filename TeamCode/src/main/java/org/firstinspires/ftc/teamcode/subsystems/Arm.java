@@ -31,22 +31,26 @@ public class Arm extends Subsystem {
 
     public static int armPresetRest = -20; //
 //    public static int armPresetIntakeSpecimen = 4810;
-    public static int armPresetIntakeSpecimen = 300; //
+    public static int armPresetIntakeSpecimen = 470; //
 
-    public static int armLowerConstantSample = 250;
-    public static int armLowerConstantSpecimen = 250;
+    public static double automaticDepositTimeDelay = 0.18;
 
-    public static int armPresetIntakeSample = 4550; //
+    public static double clawWrist0 = 0.815;
+    public static double clawWrist90 = 0.44;
+
+    public static int armLowerConstantSample = 200;
+    public static int armLowerConstantSpecimen = 500;
+
+    public static int armPresetIntakeSample = 4850; //
     
-    public static int armPresetDepositSpecimen = 3350; //
-    public static int armPresetDepositSpecimenAuto = 2900;
+    public static int armPresetDepositSpecimen = 3900; //
     public static int armPreset1DepositSample = 2750; //
 
-    public static double pivotPresetRest = 1.00;
-    public static double pivotPresetIntakeSpecimen = 0.657;
-    public static double pivotPresetIntakeSample = 0.88;
-    public static double pivotPresetDepositSpecimen = 0.566;
-    public static double pivotPresetDepositSample = 0.4;
+    public static double pivotPresetRest = 0.9;
+    public static double pivotPresetIntakeSpecimen = 0.40;
+    public static double pivotPresetIntakeSample = 0.64;
+    public static double pivotPresetDepositSpecimen = 0.32;
+    public static double pivotPresetDepositSample = 0.67;
 
     public static final int armPresetIntakeSpecimenGround = 0;
     public static final double pivotPresetIntakeSpecimenGround = 0.31;
@@ -71,7 +75,7 @@ public class Arm extends Subsystem {
     public static double PID_ENCODER_DISTANCE_THRESHOLD = 100; // if within 100 ticks, switch to small pid
     public static double PID_LOOP_THRESHOLD = 10; // if state has been the same for 10 loops, assume its reached steady state and move to small pid
     public static boolean PID_BIG = true;
-    public static boolean TWO_PID = true;
+    public static boolean TWO_PID = false;
     private int pidCounter = 0;
 
     public enum ArmState {
@@ -185,7 +189,7 @@ public class Arm extends Subsystem {
                     pivotQueue();
                 }
 
-                if ( !(previousCurrentPos == BulkReading.pMotorArmR && previousInstantRefPos == instantRefPos) ) {
+//                if ( !(previousCurrentPos == BulkReading.pMotorArmR && previousInstantRefPos == instantRefPos) ) {
                     double ffPower = pid.calculateF(referencePos);
                     if (TWO_PID) {
                         if (instantRefPos != previousInstantRefPos) {
@@ -195,7 +199,7 @@ public class Arm extends Subsystem {
                         }
 
                         if (PID_BIG) {
-                            setArmPower(ffPower + pid.calculatePIDBig(referencePos, BulkReading.pMotorArmR));
+                            setArmPower(ffPower + pid.calculatePIDBig(instantRefPos, BulkReading.pMotorArmR));
                             // currently assuming big pid at first
                             if (previousCurrentPos == BulkReading.pMotorArmR) {
                                 // only if we have 10 consecutive same pos, we assume it converged
@@ -208,19 +212,19 @@ public class Arm extends Subsystem {
                                 pidCounter = 0;
                             }
                         }else {
-                            setArmPower(ffPower + pid.calculatePIDSmall(referencePos, BulkReading.pMotorArmR));
+                            setArmPower(ffPower + pid.calculatePIDSmall(instantRefPos, BulkReading.pMotorArmR));
                         }
                     }else {
-                        setArmPower(ffPower + pid.calculatePIDBig(referencePos, BulkReading.pMotorArmR));
+                        setArmPower(ffPower + pid.calculatePIDBig(instantRefPos, BulkReading.pMotorArmR));
                     }
-                }
+//                }
                 previousCurrentPos = BulkReading.pMotorArmR;
                 previousInstantRefPos = instantRefPos;
                 previousRefPos = referencePos;
                 break;
             case BASIC_PID:
-                if ( !(previousCurrentPos == BulkReading.pMotorArmR && previousRefPos == referencePos) ) {
-                    double ffPower = pid.calculateF(referencePos);
+//                if ( !(previousCurrentPos == BulkReading.pMotorArmR && previousRefPos == referencePos) ) {
+                    double ff = pid.calculateF(referencePos);
                     if (TWO_PID) {
                         if (referencePos != previousInstantRefPos) {
                             PID_BIG = true;
@@ -229,7 +233,7 @@ public class Arm extends Subsystem {
                         }
 
                         if (PID_BIG) {
-                            setArmPower(ffPower + pid.calculatePIDBig(referencePos, BulkReading.pMotorArmR));
+                            setArmPower(ff + pid.calculatePIDBig(referencePos, BulkReading.pMotorArmR));
                             // currently assuming big pid at first
                             if (previousCurrentPos == BulkReading.pMotorArmR) {
                                 // only if we have 10 consecutive same pos, we assume it converged
@@ -242,12 +246,12 @@ public class Arm extends Subsystem {
                                 pidCounter = 0;
                             }
                         }else {
-                            setArmPower(ffPower + pid.calculatePIDSmall(referencePos, BulkReading.pMotorArmR));
+                            setArmPower(ff + pid.calculatePIDSmall(referencePos, BulkReading.pMotorArmR));
                         }
                     }else {
-                        setArmPower(ffPower + pid.calculatePIDBig(referencePos, BulkReading.pMotorArmR));
+                        setArmPower(ff + pid.calculatePIDBig(referencePos, BulkReading.pMotorArmR));
                     }
-                }
+//                }
                 previousCurrentPos = BulkReading.pMotorArmR;
                 previousRefPos = referencePos;
                 break;

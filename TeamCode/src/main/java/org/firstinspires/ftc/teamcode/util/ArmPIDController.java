@@ -13,7 +13,8 @@ public class ArmPIDController {
 
     private JVBoysSoccerRobot robot;
     private Telemetry telemetry;
-    public static double p_BIG = 0.0028, i_BIG = 0.0000028, d_BIG = 0.000000002, f = 0.004;
+    // public static double p_BIG = 0.0028, i_BIG = 0.0000028, d_BIG = 0.000000002, f = 0.004;
+    public static double p_BIG = 0.0028, i_BIG = 0.0000022, d_BIG = 0.0000000001, f = 0;
     public static double p_SMALL = 0, i_SMALL = 0, d_SMALL = 0;
 
     private final double motorEncoderTicks = RobotSettings.TOTAL_ENCODER_TICKS;
