@@ -62,28 +62,28 @@ public final class MecanumDrive {
                 RobotSettings.USB_FACING_DIR;
 
         // drive model parameters
-        public double inPerTick = 53.4 / 69880.0; // 76.0 / 99260.0
-        public double lateralInPerTick = 0.0005963834250116767; // 0.0005934019729348373
-        public double trackWidthTicks = 15718.396240909573; // 15377.940468326908
+        public double inPerTick = (((71 + 9/16.0) / 36444.0) + ( (68 + 5/8.0) / 34773.0) + ( (71 + 11/16.0) / 36372 ) + ( (68.0 / 34563.0))) / 4.0; // 0.0019688794507807268
+        public double lateralInPerTick = 0.0014861412934290457; //
+        public double trackWidthTicks = 6097.021733912477; //
 
         // feedforward parameters (in tick units)
-        public double kS = 0.8206984479225161;
-        public double kV = 0.00013731585961029374;
-        public double kA = 0.00002;
+        public double kS = 0.8817038883723702;
+        public double kV = 0.00035376856580973566;
+        public double kA = 0.00005;
 
         // path profile parameters (in inches)
-        public double maxWheelVel = 25;
-        public double minProfileAccel = -10;
-        public double maxProfileAccel = 25;
+        public double maxWheelVel = 50;
+        public double minProfileAccel = -30;
+        public double maxProfileAccel = 50;
 
         // turn profile parameters (in radians)
         public double maxAngVel = Math.PI; // shared with path
         public double maxAngAccel = Math.PI;
 
         // path controller gains
-        public double axialGain = 3.5;
-        public double lateralGain = 2.2;
-        public double headingGain = 2.1; // shared with turn
+        public double axialGain = 2.5;
+        public double lateralGain = 3;
+        public double headingGain = 3; // shared with turn
 
         public double axialVelGain = 0.0;
         public double lateralVelGain = 0.0;
@@ -293,7 +293,7 @@ public final class MecanumDrive {
 
             Pose2d error = txWorldTarget.value().minusExp(pose);
 
-            if ((t >= timeTrajectory.duration && error.heading.toDouble() < 1.0 && robotVelRobot.angVel < 0.5) || t >= timeTrajectory.duration + 0.5) {
+            if (t >= timeTrajectory.duration + 0.8) {
                 leftFront.setPower(0);
                 leftBack.setPower(0);
                 rightBack.setPower(0);

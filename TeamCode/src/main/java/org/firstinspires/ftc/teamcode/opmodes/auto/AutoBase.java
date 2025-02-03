@@ -35,15 +35,14 @@ public abstract class AutoBase extends LinearOpMode {
     protected ArmLift armLift;
     protected ClawSystem clawSystem;
 
-    public static int DEPOSIT_SPECIMEN_FIRST = 3400;
+    public static int DEPOSIT_SPECIMEN_FIRST = 3925;
     public static int DEPOSIT_SPECIMEN_POS = DEPOSIT_SPECIMEN_FIRST;
-    public static int DEPOSIT_SPECIMEN_SECOND = 3415;
-    public static int DEPOSIT_SPECIMEN_DOWN = 2900;
-    public static int INTAKE_SPECIMEN_POS = 280;
-    public static int INTAKE_SPECIMEN_DOWN = 280;
+    public static int DEPOSIT_SPECIMEN_SECOND = 3925;
+    public static int DEPOSIT_SPECIMEN_DOWN = Arm.armPresetDepositSpecimen - Arm.armLowerConstantSpecimen;
+    public static int INTAKE_SPECIMEN_POS = 490;
     public static int DEPOSIT_SAMPLE_POS = Arm.armPreset1DepositSample;
     public static int INTAKE_SAMPLE_POS = Arm.armPresetIntakeSample;
-    public static double PIVOT_INTAKE_POS = 0.657;
+    public static double PIVOT_INTAKE_POS = 0.4;
 
     protected boolean isBlue = false;
 

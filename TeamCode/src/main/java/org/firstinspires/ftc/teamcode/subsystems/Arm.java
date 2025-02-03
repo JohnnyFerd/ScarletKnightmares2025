@@ -23,7 +23,7 @@ public class Arm extends Subsystem {
 
     public static int DEFAULT_MAX_VELOCITY = 12000; // enocder ticks per second
     public static int DEFAULT_MAX_ACCELERATION = 12000; // encoder ticks per second
-    public static int DEFAULT_MAX_DECELERATION =  1700;
+    public static int DEFAULT_MAX_DECELERATION =  2000;
 
     private int currentMaxVel = 0;
     private int currentMaxAcl = 0;
