@@ -46,6 +46,8 @@ public class Arm extends Subsystem {
     public static int armPresetDepositSpecimen = 3900; //
     public static int armPreset1DepositSample = 2750; //
 
+    public static int armPresetRigging = 2600;
+
     public static double pivotPresetRest = 0.9;
     public static double pivotPresetIntakeSpecimen = 0.40;
     public static double pivotPresetIntakeSample = 0.64;
@@ -312,6 +314,11 @@ public class Arm extends Subsystem {
             pivotCounter = 0;
         }
         setMotionProfile(armPreset1DepositSample);
+    }
+
+    public void setRiggingPosition() {
+        pivotCounter = 0;
+        setMotionProfile(armPresetRigging);
     }
 
     public void pivotQueue() {

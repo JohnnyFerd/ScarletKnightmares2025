@@ -45,6 +45,8 @@ public class TwoDriver extends LinearOpMode {
     private boolean leftClosed = true;
     private boolean rightClosed = true;
 
+    private boolean FINAL_RIGGING = false;
+
     private boolean wrist0 = true;
 
     private ElapsedTime elapsedTime = new ElapsedTime();
@@ -118,28 +120,45 @@ public class TwoDriver extends LinearOpMode {
     }
 
     public void riggingControls() {
-        if (currentGamepad1.x) {
-            if (currentGamepad1.left_bumper) {
-                robot.motorRigL.setPower(-1 * RobotSettings.RIGGING_POWER);
-            }else {
-                robot.motorRigL.setPower(0);
+        if (FINAL_RIGGING) {
+            robot.motorRigL.setPower(RobotSettings.RIGGING_POWER);
+            robot.motorRigR.setPower(RobotSettings.RIGGING_POWER);
+
+            if (currentGamepad1.dpad_up && !previousGamepad1.dpad_up) {
+                robot.armSubsystem.setRiggingPosition();
+                armControl = ArmControl.MOVE_ARM;
             }
-            if (currentGamepad1.right_bumper) {
-                robot.motorRigR.setPower(-1 * RobotSettings.RIGGING_POWER);
-            }else {
-                robot.motorRigR.setPower(0);
-            }
+
         }else {
-            if (currentGamepad1.left_bumper) {
-                robot.motorRigL.setPower(RobotSettings.RIGGING_POWER);
+
+            if (currentGamepad1.x) {
+                if (currentGamepad1.left_bumper) {
+                    robot.motorRigL.setPower(-1 * RobotSettings.RIGGING_POWER);
+                }else {
+                    robot.motorRigL.setPower(0);
+                }
+                if (currentGamepad1.right_bumper) {
+                    robot.motorRigR.setPower(-1 * RobotSettings.RIGGING_POWER);
+                }else {
+                    robot.motorRigR.setPower(0);
+                }
             }else {
-                robot.motorRigL.setPower(0);
+                if (currentGamepad1.left_bumper) {
+                    robot.motorRigL.setPower(RobotSettings.RIGGING_POWER);
+                }else {
+                    robot.motorRigL.setPower(0);
+                }
+                if (currentGamepad1.right_bumper) {
+                    robot.motorRigR.setPower(RobotSettings.RIGGING_POWER);
+                }else {
+                    robot.motorRigR.setPower(0);
+                }
             }
-            if (currentGamepad1.right_bumper) {
-                robot.motorRigR.setPower(RobotSettings.RIGGING_POWER);
-            }else {
-                robot.motorRigR.setPower(0);
-            }
+
+        }
+
+        if (currentGamepad1.y && !previousGamepad1.y) {
+            FINAL_RIGGING = !FINAL_RIGGING;
         }
     }
 
@@ -190,14 +209,22 @@ public class TwoDriver extends LinearOpMode {
             robot.drivetrainSubsystem.resetInitYaw();
         }
 
-        if (currentGamepad1.a && !previousGamepad1.a) {
+        if (currentGamepad1.b && !previousGamepad1.b) {
             robot.drivetrainSubsystem.orthogonalMode = !robot.drivetrainSubsystem.orthogonalMode;
         }
 
-        if (currentGamepad1.right_trigger > 0.01 || currentGamepad1.left_trigger > 0.01) {
-            x /= 3.0;
-            y /= 3.0;
-            r /= 3.0;
+        if (currentGamepad1.right_trigger > 0.01 && currentGamepad1.left_trigger > 0.01) {
+            x *= 0.3;
+            y *= 0.3;
+            r *= 0.3;
+        }else if (currentGamepad1.right_trigger > 0.01) {
+            x *= 0.65;
+            y *= 0.65;
+            r *= 0.65;
+        }else if (currentGamepad1.left_trigger > 0.01) {
+            x *= 0.65;
+            y *= 0.65;
+            r *= 0.65;
         }
 
         // attempting to save motor calls == faster frequency of command calls

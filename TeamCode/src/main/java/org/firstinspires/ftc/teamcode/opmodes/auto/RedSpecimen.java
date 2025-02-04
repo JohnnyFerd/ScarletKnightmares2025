@@ -18,14 +18,13 @@ import com.acmerobotics.roadrunner.VelConstraint;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
-import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 import org.firstinspires.ftc.teamcode.roadrunner.MecanumDrive;
 
 import java.util.Arrays;
 
 @Config
-@Autonomous (name="Red Specimen (Strafe)", group="Testing")
-public class RedSpecimen2 extends AutoBase {
+@Autonomous (name="Red Specimen", group="Testing")
+public class RedSpecimen extends AutoBase {
 
     private boolean choicePicked = false;
     private int pathNumber = 0;
@@ -336,58 +335,31 @@ public class RedSpecimen2 extends AutoBase {
 
     public void threeSpecimenPaths() {
         TrajectoryActionBuilder depositFirstSpecimen1B = drive.actionBuilder(specimenStart)
-                .lineToY(-58,
-                        midVelConstraint,
-                        midAccelConstraint);
+                .lineToY(-58);
         TrajectoryActionBuilder depositFirstSpecimen2B = depositFirstSpecimen1B.endTrajectory().fresh()
-                .lineToY(-51,
-                        midVelConstraint,
-                        midAccelConstraint);
+                .lineToY(-51);
         TrajectoryActionBuilder pushFirstSampleB = drive.actionBuilderFast(new Pose2d(specimenStartX, -51, specimenStartHeading))
-                .strafeToConstantHeading(new Vector2d(36, -51),
-                        maxVelConstraint,
-                        maxAccelConstraint)
-                .strafeToConstantHeading(new Vector2d(36, -8),
-                        maxVelConstraint,
-                        maxAccelConstraint)
+                .strafeToConstantHeading(new Vector2d(36, -51))
+                .strafeToConstantHeading(new Vector2d(36, -8))
                 .setTangent(Math.toRadians(0))
-                .splineToConstantHeading(new Vector2d(43, -58), Math.toRadians(270),
-                        maxVelConstraint,
-                        maxAccelConstraint)
-                .strafeToConstantHeading(new Vector2d(43, -53),
-                        midVelConstraint,
-                        midAccelConstraint);
+                .splineToConstantHeading(new Vector2d(43, -58), Math.toRadians(270))
+                .strafeToConstantHeading(new Vector2d(43, -53));
         TrajectoryActionBuilder intakeSecondSpecimenB = drive.actionBuilder(new Pose2d(43, -53, specimenStartHeading))
-                .strafeToConstantHeading(new Vector2d(43, -57),
-                        midVelConstraint,
-                        midAccelConstraint);
+                .strafeToConstantHeading(new Vector2d(35, -57));
         TrajectoryActionBuilder depositSecondSpecimen1B = intakeSecondSpecimenB.endTrajectory().fresh()
-                .strafeTo(new Vector2d(2, -58),
-                        midVelConstraint,
-                        midAccelConstraint);
+                .strafeTo(new Vector2d(2, -58));
         TrajectoryActionBuilder depositSecondSpecimen2B = depositSecondSpecimen1B.endTrajectory().fresh()
-                .strafeTo(new Vector2d(2, -49),
-                        midVelConstraint,
-                        midAccelConstraint);
+                .strafeTo(new Vector2d(2, -49));
         TrajectoryActionBuilder pickUpThirdSpecimen1B = depositSecondSpecimen2B.endTrajectory().fresh()
-                .strafeToLinearHeading(new Vector2d(28, -60), Math.toRadians(180),
-                        midVelConstraint,
-                        midAccelConstraint);
+                .strafeToConstantHeading(new Vector2d(35, -60));
         TrajectoryActionBuilder pickUpThirdSpecimen2B = pickUpThirdSpecimen1B.endTrajectory().fresh()
-                .strafeTo(new Vector2d(28, -65));
+                .strafeTo(new Vector2d(35, -65));
         TrajectoryActionBuilder depositThirdSpecimen1B = pickUpThirdSpecimen2B.endTrajectory().fresh()
-                .strafeToLinearHeading(new Vector2d(2, -58), Math.toRadians(270),
-                        midVelConstraint,
-                        midAccelConstraint);
+                .strafeToConstantHeading(new Vector2d(2, -58));
         TrajectoryActionBuilder depositThirdSpecimen2B = depositThirdSpecimen1B.endTrajectory().fresh()
-                .strafeTo(new Vector2d(2, -49),
-                        midVelConstraint,
-                        midAccelConstraint);
-
+                .strafeTo(new Vector2d(2, -49));
         TrajectoryActionBuilder moveBackToObservationZoneB = depositThirdSpecimen2B.endTrajectory().fresh()
-                .strafeToLinearHeading(new Vector2d(60, -60), Math.toRadians(90),
-                        midVelConstraint,
-                        midAccelConstraint);
+                .strafeToLinearHeading(new Vector2d(60, -60), Math.toRadians(90));
 
         depositFirstSpecimen1 = depositFirstSpecimen1B.build();
         depositFirstSpecimen2 = depositFirstSpecimen2B.build();
