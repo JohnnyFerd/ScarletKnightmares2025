@@ -21,6 +21,14 @@ public class Arm extends Subsystem {
     private MotionProfile mp;
     private ArmPIDController pid;
 
+    public static int TELEOP_MAX_VELOCITY = 12000;
+    public static int TELEOP_MAX_ACCELERATION = 12000; // encoder ticks per second
+    public static int TELEOP_MAX_DECELERATION =  2000;
+
+    public static int AUTO_MAX_VELOCITY = 12000;
+    public static int AUTO_MAX_ACCELERATION = 12000; // encoder ticks per second
+    public static int AUTO_MAX_DECELERATION =  2000;
+
     public static int DEFAULT_MAX_VELOCITY = 12000; // enocder ticks per second
     public static int DEFAULT_MAX_ACCELERATION = 12000; // encoder ticks per second
     public static int DEFAULT_MAX_DECELERATION =  2000;
@@ -31,27 +39,28 @@ public class Arm extends Subsystem {
 
     public static int armPresetRest = -20; //
 //    public static int armPresetIntakeSpecimen = 4810;
-    public static int armPresetIntakeSpecimen = 470; //
+    public static int armPresetIntakeSpecimen = 510; //
 
     public static double automaticDepositTimeDelay = 0.18;
 
     public static double clawWrist0 = 0.815;
+    public static double clawWrist45 = 0.6275;
     public static double clawWrist90 = 0.44;
 
-    public static int armLowerConstantSample = 200;
-    public static int armLowerConstantSpecimen = 500;
+    public static int armLowerConstantSample = 225;
+    public static int armLowerConstantSpecimen = 400;
 
-    public static int armPresetIntakeSample = 4850; //
+    public static int armPresetIntakeSample = 4820; //
     
-    public static int armPresetDepositSpecimen = 3900; //
+    public static int armPresetDepositSpecimen = 3810; //
     public static int armPreset1DepositSample = 2750; //
 
     public static int armPresetRigging = 2600;
 
-    public static double pivotPresetRest = 0.9;
-    public static double pivotPresetIntakeSpecimen = 0.40;
-    public static double pivotPresetIntakeSample = 0.64;
-    public static double pivotPresetDepositSpecimen = 0.32;
+    public static double pivotPresetRest = 0.95;
+    public static double pivotPresetIntakeSpecimen = 0.45;
+    public static double pivotPresetIntakeSample = 0.68;
+    public static double pivotPresetDepositSpecimen = 0.39;
     public static double pivotPresetDepositSample = 0.67;
 
     public static final int armPresetIntakeSpecimenGround = 0;
@@ -62,6 +71,10 @@ public class Arm extends Subsystem {
     public static final double pivotSpeedConstant = 0.012;
     public static final double wristSpeedConstant = 0.008;
     public static final double armSpeedConstant = 8;
+
+    public static int armPresetDepositSpecimenFront = 1350;
+    public static double pivotPresetDepositSpecimenFront = 0.44;
+    public static int armPresetDepositSpecimenFrontUp = 1800;
 
     public static double MAX_POWER = 1;
 
@@ -269,6 +282,16 @@ public class Arm extends Subsystem {
 
     }
 
+    public void setDepositSpecimenFront(boolean pivotTimed) {
+        if (pivotTimed) {
+            pivotCounter = 5;
+        }else {
+            setPivotDepositSpecimenFront();
+            pivotCounter = 0;
+        }
+        setMotionProfile(armPresetDepositSpecimenFront);
+    }
+
     public void setRest() {
         setPivotRest();
         setMotionProfile(armPresetRest);
@@ -335,6 +358,9 @@ public class Arm extends Subsystem {
             case 4:
                 setPivotDepositSample();
                 break;
+            case 5:
+                setPivotDepositSpecimenFront();
+                break;
         }
         pivotCounter = 0;
     }
@@ -363,6 +389,12 @@ public class Arm extends Subsystem {
         robot.servoPivotL.setPosition(pivotPresetDepositSample);
         robot.servoPivotR.setPosition(pivotPresetDepositSample);
         previousPivotPos = pivotPresetDepositSample;
+    }
+
+    public void setPivotDepositSpecimenFront() {
+        robot.servoPivotL.setPosition(pivotPresetDepositSpecimenFront);
+        robot.servoPivotR.setPosition(pivotPresetDepositSpecimenFront);
+        previousPivotPos = pivotPresetDepositSpecimenFront;
     }
 
 

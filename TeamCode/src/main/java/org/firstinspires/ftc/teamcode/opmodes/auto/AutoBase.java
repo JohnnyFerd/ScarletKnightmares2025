@@ -27,6 +27,7 @@ public abstract class AutoBase extends LinearOpMode {
     protected Gamepad previousGamepad = new Gamepad();
 
     protected Pose2d specimenStart;
+    protected Pose2d specimenStart4;
     protected Pose2d sampleStart;
 
     protected double specimenStartX = 8, specimenStartY = -63, specimenStartHeading = Math.toRadians(270);
@@ -35,14 +36,21 @@ public abstract class AutoBase extends LinearOpMode {
     protected ArmLift armLift;
     protected ClawSystem clawSystem;
 
-    public static int DEPOSIT_SPECIMEN_FIRST = 3925;
+    public static int DEPOSIT_SPECIMEN_FIRST = 3910;
     public static int DEPOSIT_SPECIMEN_POS = DEPOSIT_SPECIMEN_FIRST;
-    public static int DEPOSIT_SPECIMEN_SECOND = 3925;
-    public static int DEPOSIT_SPECIMEN_DOWN = Arm.armPresetDepositSpecimen - Arm.armLowerConstantSpecimen;
-    public static int INTAKE_SPECIMEN_POS = 490;
+    public static int DEPOSIT_SPECIMEN_SECOND = 3910;
+    public static int DEPOSIT_SPECIMEN_DOWN = Arm.armPresetDepositSpecimen - 450;
+    public static int DEPOSIT_SPECIMEN_UP = Arm.armPresetDepositSpecimen + 300;
+
+    public static int ARM_UP = 2750;
+
+    public static int INTAKE_SPECIMEN_POS = 500;
     public static int DEPOSIT_SAMPLE_POS = Arm.armPreset1DepositSample;
     public static int INTAKE_SAMPLE_POS = Arm.armPresetIntakeSample;
-    public static double PIVOT_INTAKE_POS = 0.4;
+    public static double PIVOT_INTAKE_POS = 0.45;
+
+    public static double clawWristAuto45 = 0.815 - 0.6275;
+    public static double clawWristAuto180 = 0.2525;
 
     protected boolean isBlue = false;
 
@@ -52,6 +60,7 @@ public abstract class AutoBase extends LinearOpMode {
         robot = new JVBoysSoccerRobot(hardwareMap, telemetry, true);
 
         specimenStart = new Pose2d(specimenStartX, specimenStartY, specimenStartHeading);
+        specimenStart4 = new Pose2d(specimenStartX, specimenStartY, Math.toRadians(90));
         sampleStart = new Pose2d(-24, -63, Math.toRadians(270));
         armLift = new ArmLift();
         clawSystem = new ClawSystem();
@@ -125,6 +134,52 @@ public abstract class AutoBase extends LinearOpMode {
             return new DepositSpecimen();
         }
 
+        public class DepositSpecimenNoPivotTimed implements Action {
+            private boolean initialized = false;
+            @Override
+            public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                if (!initialized) {
+                    robot.armSubsystem.setMotionProfile(DEPOSIT_SPECIMEN_POS);
+                    robot.armSubsystem.setPivotDepositSpecimen();
+                    robot.armSubsystem.pivotCounter = 0;
+                    initialized = true;
+                }
+//                robot.armSubsystem.armState = Arm.ArmState.MOTION_PROFILE;
+//                robot.armSubsystem.update();
+                if (!robot.armSubsystem.getMP().isBusy()) {
+                    DEPOSIT_SPECIMEN_POS = DEPOSIT_SPECIMEN_SECOND;
+                    return false;
+                }
+                return true;
+            }
+        }
+        public Action depositSpecimenNoPivotTimed() {
+            return new DepositSpecimenNoPivotTimed();
+        }
+
+        public class ArmUp implements Action {
+            private boolean initialized = false;
+            @Override
+            public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                if (!initialized) {
+                    robot.armSubsystem.setMotionProfile(ARM_UP);
+                    robot.armSubsystem.setPivotIntakeSample();
+                    robot.armSubsystem.pivotCounter = 0;
+                    initialized = true;
+                }
+//                robot.armSubsystem.armState = Arm.ArmState.MOTION_PROFILE;
+//                robot.armSubsystem.update();
+                if (!robot.armSubsystem.getMP().isBusy()) {
+                    return false;
+                }
+                return true;
+            }
+        }
+        public Action armUp() {
+            return new ArmUp();
+        }
+
+
         public class DepositSpecimenDown implements Action {
             @Override
             public boolean run(@NonNull TelemetryPacket telemetryPacket) {
@@ -137,6 +192,17 @@ public abstract class AutoBase extends LinearOpMode {
             return new DepositSpecimenDown();
         }
 
+        public class DepositSpecimenUp implements Action {
+            @Override
+            public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                Arm.referencePos = DEPOSIT_SPECIMEN_UP;
+                robot.armSubsystem.armState = Arm.ArmState.BASIC_PID;
+                return false;
+            }
+        }
+        public Action depositSpecimenUp() {
+            return new DepositSpecimenUp();
+        }
 
         public class IntakeSpecimen implements Action {
             private boolean initialized = false;
@@ -180,7 +246,7 @@ public abstract class AutoBase extends LinearOpMode {
             @Override
             public boolean run(@NonNull TelemetryPacket telemetryPacket) {
                 if (!initialized) {
-                    robot.armSubsystem.setIntakeSample(true);
+                    robot.armSubsystem.setIntakeSample(false);
                     initialized = true;
                 }
                 if (!robot.armSubsystem.getMP().isBusy()) {
@@ -191,6 +257,30 @@ public abstract class AutoBase extends LinearOpMode {
         }
         public Action intakeSample() {
             return new IntakeSample();
+        }
+
+        public class IntakeSampleDown implements Action {
+            @Override
+            public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                robot.armSubsystem.armState = Arm.ArmState.BASIC_PID;
+                Arm.referencePos = BulkReading.pMotorArmR + Arm.armLowerConstantSample;
+                return false;
+            }
+        }
+        public Action intakeSampleDown() {
+            return new IntakeSampleDown();
+        }
+
+        public class IntakeSampleUp implements Action {
+            @Override
+            public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                robot.armSubsystem.armState = Arm.ArmState.BASIC_PID;
+                Arm.referencePos = Arm.armPresetIntakeSample;
+                return false;
+            }
+        }
+        public Action intakeSampleUp() {
+            return new IntakeSampleUp();
         }
 
         public class RestArm implements Action {
@@ -216,6 +306,35 @@ public abstract class AutoBase extends LinearOpMode {
         public Action restArm() {
             return new RestArm();
         }
+
+        public class DepositSpecimenFront implements Action {
+            private boolean initialized = false;
+            @Override
+            public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                if (!initialized) {
+                    robot.armSubsystem.setDepositSpecimenFront(true);
+                    initialized = true;
+                }
+                if (!robot.armSubsystem.getMP().isBusy()) {
+                    return false;
+                }
+                return true;
+            }
+        }
+        public Action depositSpecimenFront() {
+            return new DepositSpecimenFront();
+        }
+        public class DepositSpecimenFrontUp implements Action {
+            @Override
+            public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                Arm.referencePos = Arm.armPresetDepositSpecimenFrontUp;
+                robot.armSubsystem.armState = Arm.ArmState.BASIC_PID;
+                return false;
+            }
+        }
+        public Action depositSpecimenFrontUp() {
+            return new DepositSpecimenFrontUp();
+        }
     }
 
     public class ClawSystem {
@@ -239,6 +358,39 @@ public abstract class AutoBase extends LinearOpMode {
         }
         public Action openClaw() {
             return new OpenClaw();
+        }
+
+        public class ClawWrist0 implements Action {
+            @Override
+            public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                robot.servoWrist.setPosition(Arm.clawWrist0);
+                return false;
+            }
+        }
+        public Action clawWrist0() {
+            return new ClawWrist0();
+        }
+
+        public class ClawWrist45 implements Action {
+            @Override
+            public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                robot.servoWrist.setPosition(clawWristAuto45);
+                return false;
+            }
+        }
+        public Action clawWrist45() {
+            return new ClawWrist45();
+        }
+
+        public class ClawWrist180 implements Action {
+            @Override
+            public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                robot.servoWrist.setPosition(clawWristAuto180);
+                return false;
+            }
+        }
+        public Action clawWrist180() {
+            return new ClawWrist180();
         }
     }
 
