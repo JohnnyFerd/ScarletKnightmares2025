@@ -60,22 +60,36 @@ public class JVBoysSoccerRobot {
         }
 
         initIMU();
-        initHardware();
+        if (Arm.AUTO_NORESET_ARM_POSITION) {
+            Arm.AUTO_NORESET_ARM_POSITION = false;
+            initDrivetrainHardware();
+            initClawHardware();
+            initRiggingHardware();
+            initArmHardware(false);
+        }else {
+            initHardware();
+        }
         drivetrainSubsystem = new Drivetrain(hwMap, telemetry, this);
         clawSubsystem = new Claw(hwMap, telemetry, this);
         armSubsystem = new Arm(hwMap, telemetry, this);
 
         subsystems = Arrays.asList(drivetrainSubsystem, armSubsystem, clawSubsystem);
         BR = new BulkReading(this);
+
+        Arm.DEFAULT_MAX_ACCELERATION = Arm.TELEOP_MAX_ACCELERATION;
+        Arm.DEFAULT_MAX_VELOCITY = Arm.TELEOP_MAX_VELOCITY;
+        Arm.DEFAULT_MAX_DECELERATION = Arm.TELEOP_MAX_DECELERATION;
     }
 
     public JVBoysSoccerRobot(HardwareMap hwMap, Telemetry telemetry, boolean isAuto) {
         if (isAuto) {
-            Arm.DEFAULT_MAX_ACCELERATION = 14000;
-            Arm.DEFAULT_MAX_VELOCITY = 14000;
-            Arm.DEFAULT_MAX_DECELERATION = 2000;
+            Arm.DEFAULT_MAX_ACCELERATION = Arm.AUTO_MAX_ACCELERATION;
+            Arm.DEFAULT_MAX_VELOCITY = Arm.AUTO_MAX_VELOCITY;
+            Arm.DEFAULT_MAX_DECELERATION = Arm.AUTO_MAX_DECELERATION;
             this.hwMap = hwMap;
             this.telemetry = telemetry;
+
+            Arm.AUTO_NORESET_ARM_POSITION = true;
 
             // Configuring Hubs to auto mode for bulk reads
             allHubs = hwMap.getAll(LynxModule.class);
@@ -85,7 +99,7 @@ public class JVBoysSoccerRobot {
             }
 
             initIMU();
-            initArmHardware();
+            initArmHardware(true);
             initClawHardware();
             clawSubsystem = new Claw(hwMap, telemetry, this);
             armSubsystem = new Arm(hwMap, telemetry, this);
@@ -106,7 +120,7 @@ public class JVBoysSoccerRobot {
 //        SwerveServoLeft = hwMap.get(DcMotorSimple.class, "");
 
         initDrivetrainHardware();
-        initArmHardware();
+        initArmHardware(true);
         initClawHardware();
         initRiggingHardware();
     }
@@ -141,14 +155,16 @@ public class JVBoysSoccerRobot {
         motorBR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     }
 
-    public void initArmHardware() {
+    public void initArmHardware(boolean resetEncoder) {
         motorArmL = hwMap.get(DcMotorEx.class, RobotSettings.ARM_LMOTOR_NAME);
         motorArmR = hwMap.get(DcMotorEx.class, RobotSettings.ARM_RMOTOR_NAME);
 
         motorArmL.setDirection(RobotSettings.ARM_LMOTOR_REVERSED ? DcMotor.Direction.REVERSE : DcMotor.Direction.FORWARD);
         motorArmR.setDirection(RobotSettings.ARM_RMOTOR_REVERSED ? DcMotor.Direction.REVERSE : DcMotor.Direction.FORWARD);
 
-        motorArmR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        if (resetEncoder) {
+            motorArmR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        }
 
         motorArmL.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         motorArmR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);

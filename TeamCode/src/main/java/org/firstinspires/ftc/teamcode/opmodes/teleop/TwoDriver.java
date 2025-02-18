@@ -12,6 +12,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.settings.RobotSettings;
 import org.firstinspires.ftc.teamcode.subsystems.Arm;
+import org.firstinspires.ftc.teamcode.subsystems.Claw;
 import org.firstinspires.ftc.teamcode.subsystems.JVBoysSoccerRobot;
 import org.firstinspires.ftc.teamcode.util.BulkReading;
 
@@ -126,13 +127,33 @@ public class TwoDriver extends LinearOpMode {
 
     public void riggingControls() {
         if (FINAL_RIGGING) {
-            robot.motorRigL.setPower(RobotSettings.RIGGING_POWER);
-            robot.motorRigR.setPower(RobotSettings.RIGGING_POWER);
-
-            if (currentGamepad1.dpad_up && !previousGamepad1.dpad_up) {
-                robot.armSubsystem.setRiggingPosition();
-                armControl = ArmControl.MOVE_ARM;
+            if (currentGamepad1.x) {
+                if (currentGamepad1.left_bumper) {
+                    robot.motorRigL.setPower(0);
+                }else {
+                    robot.motorRigL.setPower(RobotSettings.RIGGING_FEEDFORWARD);
+                }
+                if (currentGamepad1.right_bumper) {
+                    robot.motorRigR.setPower(0);
+                }else {
+                    robot.motorRigR.setPower(RobotSettings.RIGGING_FEEDFORWARD);
+                }
+            }else {
+                if (currentGamepad1.left_bumper) {
+                    robot.motorRigL.setPower(RobotSettings.RIGGING_POWER);
+                }else {
+                    robot.motorRigL.setPower(RobotSettings.RIGGING_FEEDFORWARD);
+                }
+                if (currentGamepad1.right_bumper) {
+                    robot.motorRigR.setPower(RobotSettings.RIGGING_POWER);
+                }else {
+                    robot.motorRigR.setPower(RobotSettings.RIGGING_FEEDFORWARD);
+                }
             }
+//            if (currentGamepad1.dpad_up && !previousGamepad1.dpad_up) {
+//                robot.armSubsystem.setRiggingPosition();
+//                armControl = ArmControl.MOVE_ARM;
+//            }
 
         }else {
 
@@ -191,10 +212,10 @@ public class TwoDriver extends LinearOpMode {
             rightClosed = !rightClosed;
             leftClosed = !leftClosed;
         }
-        if (currentGamepad2.right_bumper && !previousGamepad2.right_bumper) {
-            rightClosed = !rightClosed;
-            leftClosed = !leftClosed;
-        }
+//        if (currentGamepad2.right_bumper && !previousGamepad2.right_bumper) {
+//            rightClosed = !rightClosed;
+//            leftClosed = !leftClosed;
+//        }
 
         if (leftClosed && rightClosed) {
             robot.clawSubsystem.closeBothClaw();
@@ -269,6 +290,7 @@ public class TwoDriver extends LinearOpMode {
                     wristCounter = 1;
                     robot.servoWrist.setPosition(Arm.clawWrist0);
                     robot.armSubsystem.setIntakeSample(true);
+                    Claw.useTightClaw = true;
                     armControl = ArmControl.INTAKE_SAMPLE_DEFAULT;
                 }
                 if (currentGamepad2.b && !previousGamepad2.b) {
@@ -307,6 +329,7 @@ public class TwoDriver extends LinearOpMode {
                     wristCounter = 1;
                     robot.servoWrist.setPosition(Arm.clawWrist0);
                     robot.armSubsystem.setIntakeSample(true);
+                    Claw.useTightClaw = true;
                     armControl = ArmControl.INTAKE_SAMPLE_DEFAULT;
                 }
                 if (currentGamepad2.b && !previousGamepad2.b) {
@@ -359,6 +382,7 @@ public class TwoDriver extends LinearOpMode {
                     wristCounter = 1;
                     robot.servoWrist.setPosition(Arm.clawWrist0);
                     robot.armSubsystem.setIntakeSample(true);
+                    Claw.useTightClaw = true;
                     armControl = ArmControl.INTAKE_SAMPLE_DEFAULT;
                 }
                 if (currentGamepad2.b && !previousGamepad2.b) {
@@ -374,13 +398,14 @@ public class TwoDriver extends LinearOpMode {
                     robot.armSubsystem.armState = Arm.ArmState.BASIC_PID;
                     Arm.referencePos = BulkReading.pMotorArmR - Arm.armLowerConstantSpecimen;
                     currentDepositTime = RobotSettings.SUPER_TIME.seconds();
+                    armControl = ArmControl.MOVE_ARM;
                     depositDelay = false;
                 }
-                if (depositDelay == true && RobotSettings.SUPER_TIME.seconds() > currentDepositTime + Arm.automaticDepositTimeDelay) {
-                    depositDelay = false;
-                    leftClosed = false;
-                    rightClosed = false;
-                }
+//                if (depositDelay == true && RobotSettings.SUPER_TIME.seconds() > currentDepositTime + Arm.automaticDepositTimeDelay) {
+//                    depositDelay = false;
+//                    leftClosed = false;
+//                    rightClosed = false;
+//                }
 
                 if (currentGamepad2.right_trigger > 0.01 && currentGamepad2.left_trigger <= 0.01) {
                     double newPosition = robot.servoPivotR.getPosition() + Arm.pivotSpeedConstant * currentGamepad2.right_trigger;
@@ -397,6 +422,7 @@ public class TwoDriver extends LinearOpMode {
                         robot.armSubsystem.armState = Arm.ArmState.BASIC_PID;
                     }else if (robot.armSubsystem.armState == Arm.ArmState.BASIC_PID) {
                         robot.armSubsystem.referencePos = robot.armSubsystem.referencePos + Arm.armSpeedConstant * currentGamepad2.right_stick_y * -1;
+                        Arm.armPresetDepositSpecimen = BulkReading.pMotorArmR; // TODO: Test this
                     }
                 }
                 if (Math.abs(currentGamepad2.left_stick_y) > 0.01) {
@@ -462,12 +488,14 @@ public class TwoDriver extends LinearOpMode {
                     robot.armSubsystem.setDepositSample(true);
                     armControl = ArmControl.MOVE_ARM;
                     wrist0 = true;
+                    Claw.useTightClaw = false;
                 }
                 if (currentGamepad2.y && !previousGamepad2.y) {
                     robot.armSubsystem.setDepositSpecimen(true);
                     robot.servoWrist.setPosition(Arm.clawWrist0);
                     armControl = ArmControl.DEPOSIT_SPECIMEN_DEFAULT;
                     wrist0 = true;
+                    Claw.useTightClaw = false;
                 }
                 if (currentGamepad2.b && !previousGamepad2.b) {
                     robot.servoWrist.setPosition(Arm.clawWrist0);
@@ -476,11 +504,13 @@ public class TwoDriver extends LinearOpMode {
                     robot.armSubsystem.setIntakeSpecimen(true);
                     armControl = ArmControl.INTAKE_SPECIMEN_DEFAULT;
                     wrist0 = true;
+                    Claw.useTightClaw = false;
                 }
                 if (currentGamepad2.a && !previousGamepad2.a) {
                     wristCounter = 1;
                     robot.servoWrist.setPosition(Arm.clawWrist0);
                     robot.armSubsystem.setIntakeSample(true);
+                    Claw.useTightClaw = true;
                     armControl = ArmControl.INTAKE_SAMPLE_DEFAULT;
                 }
                 if (currentGamepad2.dpad_up && !previousGamepad2.dpad_up) {
@@ -490,6 +520,7 @@ public class TwoDriver extends LinearOpMode {
                     robot.armSubsystem.setRest();
                     armControl = ArmControl.GOING_TO_REST;
                     wrist0 = true;
+                    Claw.useTightClaw = false;
                 }
                 if (currentGamepad2.right_trigger > 0.01 && currentGamepad2.left_trigger <= 0.01) {
                     double newPosition = robot.servoPivotR.getPosition() + Arm.pivotSpeedConstant * currentGamepad2.right_trigger;
@@ -511,7 +542,7 @@ public class TwoDriver extends LinearOpMode {
                     double newPosition = robot.servoWrist.getPosition() - Arm.wristSpeedConstant * currentGamepad2.left_stick_y;
                     robot.servoWrist.setPosition(newPosition);
                 }
-                if (currentGamepad2.back && !previousGamepad2.back) {
+                if (currentGamepad2.right_bumper && !previousGamepad2.right_bumper) {
                     wristCounter++;
 
                     if (wristCounter % 3 == 1) {
@@ -567,6 +598,7 @@ public class TwoDriver extends LinearOpMode {
                     wristCounter = 1;
                     robot.servoWrist.setPosition(Arm.clawWrist0);
                     robot.armSubsystem.setIntakeSample(true);
+                    Claw.useTightClaw = true;
                     armControl = ArmControl.INTAKE_SAMPLE_DEFAULT;
                 }
                 if (currentGamepad2.dpad_up && !previousGamepad2.dpad_up) {
@@ -579,10 +611,12 @@ public class TwoDriver extends LinearOpMode {
                 if (currentGamepad2.right_trigger > 0.01 && currentGamepad2.left_trigger <= 0.01) {
                     double newPosition = robot.servoPivotR.getPosition() + Arm.pivotSpeedConstant * currentGamepad2.right_trigger;
                     robot.armSubsystem.setPivot(newPosition);
+                    Arm.pivotPresetIntakeSpecimen = newPosition;
                 }
                 if (currentGamepad2.left_trigger > 0.01 && currentGamepad2.right_trigger <= 0.01) {
                     double newPosition = robot.servoPivotR.getPosition() - Arm.pivotSpeedConstant * currentGamepad2.left_trigger;
                     robot.armSubsystem.setPivot(newPosition);
+                    Arm.pivotPresetIntakeSpecimen = newPosition; // TODO: test this
                 }
                 if (Math.abs(currentGamepad2.right_stick_y) > 0.01) {
                     if (robot.armSubsystem.armState == Arm.ArmState.MOTION_PROFILE || robot.armSubsystem.armState == Arm.ArmState.AT_REST) {
@@ -590,6 +624,7 @@ public class TwoDriver extends LinearOpMode {
                         robot.armSubsystem.armState = Arm.ArmState.BASIC_PID;
                     }else if (robot.armSubsystem.armState == Arm.ArmState.BASIC_PID) {
                         robot.armSubsystem.referencePos = robot.armSubsystem.referencePos + Arm.armSpeedConstant * currentGamepad2.right_stick_y * -1;
+                        Arm.armPresetIntakeSpecimen = (int)robot.armSubsystem.referencePos;
                     }
                 }
                 if (Math.abs(currentGamepad2.left_stick_y) > 0.01) {

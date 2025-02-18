@@ -17,6 +17,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.teamcode.settings.RobotSettings;
 import org.firstinspires.ftc.teamcode.subsystems.Arm;
+import org.firstinspires.ftc.teamcode.subsystems.Claw;
 import org.firstinspires.ftc.teamcode.subsystems.JVBoysSoccerRobot;
 import org.firstinspires.ftc.teamcode.util.BulkReading;
 
@@ -36,21 +37,21 @@ public abstract class AutoBase extends LinearOpMode {
     protected ArmLift armLift;
     protected ClawSystem clawSystem;
 
-    public static int DEPOSIT_SPECIMEN_FIRST = 3910;
+    public static int DEPOSIT_SPECIMEN_FIRST = 3890;
     public static int DEPOSIT_SPECIMEN_POS = DEPOSIT_SPECIMEN_FIRST;
-    public static int DEPOSIT_SPECIMEN_SECOND = 3910;
-    public static int DEPOSIT_SPECIMEN_DOWN = Arm.armPresetDepositSpecimen - 450;
+    public static int DEPOSIT_SPECIMEN_SECOND = 3890;
+    public static int DEPOSIT_SPECIMEN_DOWN = 3400;
     public static int DEPOSIT_SPECIMEN_UP = Arm.armPresetDepositSpecimen + 300;
 
     public static int ARM_UP = 2750;
 
-    public static int INTAKE_SPECIMEN_POS = 500;
-    public static int DEPOSIT_SAMPLE_POS = Arm.armPreset1DepositSample;
+    public static int INTAKE_SPECIMEN_POS = 530;
+    public static int DEPOSIT_SAMPLE_POS = Arm.armPresetDepositSample;
     public static int INTAKE_SAMPLE_POS = Arm.armPresetIntakeSample;
-    public static double PIVOT_INTAKE_POS = 0.45;
+    public static double PIVOT_INTAKE_POS = 0.45 - Arm.PIVOT_OFFSET;
 
-    public static double clawWristAuto45 = 0.815 - 0.6275;
-    public static double clawWristAuto180 = 0.2525;
+    public static double clawWristAuto45 = 0.6275;
+    public static double clawWristAuto180 = 0.1;
 
     protected boolean isBlue = false;
 
@@ -110,6 +111,42 @@ public abstract class AutoBase extends LinearOpMode {
         }
         public Action stopUpdate() {
             return new StopUpdate();
+        }
+
+        public class DepositSpecimenRamFront implements Action {
+            private boolean initialized = false;
+            @Override
+            public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                if (!initialized) {
+                    robot.armSubsystem.setDepositSpecimenRamFront(true);
+                    initialized = true;
+                }
+                if (!robot.armSubsystem.getMP().isBusy()) {
+                    return false;
+                }
+                return true;
+            }
+        }
+        public Action depositSpecimenRamFront() {
+            return new DepositSpecimenRamFront();
+        }
+
+        public class DepositSpecimenRam implements Action {
+            private boolean initialized = false;
+            @Override
+            public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                if (!initialized) {
+                    robot.armSubsystem.setDepositSpecimenRam(true);
+                    initialized = true;
+                }
+                if (!robot.armSubsystem.getMP().isBusy()) {
+                    return false;
+                }
+                return true;
+            }
+        }
+        public Action depositSpecimenRam() {
+            return new DepositSpecimenRam();
         }
 
         public class DepositSpecimen implements Action {
@@ -202,6 +239,25 @@ public abstract class AutoBase extends LinearOpMode {
         }
         public Action depositSpecimenUp() {
             return new DepositSpecimenUp();
+        }
+
+        public class IntakeSpecimenPivotTimed implements Action {
+            private boolean initialized = false;
+            @Override
+            public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                if (!initialized) {
+                    robot.armSubsystem.setMotionProfile(INTAKE_SPECIMEN_POS);
+                    robot.armSubsystem.pivotCounter = 1;
+                    initialized = true;
+                }
+                if (!robot.armSubsystem.getMP().isBusy()) {
+                    return false;
+                }
+                return true;
+            }
+        }
+        public Action intakeSpecimenPivotTimed() {
+            return new IntakeSpecimenPivotTimed();
         }
 
         public class IntakeSpecimen implements Action {
@@ -341,12 +397,25 @@ public abstract class AutoBase extends LinearOpMode {
         public class CloseClaw implements Action {
             @Override
             public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                Claw.useTightClaw = false;
                 robot.clawSubsystem.closeBothClaw();
                 return false;
             }
         }
         public Action closeClaw() {
             return new CloseClaw();
+        }
+
+        public class CloseClawTight implements Action {
+            @Override
+            public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                Claw.useTightClaw = true;
+                robot.clawSubsystem.closeBothClaw();
+                return false;
+            }
+        }
+        public Action closeClawTight() {
+            return new CloseClawTight();
         }
 
         public class OpenClaw implements Action {

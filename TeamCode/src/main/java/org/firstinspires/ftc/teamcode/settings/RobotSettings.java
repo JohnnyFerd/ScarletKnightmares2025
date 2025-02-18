@@ -13,7 +13,8 @@ public class RobotSettings {
     public static ElapsedTime SUPER_TIME = new ElapsedTime();
 
     public static int ARM_VERTICAL_THRESHOLD = 2750;
-    public static double RIGGING_POWER = 0.5;
+    public static double RIGGING_POWER = 0.6;
+    public static double RIGGING_FEEDFORWARD = 0.25;
 
     // DRIVETRAIN
 

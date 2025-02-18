@@ -18,8 +18,13 @@ public class Claw extends Subsystem {
     private int thresholdEncoderValue = 2750;
     private boolean reversedControls = false;
 
-    public static double CLAW_CLOSED_POSITIONL = 0.17;
-    public static double CLAW_CLOSED_POSITIONR = 0.12;
+    public static boolean useTightClaw = false;
+
+    public static double CLAW_CLOSED_POSITIONL = 0.18;
+    public static double CLAW_CLOSED_POSITIONR = 0.13;
+    public static double CLAW_CLOSED_POSITIONL_TIGHT = 0.17;
+    public static double CLAW_CLOSED_POSITIONR_TIGHT = 0.12;
+
     public static double CLAW_OPENED_POSITIONL = 0.42;
     public static double CLAW_OPENED_POSITIONR = 0.38;
 
@@ -67,8 +72,13 @@ public class Claw extends Subsystem {
     public void closeBothClaw() {
         leftOpened = false;
         rightOpened = false;
-        robot.servoClawL.setPosition(CLAW_CLOSED_POSITIONL);
-        robot.servoClawR.setPosition(CLAW_CLOSED_POSITIONR);
+        if (useTightClaw) {
+            robot.servoClawL.setPosition(CLAW_CLOSED_POSITIONL_TIGHT);
+            robot.servoClawR.setPosition(CLAW_CLOSED_POSITIONR_TIGHT);
+        }else {
+            robot.servoClawL.setPosition(CLAW_CLOSED_POSITIONL);
+            robot.servoClawR.setPosition(CLAW_CLOSED_POSITIONR);
+        }
     }
 
     @Override

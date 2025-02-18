@@ -21,13 +21,17 @@ public class Arm extends Subsystem {
     private MotionProfile mp;
     private ArmPIDController pid;
 
+    public static boolean AUTO_NORESET_ARM_POSITION = false;
+
+    public static double PIVOT_OFFSET = -0.03;
+
     public static int TELEOP_MAX_VELOCITY = 12000;
     public static int TELEOP_MAX_ACCELERATION = 12000; // encoder ticks per second
     public static int TELEOP_MAX_DECELERATION =  2000;
 
     public static int AUTO_MAX_VELOCITY = 12000;
     public static int AUTO_MAX_ACCELERATION = 12000; // encoder ticks per second
-    public static int AUTO_MAX_DECELERATION =  2000;
+    public static int AUTO_MAX_DECELERATION = 2500;
 
     public static int DEFAULT_MAX_VELOCITY = 12000; // enocder ticks per second
     public static int DEFAULT_MAX_ACCELERATION = 12000; // encoder ticks per second
@@ -49,22 +53,20 @@ public class Arm extends Subsystem {
 
     public static int armLowerConstantSample = 225;
     public static int armLowerConstantSpecimen = 400;
-
     public static int armPresetIntakeSample = 4820; //
-    
-    public static int armPresetDepositSpecimen = 3810; //
-    public static int armPreset1DepositSample = 2750; //
+    public static int armPresetDepositSpecimen = 3900; //
+    public static int armPresetDepositSample = 2750; //
 
     public static int armPresetRigging = 2600;
 
-    public static double pivotPresetRest = 0.95;
-    public static double pivotPresetIntakeSpecimen = 0.45;
-    public static double pivotPresetIntakeSample = 0.68;
-    public static double pivotPresetDepositSpecimen = 0.39;
-    public static double pivotPresetDepositSample = 0.67;
+    public static double pivotPresetRest = 0.95 - PIVOT_OFFSET;
+    public static double pivotPresetIntakeSpecimen = 0.45 - PIVOT_OFFSET;
+    public static double pivotPresetIntakeSample = 0.68 - PIVOT_OFFSET;
+    public static double pivotPresetDepositSpecimen = 0.35 - PIVOT_OFFSET;
+    public static double pivotPresetDepositSample = 0.67 - PIVOT_OFFSET;
 
     public static final int armPresetIntakeSpecimenGround = 0;
-    public static final double pivotPresetIntakeSpecimenGround = 0.31;
+    public static final double pivotPresetIntakeSpecimenGround = 0.31 - PIVOT_OFFSET;
 
     public double previousPivotPos = 0;
 
@@ -72,9 +74,15 @@ public class Arm extends Subsystem {
     public static final double wristSpeedConstant = 0.008;
     public static final double armSpeedConstant = 8;
 
-    public static int armPresetDepositSpecimenFront = 1350;
-    public static double pivotPresetDepositSpecimenFront = 0.44;
+    public static int armPresetDepositSpecimenFront = 1450;
+    public static double pivotPresetDepositSpecimenFront = 0.42 - PIVOT_OFFSET;
     public static int armPresetDepositSpecimenFrontUp = 1800;
+
+    public static int armPresetDepositSpecimenRamFront = 2000;
+    public static double pivotPresetDepositSpecimeRamFront = 0.4;
+
+    public static int armPresetDepositSpecimenRam = 4040;
+    public static double pivotPresetDepositSpecimeRam = 0.225;
 
     public static double MAX_POWER = 1;
 
@@ -297,6 +305,26 @@ public class Arm extends Subsystem {
         setMotionProfile(armPresetRest);
     }
 
+    public void setDepositSpecimenRamFront(boolean pivotTimed) {
+        if (pivotTimed) {
+            pivotCounter = 6;
+        }else {
+            setPivotDepositSpecimenRamFront();
+            pivotCounter = 0;
+        }
+        setMotionProfile(armPresetDepositSpecimenRamFront);
+    }
+    public void setDepositSpecimenRam(boolean pivotTimed) {
+        if (pivotTimed) {
+            pivotCounter = 7;
+        }else {
+            setPivotDepositSpecimenRam();
+            pivotCounter = 0;
+        }
+        setMotionProfile(armPresetDepositSpecimenRam);
+    }
+
+
     public void setIntakeSpecimen(boolean pivotTimed) {
         if (pivotTimed) {
             pivotCounter = 1;
@@ -305,11 +333,6 @@ public class Arm extends Subsystem {
             pivotCounter = 0;
         }
         setMotionProfile(armPresetIntakeSpecimen);
-    }
-    public void setIntakeSpecimenGround() {
-        setMotionProfile(armPresetIntakeSpecimenGround);
-        robot.servoPivotL.setPosition(pivotPresetIntakeSpecimenGround);
-        robot.servoPivotR.setPosition(pivotPresetIntakeSpecimenGround);
     }
     public void setIntakeSample(boolean pivotTimed) {
         if (pivotTimed) {
@@ -336,7 +359,7 @@ public class Arm extends Subsystem {
             setPivotDepositSample();
             pivotCounter = 0;
         }
-        setMotionProfile(armPreset1DepositSample);
+        setMotionProfile(armPresetDepositSample);
     }
 
     public void setRiggingPosition() {
@@ -361,10 +384,26 @@ public class Arm extends Subsystem {
             case 5:
                 setPivotDepositSpecimenFront();
                 break;
+            case 6:
+                setPivotDepositSpecimenRamFront();
+                break;
+            case 7:
+                setPivotDepositSpecimenRam();
+                break;
         }
         pivotCounter = 0;
     }
 
+    public void setPivotDepositSpecimenRamFront() {
+        robot.servoPivotL.setPosition(pivotPresetDepositSpecimeRamFront);
+        robot.servoPivotR.setPosition(pivotPresetDepositSpecimeRamFront);
+        previousPivotPos = pivotPresetDepositSpecimeRamFront;
+    }
+    public void setPivotDepositSpecimenRam() {
+        robot.servoPivotL.setPosition(pivotPresetDepositSpecimeRam);
+        robot.servoPivotR.setPosition(pivotPresetDepositSpecimeRam);
+        previousPivotPos = pivotPresetDepositSpecimeRam;
+    }
     public void setPivotRest() {
         robot.servoPivotL.setPosition(pivotPresetRest);
         robot.servoPivotR.setPosition(pivotPresetRest);
