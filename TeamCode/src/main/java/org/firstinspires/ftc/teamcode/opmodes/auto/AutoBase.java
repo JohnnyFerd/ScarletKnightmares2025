@@ -50,8 +50,9 @@ public abstract class AutoBase extends LinearOpMode {
     public static int INTAKE_SAMPLE_POS = Arm.armPresetIntakeSample;
     public static double PIVOT_INTAKE_POS = 0.45 - Arm.PIVOT_OFFSET;
 
-    public static double clawWristAuto45 = 0.6275;
+    public static double clawWristAuto45 = 0.6075;
     public static double clawWristAuto180 = 0.1;
+    public static double clawWristAuto135 = 0.2425;
 
     protected boolean isBlue = false;
 
@@ -65,9 +66,6 @@ public abstract class AutoBase extends LinearOpMode {
         sampleStart = new Pose2d(-24, -63, Math.toRadians(270));
         armLift = new ArmLift();
         clawSystem = new ClawSystem();
-
-        PoseStorage.ORIGINAL_INIT_YAW = robot.imu.getRobotOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle;
-        PoseStorage.AUTO_SHIFTED = true;
 
         telemetry.addData("Status", "Initialized");
         telemetry.addData("Elapsed time", RobotSettings.SUPER_TIME.toString());
@@ -429,6 +427,17 @@ public abstract class AutoBase extends LinearOpMode {
             return new OpenClaw();
         }
 
+        public class OpenClawWide implements Action {
+            @Override
+            public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                robot.clawSubsystem.openBothClawWide();
+                return false;
+            }
+        }
+        public Action openClawWide() {
+            return new OpenClawWide();
+        }
+
         public class ClawWrist0 implements Action {
             @Override
             public boolean run(@NonNull TelemetryPacket telemetryPacket) {
@@ -449,6 +458,17 @@ public abstract class AutoBase extends LinearOpMode {
         }
         public Action clawWrist45() {
             return new ClawWrist45();
+        }
+
+        public class ClawWrist135 implements Action {
+            @Override
+            public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                robot.servoWrist.setPosition(clawWristAuto135);
+                return false;
+            }
+        }
+        public Action clawWrist135() {
+            return new ClawWrist135();
         }
 
         public class ClawWrist180 implements Action {

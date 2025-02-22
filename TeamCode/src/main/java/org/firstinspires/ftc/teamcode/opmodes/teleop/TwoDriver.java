@@ -410,10 +410,12 @@ public class TwoDriver extends LinearOpMode {
                 if (currentGamepad2.right_trigger > 0.01 && currentGamepad2.left_trigger <= 0.01) {
                     double newPosition = robot.servoPivotR.getPosition() + Arm.pivotSpeedConstant * currentGamepad2.right_trigger;
                     robot.armSubsystem.setPivot(newPosition);
+                    Arm.pivotPresetDepositSpecimen = newPosition; // TODO: test this
                 }
                 if (currentGamepad2.left_trigger > 0.01 && currentGamepad2.right_trigger <= 0.01) {
                     double newPosition = robot.servoPivotR.getPosition() - Arm.pivotSpeedConstant * currentGamepad2.left_trigger;
                     robot.armSubsystem.setPivot(newPosition);
+                    Arm.pivotPresetDepositSpecimen = newPosition; // TODO: test this
                 }
 
                 if (Math.abs(currentGamepad2.right_stick_y) > 0.01) {
@@ -525,10 +527,12 @@ public class TwoDriver extends LinearOpMode {
                 if (currentGamepad2.right_trigger > 0.01 && currentGamepad2.left_trigger <= 0.01) {
                     double newPosition = robot.servoPivotR.getPosition() + Arm.pivotSpeedConstant * currentGamepad2.right_trigger;
                     robot.armSubsystem.setPivot(newPosition);
+                    Arm.pivotPresetIntakeSample = newPosition; // TODO: test this
                 }
                 if (currentGamepad2.left_trigger > 0.01 && currentGamepad2.right_trigger <= 0.01) {
                     double newPosition = robot.servoPivotR.getPosition() - Arm.pivotSpeedConstant * currentGamepad2.left_trigger;
                     robot.armSubsystem.setPivot(newPosition);
+                    Arm.pivotPresetIntakeSample = newPosition; // TODO: test this
                 }
                 if (Math.abs(currentGamepad2.right_stick_y) > 0.01) {
                     if (robot.armSubsystem.armState == Arm.ArmState.MOTION_PROFILE || robot.armSubsystem.armState == Arm.ArmState.AT_REST) {
@@ -536,6 +540,7 @@ public class TwoDriver extends LinearOpMode {
                         robot.armSubsystem.armState = Arm.ArmState.BASIC_PID;
                     }else if (robot.armSubsystem.armState == Arm.ArmState.BASIC_PID) {
                         robot.armSubsystem.referencePos = robot.armSubsystem.referencePos + Arm.armSpeedConstant * currentGamepad2.right_stick_y * -1;
+                        Arm.armPresetIntakeSpecimen = BulkReading.pMotorArmR; // TODO: Test this
                     }
                 }
                 if (Math.abs(currentGamepad2.left_stick_y) > 0.01) {

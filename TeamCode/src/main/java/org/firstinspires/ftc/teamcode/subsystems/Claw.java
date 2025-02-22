@@ -20,12 +20,15 @@ public class Claw extends Subsystem {
 
     public static boolean useTightClaw = false;
 
-    public static double CLAW_CLOSED_POSITIONL = 0.18;
+    public static double CLAW_CLOSED_POSITIONL = 0.185;
     public static double CLAW_CLOSED_POSITIONR = 0.13;
     public static double CLAW_CLOSED_POSITIONL_TIGHT = 0.17;
     public static double CLAW_CLOSED_POSITIONR_TIGHT = 0.12;
 
-    public static double CLAW_OPENED_POSITIONL = 0.42;
+    public static double CLAW_OPENED_POSITIONL_WIDE = 0.55;
+    public static double CLAW_OPENED_POSITIONR_WIDE = 0.47;
+
+    public static double CLAW_OPENED_POSITIONL = 0.44;
     public static double CLAW_OPENED_POSITIONR = 0.38;
 
     public Claw(HardwareMap hwMap, Telemetry telemetry, JVBoysSoccerRobot robot) {
@@ -39,6 +42,13 @@ public class Claw extends Subsystem {
         rightOpened = true;
         robot.servoClawL.setPosition(CLAW_OPENED_POSITIONL);
         robot.servoClawR.setPosition(CLAW_OPENED_POSITIONR);
+    }
+
+    public void openBothClawWide() {
+        leftOpened = true;
+        rightOpened = true;
+        robot.servoClawL.setPosition(CLAW_OPENED_POSITIONL_WIDE);
+        robot.servoClawR.setPosition(CLAW_OPENED_POSITIONR_WIDE);
     }
 
     public void openLeftClaw() {

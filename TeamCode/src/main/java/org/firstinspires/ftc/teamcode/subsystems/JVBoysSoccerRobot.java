@@ -9,6 +9,9 @@ import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.teamcode.settings.UseTelemetry;
 import org.firstinspires.ftc.teamcode.util.BulkReading;
 import org.firstinspires.ftc.teamcode.settings.RobotSettings;
@@ -70,6 +73,15 @@ public class JVBoysSoccerRobot {
             initHardware();
         }
         drivetrainSubsystem = new Drivetrain(hwMap, telemetry, this);
+
+        if (RobotSettings.STORE_POSE) {
+            drivetrainSubsystem.initYaw = RobotSettings.POSE_STORAGE;
+            RobotSettings.STORE_POSE = false;
+        }else {
+            drivetrainSubsystem.resetInitYaw();
+        }
+        telemetry.addData("INIT YAW: ", drivetrainSubsystem.initYaw);
+
         clawSubsystem = new Claw(hwMap, telemetry, this);
         armSubsystem = new Arm(hwMap, telemetry, this);
 
@@ -90,6 +102,7 @@ public class JVBoysSoccerRobot {
             this.telemetry = telemetry;
 
             Arm.AUTO_NORESET_ARM_POSITION = true;
+            RobotSettings.STORE_POSE = true;
 
             // Configuring Hubs to auto mode for bulk reads
             allHubs = hwMap.getAll(LynxModule.class);
@@ -104,6 +117,9 @@ public class JVBoysSoccerRobot {
             clawSubsystem = new Claw(hwMap, telemetry, this);
             armSubsystem = new Arm(hwMap, telemetry, this);
             subsystems = Arrays.asList(clawSubsystem, armSubsystem);
+
+            RobotSettings.POSE_STORAGE = imu.getRobotOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle;
+            telemetry.addData("PoseStorage: ", RobotSettings.POSE_STORAGE);
             BR = new BulkReading(this, true);
         }
     }

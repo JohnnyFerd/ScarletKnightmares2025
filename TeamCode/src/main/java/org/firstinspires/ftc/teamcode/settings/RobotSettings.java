@@ -16,6 +16,9 @@ public class RobotSettings {
     public static double RIGGING_POWER = 0.6;
     public static double RIGGING_FEEDFORWARD = 0.25;
 
+    public static double POSE_STORAGE = 0;
+    public static boolean STORE_POSE = false;
+
     // DRIVETRAIN
 
     public static final String FL_NAME = "FL";

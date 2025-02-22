@@ -23,7 +23,7 @@ public class Arm extends Subsystem {
 
     public static boolean AUTO_NORESET_ARM_POSITION = false;
 
-    public static double PIVOT_OFFSET = -0.03;
+    public static double PIVOT_OFFSET = 0.24;
 
     public static int TELEOP_MAX_VELOCITY = 12000;
     public static int TELEOP_MAX_ACCELERATION = 12000; // encoder ticks per second
@@ -43,16 +43,16 @@ public class Arm extends Subsystem {
 
     public static int armPresetRest = -20; //
 //    public static int armPresetIntakeSpecimen = 4810;
-    public static int armPresetIntakeSpecimen = 510; //
+    public static int armPresetIntakeSpecimen = 515; //
 
     public static double automaticDepositTimeDelay = 0.18;
 
-    public static double clawWrist0 = 0.815;
-    public static double clawWrist45 = 0.6275;
-    public static double clawWrist90 = 0.44;
+    public static double clawWrist0 = 0.79;
+    public static double clawWrist45 = 0.6075;
+    public static double clawWrist90 = 0.425;
 
     public static int armLowerConstantSample = 225;
-    public static int armLowerConstantSpecimen = 400;
+    public static int armLowerConstantSpecimen = 430;
     public static int armPresetIntakeSample = 4820; //
     public static int armPresetDepositSpecimen = 3900; //
     public static int armPresetDepositSample = 2750; //

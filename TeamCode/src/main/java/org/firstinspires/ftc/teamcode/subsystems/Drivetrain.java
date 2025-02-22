@@ -8,6 +8,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.teamcode.opmodes.auto.PoseStorage;
+import org.firstinspires.ftc.teamcode.settings.RobotSettings;
 import org.firstinspires.ftc.teamcode.settings.UseTelemetry;
 
 public class Drivetrain extends Subsystem {
@@ -18,7 +19,7 @@ public class Drivetrain extends Subsystem {
 
     private  double  power, theta, sin, cos, max;
     public Orientation lastAngle;
-    private double initYaw;
+    public double initYaw;
     private double powerFL, powerFR, powerBL, powerBR;
 
     private double prevPowerFL, prevPowerFR, prevPowerBL, prevPowerBR;
@@ -39,7 +40,6 @@ public class Drivetrain extends Subsystem {
         prevPowerFR = -5;
 
 //        if (!PoseStorage.AUTO_SHIFTED) {
-            resetInitYaw();
 //        }else {
 //            initYaw = PoseStorage.ORIGINAL_INIT_YAW + PoseStorage.AUTO_SHIFT_YAW;
 //        }
