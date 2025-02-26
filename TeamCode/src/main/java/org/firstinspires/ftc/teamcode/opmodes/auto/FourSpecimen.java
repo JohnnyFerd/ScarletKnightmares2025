@@ -48,8 +48,8 @@ public class FourSpecimen extends AutoBase {
     ));
     private AccelConstraint midAccelConstraint = new ProfileAccelConstraint(-15, 30.0);
 
-    private VelConstraint velConstraint40 = new MinVelConstraint(Arrays.asList(
-            new TranslationalVelConstraint(40.0),
+    private VelConstraint velConstraint35 = new MinVelConstraint(Arrays.asList(
+            new TranslationalVelConstraint(32.0),
             new AngularVelConstraint(Math.PI)
     ));
 
@@ -137,7 +137,7 @@ public class FourSpecimen extends AutoBase {
         // actions that need to happen on init
         Actions.runBlocking(
                 new ParallelAction(
-                        clawSystem.closeClaw()
+                        clawSystem.closeClawTight()
                 )
         );
 
@@ -699,17 +699,17 @@ public class FourSpecimen extends AutoBase {
                 .setReversed(false)
                 .strafeToLinearHeading(new Vector2d(42, -45), Math.toRadians(270));
         TrajectoryActionBuilder intakeSecondSpecimen2B = intakeSecondSpecimenB.endTrajectory().fresh()
-                .strafeTo(new Vector2d(42, -54));
+                .strafeTo(new Vector2d(42, -54.5));
         TrajectoryActionBuilder depositSecondSpecimen1B = intakeSecondSpecimen2B.endTrajectory().fresh()
 //                .setReversed(false)
 ////                .setTangent(180)
 ////                .splineToSplineHeading(new Pose2d(2, -38, Math.toRadians(90)), Math.toRadians(90));
 //                .strafeToConstantHeading(new Vector2d(2, -55))
                 .setTangent(Math.toRadians(180))
-                .splineToConstantHeading(new Vector2d(1.5, -46.5), Math.toRadians(90), velConstraint40);
+                .splineToConstantHeading(new Vector2d(1.5, -46.75), Math.toRadians(90), velConstraint35);
         TrajectoryActionBuilder depositSecondSpecimen2B = drive.actionBuilderFast(new Pose2d(1.5, -55, Math.toRadians(270)))
-                .strafeTo(new Vector2d(1.5, -46.5));
-        TrajectoryActionBuilder pickUpThirdSpecimen1B = drive.actionBuilder(new Pose2d(1.5, -46.5, Math.toRadians(270)))
+                .strafeTo(new Vector2d(1.5, -46.75));
+        TrajectoryActionBuilder pickUpThirdSpecimen1B = drive.actionBuilder(new Pose2d(1.5, -46.75, Math.toRadians(270)))
                 .setTangent(Math.toRadians(0))
                 .splineToConstantHeading(new Vector2d(36, -55), Math.toRadians(270), midVelConstraint);
         TrajectoryActionBuilder pickUpThirdSpecimen2B = pickUpThirdSpecimen1B.endTrajectory().fresh()
@@ -719,11 +719,11 @@ public class FourSpecimen extends AutoBase {
 //                .splineToSplineHeading(new Pose2d(5, -38, Math.toRadians(90)), Math.toRadians(90));
 //                .strafeToConstantHeading(new Vector2d(-2, -55));
                 .setTangent(Math.toRadians(180))
-                .splineToConstantHeading(new Vector2d(-2, -46.5), Math.toRadians(90), velConstraint40);
+                .splineToConstantHeading(new Vector2d(-2, -46), Math.toRadians(90), velConstraint35);
         TrajectoryActionBuilder depositThirdSpecimen2B = drive.actionBuilderFast(new Pose2d(-2, -55, Math.toRadians(270)))
-                .strafeTo(new Vector2d(-2, -46.5));
+                .strafeTo(new Vector2d(-2, -46));
 
-        TrajectoryActionBuilder pickUpFourthSpecimen1B = drive.actionBuilder(new Pose2d(-2, -46.5, Math.toRadians(270)))
+        TrajectoryActionBuilder pickUpFourthSpecimen1B = drive.actionBuilder(new Pose2d(-2, -46, Math.toRadians(270)))
                 .setTangent(Math.toRadians(0))
                 .splineToConstantHeading(new Vector2d(36, -55), Math.toRadians(270), midVelConstraint);
         TrajectoryActionBuilder pickUpFourthSpecimen2B = pickUpFourthSpecimen1B.endTrajectory().fresh()
@@ -733,11 +733,11 @@ public class FourSpecimen extends AutoBase {
 //                .splineToSplineHeading(new Pose2d(5, -38, Math.toRadians(90)), Math.toRadians(90));
 //                .strafeToConstantHeading(new Vector2d(-6, -55));
                 .setTangent(Math.toRadians(180))
-                .splineToConstantHeading(new Vector2d(-6, -46.5), Math.toRadians(90), velConstraint40);
+                .splineToConstantHeading(new Vector2d(-6, -46), Math.toRadians(90), velConstraint35);
         TrajectoryActionBuilder depositFourthSpecimen2B = drive.actionBuilderFast(new Pose2d(-6, -55, Math.toRadians(270)))
-                .strafeTo(new Vector2d(-6, -46.5));
-        TrajectoryActionBuilder moveBackToObservationZoneB = drive.actionBuilder(new Pose2d(-6, -46.5, Math.toRadians(270)))
-                .strafeToLinearHeading(new Vector2d(55, -55), Math.toRadians(90));
+                .strafeTo(new Vector2d(-6, -46));
+        TrajectoryActionBuilder moveBackToObservationZoneB = drive.actionBuilder(new Pose2d(-6, -46, Math.toRadians(270)))
+                .strafeToSplineHeading(new Vector2d(55, -55), Math.toRadians(90));
 
         depositFirstSpecimen1 = depositFirstSpecimen1B.build();
         depositFirstSpecimen2 = depositFirstSpecimen2B.build();
@@ -803,7 +803,7 @@ public class FourSpecimen extends AutoBase {
 ////                .splineToSplineHeading(new Pose2d(2, -38, Math.toRadians(90)), Math.toRadians(90));
 //                .strafeToConstantHeading(new Vector2d(2, -55))
                 .setTangent(Math.toRadians(180))
-                .splineToConstantHeading(new Vector2d(1.5, -46.5), Math.toRadians(90), velConstraint40);
+                .splineToConstantHeading(new Vector2d(1.5, -46.5), Math.toRadians(90), velConstraint35);
         TrajectoryActionBuilder depositSecondSpecimen2B = drive.actionBuilderFast(new Pose2d(1.5, -55, Math.toRadians(270)))
                 .strafeTo(new Vector2d(1.5, -46.5));
         TrajectoryActionBuilder pickUpThirdSpecimen1B = drive.actionBuilder(new Pose2d(1.5, -46.5, Math.toRadians(270)))
@@ -816,7 +816,7 @@ public class FourSpecimen extends AutoBase {
 //                .splineToSplineHeading(new Pose2d(5, -38, Math.toRadians(90)), Math.toRadians(90));
 //                .strafeToConstantHeading(new Vector2d(-2, -55));
                 .setTangent(Math.toRadians(180))
-                .splineToConstantHeading(new Vector2d(-2, -46.5), Math.toRadians(90), velConstraint40);
+                .splineToConstantHeading(new Vector2d(-2, -46.5), Math.toRadians(90), velConstraint35);
         TrajectoryActionBuilder depositThirdSpecimen2B = drive.actionBuilderFast(new Pose2d(-2, -55, Math.toRadians(270)))
                 .strafeTo(new Vector2d(-2, -46.5));
 
@@ -830,7 +830,7 @@ public class FourSpecimen extends AutoBase {
 //                .splineToSplineHeading(new Pose2d(5, -38, Math.toRadians(90)), Math.toRadians(90));
 //                .strafeToConstantHeading(new Vector2d(-6, -55));
                 .setTangent(Math.toRadians(180))
-                .splineToConstantHeading(new Vector2d(-6, -46.5), Math.toRadians(90), velConstraint40);
+                .splineToConstantHeading(new Vector2d(-6, -46.5), Math.toRadians(90), velConstraint35);
         TrajectoryActionBuilder depositFourthSpecimen2B = drive.actionBuilderFast(new Pose2d(-6, -55, Math.toRadians(270)))
                 .strafeTo(new Vector2d(-6, -46.5));
         TrajectoryActionBuilder moveBackToObservationZoneB = drive.actionBuilder(new Pose2d(-6, -46.5, Math.toRadians(270)))

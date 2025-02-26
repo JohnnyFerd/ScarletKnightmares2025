@@ -37,22 +37,23 @@ public abstract class AutoBase extends LinearOpMode {
     protected ArmLift armLift;
     protected ClawSystem clawSystem;
 
-    public static int DEPOSIT_SPECIMEN_FIRST = 3890;
+    public static int DEPOSIT_SPECIMEN_FIRST = 3860;
     public static int DEPOSIT_SPECIMEN_POS = DEPOSIT_SPECIMEN_FIRST;
-    public static int DEPOSIT_SPECIMEN_SECOND = 3890;
+    public static int DEPOSIT_SPECIMEN_SECOND = 3860;
     public static int DEPOSIT_SPECIMEN_DOWN = 3400;
-    public static int DEPOSIT_SPECIMEN_UP = Arm.armPresetDepositSpecimen + 300;
+    public static int DEPOSIT_SPECIMEN_UP = Arm.armPresetDepositSpecimen + 350;
 
     public static int ARM_UP = 2750;
 
-    public static int INTAKE_SPECIMEN_POS = 530;
+    public static int INTAKE_SPECIMEN_POS = 600;
+    public static int INTAKE_SPECIMEN_POS_HIGHER = 600;
     public static int DEPOSIT_SAMPLE_POS = Arm.armPresetDepositSample;
     public static int INTAKE_SAMPLE_POS = Arm.armPresetIntakeSample;
-    public static double PIVOT_INTAKE_POS = 0.45 - Arm.PIVOT_OFFSET;
+    public static double PIVOT_INTAKE_POS = 0.43 - Arm.PIVOT_OFFSET;
 
-    public static double clawWristAuto45 = 0.6075;
+    public static double clawWristAuto45 = 0.755;
     public static double clawWristAuto180 = 0.1;
-    public static double clawWristAuto135 = 0.2425;
+    public static double clawWristAuto135 = 0.405;
 
     protected boolean isBlue = false;
 
@@ -244,7 +245,7 @@ public abstract class AutoBase extends LinearOpMode {
             @Override
             public boolean run(@NonNull TelemetryPacket telemetryPacket) {
                 if (!initialized) {
-                    robot.armSubsystem.setMotionProfile(INTAKE_SPECIMEN_POS);
+                    robot.armSubsystem.setMotionProfile(INTAKE_SPECIMEN_POS_HIGHER); // TODO: uses higher value
                     robot.armSubsystem.pivotCounter = 1;
                     initialized = true;
                 }
@@ -275,6 +276,25 @@ public abstract class AutoBase extends LinearOpMode {
         }
         public Action intakeSpecimen() {
             return new IntakeSpecimen();
+        }
+
+        public class IntakeSpecimenHigher implements Action {
+            private boolean initialized = false;
+            @Override
+            public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                if (!initialized) {
+                    robot.armSubsystem.setMotionProfile(INTAKE_SPECIMEN_POS_HIGHER);
+                    robot.armSubsystem.setPivot(PIVOT_INTAKE_POS);
+                    initialized = true;
+                }
+                if (!robot.armSubsystem.getMP().isBusy()) {
+                    return false;
+                }
+                return true;
+            }
+        }
+        public Action intakeSpecimenHigher() {
+            return new IntakeSpecimenHigher();
         }
 
         public class DepositSample implements Action {

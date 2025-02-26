@@ -20,10 +20,10 @@ public class Claw extends Subsystem {
 
     public static boolean useTightClaw = false;
 
-    public static double CLAW_CLOSED_POSITIONL = 0.185;
-    public static double CLAW_CLOSED_POSITIONR = 0.13;
-    public static double CLAW_CLOSED_POSITIONL_TIGHT = 0.17;
-    public static double CLAW_CLOSED_POSITIONR_TIGHT = 0.12;
+    public static double CLAW_CLOSED_POSITIONL = 0.165;
+    public static double CLAW_CLOSED_POSITIONR = 0.105;
+    public static double CLAW_CLOSED_POSITIONL_TIGHT = 0.145;
+    public static double CLAW_CLOSED_POSITIONR_TIGHT = 0.085;
 
     public static double CLAW_OPENED_POSITIONL_WIDE = 0.55;
     public static double CLAW_OPENED_POSITIONR_WIDE = 0.47;

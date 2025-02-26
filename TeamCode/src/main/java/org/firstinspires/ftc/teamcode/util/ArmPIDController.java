@@ -14,7 +14,7 @@ public class ArmPIDController {
     private JVBoysSoccerRobot robot;
     private Telemetry telemetry;
     // public static double p_BIG = 0.0028, i_BIG = 0.0000028, d_BIG = 0.000000002, f = 0.004;
-    public static double p_BIG = 0.0028, i_BIG = 0.0000022, d_BIG = 0.0000000001, f = 0.0003;
+    public static double p_BIG = 0.0028, i_BIG = 0.0000022, d_BIG = 0.0000000001, f = 0.00035;
     public static double p_SMALL = 0, i_SMALL = 0, d_SMALL = 0;
 
     private final double motorEncoderTicks = RobotSettings.TOTAL_ENCODER_TICKS;
@@ -24,7 +24,7 @@ public class ArmPIDController {
     private double previousRefPos = 100000;
     private double distance = 0;
 
-    private final double VERTICAL_POS = 2750;
+    private final double VERTICAL_POS = 2850;
 
 
     public ArmPIDController(JVBoysSoccerRobot robot, Telemetry telemetry) {
