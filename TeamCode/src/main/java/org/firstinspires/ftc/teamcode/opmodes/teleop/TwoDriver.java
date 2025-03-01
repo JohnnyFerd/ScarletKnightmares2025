@@ -499,7 +499,7 @@ public class TwoDriver extends LinearOpMode {
                     wrist0 = true;
                     Claw.useTightClaw = false;
                 }
-                if (currentGamepad2.b && !previousGamepad2.b) {
+                if (currentGamepad2.b && !previousGamepad2.b) { // TODO: fix this??? this button doesn't work???
                     robot.servoWrist.setPosition(Arm.clawWrist0);
                     leftClosed = false;
                     rightClosed = false;

@@ -37,19 +37,21 @@ public abstract class AutoBase extends LinearOpMode {
     protected ArmLift armLift;
     protected ClawSystem clawSystem;
 
-    public static int DEPOSIT_SPECIMEN_FIRST = 3860;
+    public static int DEPOSIT_SPECIMEN_FIRST = 3920;
     public static int DEPOSIT_SPECIMEN_POS = DEPOSIT_SPECIMEN_FIRST;
-    public static int DEPOSIT_SPECIMEN_SECOND = 3860;
-    public static int DEPOSIT_SPECIMEN_DOWN = 3400;
-    public static int DEPOSIT_SPECIMEN_UP = Arm.armPresetDepositSpecimen + 350;
+    public static int DEPOSIT_SPECIMEN_SECOND = 3920;
+    public static int DEPOSIT_SPECIMEN_DOWN = 3350;
+    public static int DEPOSIT_SPECIMEN_UP = Arm.armPresetDepositSpecimen + 400;
 
-    public static int ARM_UP = 2750;
+    public static int ARM_UP = 2780;
 
     public static int INTAKE_SPECIMEN_POS = 600;
     public static int INTAKE_SPECIMEN_POS_HIGHER = 600;
     public static int DEPOSIT_SAMPLE_POS = Arm.armPresetDepositSample;
     public static int INTAKE_SAMPLE_POS = Arm.armPresetIntakeSample;
     public static double PIVOT_INTAKE_POS = 0.43 - Arm.PIVOT_OFFSET;
+
+    public static double PIVOT_DEPOSIT_SPECIMEN_POS = 0.36 - Arm.PIVOT_OFFSET;
 
     public static double clawWristAuto45 = 0.755;
     public static double clawWristAuto180 = 0.1;
@@ -154,7 +156,7 @@ public abstract class AutoBase extends LinearOpMode {
             public boolean run(@NonNull TelemetryPacket telemetryPacket) {
                 if (!initialized) {
                     robot.armSubsystem.setMotionProfile(DEPOSIT_SPECIMEN_POS);
-                    robot.armSubsystem.pivotCounter = 3;
+                    robot.armSubsystem.pivotCounter = 8;
                     initialized = true;
                 }
 //                robot.armSubsystem.armState = Arm.ArmState.MOTION_PROFILE;

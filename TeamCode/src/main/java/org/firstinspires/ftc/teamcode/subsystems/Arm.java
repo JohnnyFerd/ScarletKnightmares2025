@@ -4,6 +4,7 @@ import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.teamcode.opmodes.auto.AutoBase;
 import org.firstinspires.ftc.teamcode.settings.UseTelemetry;
 import org.firstinspires.ftc.teamcode.util.BulkReading;
 import org.firstinspires.ftc.teamcode.util.MotionProfile;
@@ -23,7 +24,7 @@ public class Arm extends Subsystem {
 
     public static boolean AUTO_NORESET_ARM_POSITION = false;
 
-    public static double PIVOT_OFFSET = 0.04;
+    public static double PIVOT_OFFSET = 0.06;
 
     public static int TELEOP_MAX_VELOCITY = 12000;
     public static int TELEOP_MAX_ACCELERATION = 12000; // encoder ticks per second
@@ -31,7 +32,7 @@ public class Arm extends Subsystem {
 
     public static int AUTO_MAX_VELOCITY = 12000;
     public static int AUTO_MAX_ACCELERATION = 12000; // encoder ticks per second
-    public static int AUTO_MAX_DECELERATION = 2500;
+    public static int AUTO_MAX_DECELERATION = 2250;
 
     public static int DEFAULT_MAX_VELOCITY = 12000; // enocder ticks per second
     public static int DEFAULT_MAX_ACCELERATION = 12000; // encoder ticks per second
@@ -43,7 +44,7 @@ public class Arm extends Subsystem {
 
     public static int armPresetRest = -20; //
 //    public static int armPresetIntakeSpecimen = 4810;
-    public static int armPresetIntakeSpecimen = 590; //
+    public static int armPresetIntakeSpecimen = 605; //
 
     public static double automaticDepositTimeDelay = 0.18;
 
@@ -54,15 +55,15 @@ public class Arm extends Subsystem {
     public static int armLowerConstantSample = 225;
     public static int armLowerConstantSpecimen = 450;
     public static int armPresetIntakeSample = 4975; //
-    public static int armPresetDepositSpecimen = 3860; //
-    public static int armPresetDepositSample = 2750; //
+    public static int armPresetDepositSpecimen = 3930; //
+    public static int armPresetDepositSample = 2780; //
 
     public static int armPresetRigging = 2600;
 
     public static double pivotPresetRest = 0.95 - PIVOT_OFFSET;
-    public static double pivotPresetIntakeSpecimen = 0.43 - PIVOT_OFFSET;
-    public static double pivotPresetIntakeSample = 0.69 - PIVOT_OFFSET;
-    public static double pivotPresetDepositSpecimen = 0.39 - PIVOT_OFFSET;
+    public static double pivotPresetIntakeSpecimen = 0.42 - PIVOT_OFFSET;
+    public static double pivotPresetIntakeSample = 0.64 - PIVOT_OFFSET;
+    public static double pivotPresetDepositSpecimen = 0.34 - PIVOT_OFFSET;
     public static double pivotPresetDepositSample = 0.67 - PIVOT_OFFSET;
 
     public static final int armPresetIntakeSpecimenGround = 0;
@@ -74,9 +75,9 @@ public class Arm extends Subsystem {
     public static final double wristSpeedConstant = 0.008;
     public static final double armSpeedConstant = 8;
 
-    public static int armPresetDepositSpecimenFront = 1540;
-    public static double pivotPresetDepositSpecimenFront = 0.43 - PIVOT_OFFSET;
-    public static int armPresetDepositSpecimenFrontUp = 1900;
+    public static int armPresetDepositSpecimenFront = 1610;
+    public static double pivotPresetDepositSpecimenFront = 0.34 - PIVOT_OFFSET;
+    public static int armPresetDepositSpecimenFrontUp = 2050;
 
     public static int armPresetDepositSpecimenRamFront = 2000;
     public static double pivotPresetDepositSpecimeRamFront = 0.4;
@@ -389,6 +390,11 @@ public class Arm extends Subsystem {
                 break;
             case 7:
                 setPivotDepositSpecimenRam();
+                break;
+            case 8:
+                robot.servoPivotL.setPosition(AutoBase.PIVOT_DEPOSIT_SPECIMEN_POS);
+                robot.servoPivotR.setPosition(AutoBase.PIVOT_DEPOSIT_SPECIMEN_POS);
+                previousPivotPos = AutoBase.PIVOT_DEPOSIT_SPECIMEN_POS;
                 break;
         }
         pivotCounter = 0;

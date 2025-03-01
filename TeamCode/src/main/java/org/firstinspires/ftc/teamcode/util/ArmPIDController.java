@@ -13,18 +13,22 @@ public class ArmPIDController {
 
     private JVBoysSoccerRobot robot;
     private Telemetry telemetry;
-    // public static double p_BIG = 0.0028, i_BIG = 0.0000028, d_BIG = 0.000000002, f = 0.004;
-    public static double p_BIG = 0.0028, i_BIG = 0.0000022, d_BIG = 0.0000000001, f = 0.00035;
+    // public static double p_BIG = 0.0028, i_BIG = 0.000002, d_BIG = 0.00000000022, f = 0.00035;
+    public static double p_BIG = 0.0025, i_BIG = 0.000003, d_BIG = 0.00000000025, f = 0.0004;
     public static double p_SMALL = 0, i_SMALL = 0, d_SMALL = 0;
 
     private final double motorEncoderTicks = RobotSettings.TOTAL_ENCODER_TICKS;
     private double integralSum = 0, lastError = 0;
     private double previousTime = 0;
 
+    private double a = 0.8;
+    private double previousFilterEstimate = 0;
+    private double currentFilterEstimate = 0;
+
     private double previousRefPos = 100000;
     private double distance = 0;
 
-    private final double VERTICAL_POS = 2850;
+    private final double VERTICAL_POS = 2780;
 
 
     public ArmPIDController(JVBoysSoccerRobot robot, Telemetry telemetry) {
@@ -39,10 +43,23 @@ public class ArmPIDController {
         return calculatePID(reference, state, p_BIG, i_BIG, d_BIG);
     }
     public double calculatePID(double reference, double state, double p, double i, double d) {
+        if (previousRefPos != reference) {
+            integralSum = 0;
+        }
         double currentTime = RobotSettings.SUPER_TIME.seconds();
         double error = reference - state;
         integralSum += error * (currentTime - previousTime);
         double derivative = (error - lastError) / (currentTime - previousTime);
+
+        // LOW PASS FILTER
+        // filter out hight frequency noise to increase derivative performance
+        currentFilterEstimate = (a * previousFilterEstimate) + (1-a) * (error-lastError);
+        previousFilterEstimate = currentFilterEstimate;
+
+        // rate of change of the error
+        derivative = currentFilterEstimate / (currentTime - previousTime);
+
+
         lastError = error;
 
         previousTime = RobotSettings.SUPER_TIME.seconds();
