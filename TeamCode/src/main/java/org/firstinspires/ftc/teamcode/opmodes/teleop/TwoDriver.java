@@ -105,7 +105,7 @@ public class TwoDriver extends LinearOpMode {
                 drivetrainControls();
                 clawControls();
                 armControls();
-                riggingControls();
+//                riggingControls();
 
                 telemetry.addData("ARM STATE", armControl);
 
@@ -243,9 +243,9 @@ public class TwoDriver extends LinearOpMode {
             robot.drivetrainSubsystem.resetInitYaw();
         }
 
-        if (currentGamepad1.b && !previousGamepad1.b) {
-            robot.drivetrainSubsystem.orthogonalMode = !robot.drivetrainSubsystem.orthogonalMode;
-        }
+//        if (currentGamepad1.b && !previousGamepad1.b) {
+//            robot.drivetrainSubsystem.orthogonalMode = !robot.drivetrainSubsystem.orthogonalMode;
+//        }
 
         if (currentGamepad1.right_trigger > 0.01 && currentGamepad1.left_trigger > 0.01) {
             x *= 0.3;
@@ -563,7 +563,7 @@ public class TwoDriver extends LinearOpMode {
                 if (RobotSettings.SUPER_TIME.seconds() - intakeSampleTime > pickupTime1) {
                     robot.armSubsystem.armState = Arm.ArmState.BASIC_PID;
 //                    Arm.referencePos = Arm.armPresetIntakeSampleAuto;
-                    Arm.referencePos = BulkReading.pMotorArmR + Arm.armLowerConstantSample;
+                    Arm.referencePos = BulkReading.pMotorArmR + Arm.armLowerConstantSampleTeleop;
                     armControl = ArmControl.INTAKE_SAMPLE2;
                 }
                 break;

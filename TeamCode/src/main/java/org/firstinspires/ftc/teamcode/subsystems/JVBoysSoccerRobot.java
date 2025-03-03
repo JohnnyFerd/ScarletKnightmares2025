@@ -69,6 +69,7 @@ public class JVBoysSoccerRobot {
             initClawHardware();
             initRiggingHardware();
             initArmHardware(false);
+            Arm.armPresetIntakeSample = 4975; //
         }else {
             initHardware();
         }

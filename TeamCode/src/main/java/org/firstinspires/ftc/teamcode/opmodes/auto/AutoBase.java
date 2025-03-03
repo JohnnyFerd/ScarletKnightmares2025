@@ -12,9 +12,6 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Gamepad;
 
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.teamcode.settings.RobotSettings;
 import org.firstinspires.ftc.teamcode.subsystems.Arm;
 import org.firstinspires.ftc.teamcode.subsystems.Claw;
@@ -37,9 +34,9 @@ public abstract class AutoBase extends LinearOpMode {
     protected ArmLift armLift;
     protected ClawSystem clawSystem;
 
-    public static int DEPOSIT_SPECIMEN_FIRST = 3920;
+    public static int DEPOSIT_SPECIMEN_FIRST = 3915;
     public static int DEPOSIT_SPECIMEN_POS = DEPOSIT_SPECIMEN_FIRST;
-    public static int DEPOSIT_SPECIMEN_SECOND = 3920;
+    public static int DEPOSIT_SPECIMEN_SECOND = 3915;
     public static int DEPOSIT_SPECIMEN_DOWN = 3350;
     public static int DEPOSIT_SPECIMEN_UP = Arm.armPresetDepositSpecimen + 400;
 
@@ -51,7 +48,7 @@ public abstract class AutoBase extends LinearOpMode {
     public static int INTAKE_SAMPLE_POS = Arm.armPresetIntakeSample;
     public static double PIVOT_INTAKE_POS = 0.43 - Arm.PIVOT_OFFSET;
 
-    public static double PIVOT_DEPOSIT_SPECIMEN_POS = 0.36 - Arm.PIVOT_OFFSET;
+    public static double PIVOT_DEPOSIT_SPECIMEN_POS = 0.34 - Arm.PIVOT_OFFSET;
 
     public static double clawWristAuto45 = 0.755;
     public static double clawWristAuto180 = 0.1;
@@ -339,7 +336,7 @@ public abstract class AutoBase extends LinearOpMode {
             @Override
             public boolean run(@NonNull TelemetryPacket telemetryPacket) {
                 robot.armSubsystem.armState = Arm.ArmState.BASIC_PID;
-                Arm.referencePos = BulkReading.pMotorArmR + Arm.armLowerConstantSample;
+                Arm.referencePos = BulkReading.pMotorArmR + Arm.armLowerConstantSampleAuto;
                 return false;
             }
         }
@@ -436,6 +433,18 @@ public abstract class AutoBase extends LinearOpMode {
         }
         public Action closeClawTight() {
             return new CloseClawTight();
+        }
+
+        public class CloseClawTightest implements Action {
+            @Override
+            public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                Claw.useTightClaw = true;
+                robot.clawSubsystem.closeBothClawTightest();
+                return false;
+            }
+        }
+        public Action closeClawTightest() {
+            return new CloseClawTightest();
         }
 
         public class OpenClaw implements Action {
