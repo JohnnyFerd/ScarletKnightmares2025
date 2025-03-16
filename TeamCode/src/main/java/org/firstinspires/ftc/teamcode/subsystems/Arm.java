@@ -24,7 +24,7 @@ public class Arm extends Subsystem {
 
     public static boolean AUTO_NORESET_ARM_POSITION = false;
 
-    public static double PIVOT_OFFSET = 0.07;
+    public static double PIVOT_OFFSET = 0;
 
     public static int TELEOP_MAX_VELOCITY = 12000;
     public static int TELEOP_MAX_ACCELERATION = 12000; // encoder ticks per second
@@ -52,19 +52,19 @@ public class Arm extends Subsystem {
     public static double clawWrist45 = 0.755;
     public static double clawWrist90 = 0.58;
 
-    public static int armLowerConstantSampleTeleop = 200;
+    public static int armLowerConstantSampleTeleop = 225;
     public static int armLowerConstantSampleAuto = 225;
     public static int armLowerConstantSpecimen = 450;
-    public static int armPresetIntakeSample = 5000; //
+    public static int armPresetIntakeSample = 4975; //
     public static int armPresetDepositSpecimen = 3930; //
     public static int armPresetDepositSample = 2780; //
 
     public static int armPresetRigging = 2600;
 
     public static double pivotPresetRest = 0.95 - PIVOT_OFFSET;
-    public static double pivotPresetIntakeSpecimen = 0.42 - PIVOT_OFFSET;
-    public static double pivotPresetIntakeSample = 0.64 - PIVOT_OFFSET;
-    public static double pivotPresetDepositSpecimen = 0.34 - PIVOT_OFFSET;
+    public static double pivotPresetIntakeSpecimen = 0.40 - PIVOT_OFFSET;
+    public static double pivotPresetIntakeSample = 0.59 - PIVOT_OFFSET;
+    public static double pivotPresetDepositSpecimen = 0.29 - PIVOT_OFFSET;
     public static double pivotPresetDepositSample = 0.67 - PIVOT_OFFSET;
 
     public static final int armPresetIntakeSpecimenGround = 0;
@@ -76,9 +76,9 @@ public class Arm extends Subsystem {
     public static final double wristSpeedConstant = 0.008;
     public static final double armSpeedConstant = 8;
 
-    public static int armPresetDepositSpecimenFront = 1625;
-    public static double pivotPresetDepositSpecimenFront = 0.34 - PIVOT_OFFSET;
-    public static int armPresetDepositSpecimenFrontUp = 2110;
+    public static int armPresetDepositSpecimenFront = 1580;
+    public static double pivotPresetDepositSpecimenFront = 0.31 - PIVOT_OFFSET;
+    public static int armPresetDepositSpecimenFrontUp = 2080;
 
     public static int armPresetDepositSpecimenRamFront = 2000;
     public static double pivotPresetDepositSpecimeRamFront = 0.4;
@@ -412,6 +412,7 @@ public class Arm extends Subsystem {
         previousPivotPos = pivotPresetDepositSpecimeRam;
     }
     public void setPivotRest() {
+        pivotCounter = 0;
         robot.servoPivotL.setPosition(pivotPresetRest);
         robot.servoPivotR.setPosition(pivotPresetRest);
         previousPivotPos = pivotPresetRest;

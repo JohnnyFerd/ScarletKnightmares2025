@@ -24,7 +24,7 @@ import org.firstinspires.ftc.teamcode.subsystems.Arm;
 import java.util.Arrays;
 
 @Config
-@Autonomous (name="0+4 Auto Final", group="Testing")
+@Autonomous (name="4+0 Auto Final", group="Testing")
 public class FourSpecimen extends AutoBase {
 
     private boolean choicePicked = false;
@@ -36,7 +36,7 @@ public class FourSpecimen extends AutoBase {
     private Action depositFirstSpecimen1, depositFirstSpecimen2, pickUpSecondSpecimen1, pickUpSecondSpecimen2, depositSecondSpecimen1, depositSecondSpecimen2, moveBackToObservationZone2;
     private Action moveToFirstSample, moveToSecondSample;
     private Action moveToFirstSample2, moveToSecondSample2;
-    private Action moveToThirdSample, moveToThirdSample2;
+    private Action moveToThirdSample, moveToThirdSample2, moveToThirdSample3;
     private Action pickUpThirdSpecimen1, pickUpThirdSpecimen2;
     private Action depositThirdSpecimen1, depositThirdSpecimen2;
     private Action pickUpFourthSpecimen1, pickUpFourthSpecimen2;
@@ -50,6 +50,11 @@ public class FourSpecimen extends AutoBase {
 
     private VelConstraint velConstraint35 = new MinVelConstraint(Arrays.asList(
             new TranslationalVelConstraint(32.0),
+            new AngularVelConstraint(Math.PI)
+    ));
+
+    private VelConstraint velConstraint40 = new MinVelConstraint(Arrays.asList(
+            new TranslationalVelConstraint(40.0),
             new AngularVelConstraint(Math.PI)
     ));
 
@@ -448,10 +453,10 @@ public class FourSpecimen extends AutoBase {
                                 armLift.updateArmSubsystem(),
                                 new SequentialAction(
                                         new ParallelAction(
-                                                new SequentialAction(
-                                                        new SleepAction(0.2),
-                                                        depositFirstSpecimen1
-                                                ),
+//                                                new SequentialAction(
+//                                                        new SleepAction(0.1),
+                                                        depositFirstSpecimen1,
+//                                                ),
                                                 armLift.depositSpecimenFront()
                                         ),
                                         depositFirstSpecimen2,
@@ -470,9 +475,9 @@ public class FourSpecimen extends AutoBase {
                                                 )
                                         ),
                                         armLift.intakeSampleDown(),
-                                        new SleepAction(0.2),
+                                        new SleepAction(0.15),
                                         clawSystem.closeClaw(),
-                                        new SleepAction(0.2),
+                                        new SleepAction(0.15),
                                         armLift.intakeSampleUp(),
                                         moveToFirstSample2,
                                         clawSystem.openClaw(),
@@ -480,9 +485,9 @@ public class FourSpecimen extends AutoBase {
                                         // push second sample
                                         moveToSecondSample,
                                         armLift.intakeSampleDown(),
-                                        new SleepAction(0.2),
+                                        new SleepAction(0.15),
                                         clawSystem.closeClaw(),
-                                        new SleepAction(0.2),
+                                        new SleepAction(0.15),
                                         armLift.intakeSampleUp(),
                                         moveToSecondSample2,
                                         clawSystem.openClawWide(),
@@ -491,18 +496,19 @@ public class FourSpecimen extends AutoBase {
                                         clawSystem.clawWrist45(),
                                         moveToThirdSample,
                                         armLift.intakeSampleDown(),
-                                        new SleepAction(0.2),
+                                        new SleepAction(0.15),
                                         clawSystem.closeClaw(),
-                                        new SleepAction(0.5),
+                                        new SleepAction(0.4),
                                         armLift.intakeSampleUp(),
                                         moveToThirdSample2,
+//                                        moveToThirdSample3,
                                         clawSystem.openClaw(),
 
                                         // pick up second specimen
                                         clawSystem.clawWrist0(),
                                         new ParallelAction(
                                                 new SequentialAction(
-                                                        new SleepAction(0.25),
+                                                        new SleepAction(0.2),
                                                         pickUpSecondSpecimen1
                                                 ),
                                                 armLift.intakeSpecimenPivotTimed()
@@ -770,45 +776,50 @@ public class FourSpecimen extends AutoBase {
                 .setReversed(true)
 //                .setTangent(Math.toRadians(270))
 //                .splineToSplineHeading(new Pose2d(32, -41, Math.toRadians(225)), Math.toRadians(45));
-                .strafeToSplineHeading(new Vector2d(32, -42.5), Math.toRadians(225));
+                .strafeToSplineHeading(new Vector2d(32, -43), Math.toRadians(225));
 //                .strafeToConstantHeading(new Vector2d(49, -49));
-        TrajectoryActionBuilder pushFirstSample2B = drive.actionBuilderFast(new Pose2d(32, -42.5, Math.toRadians(225)))
+        TrajectoryActionBuilder pushFirstSample2B = drive.actionBuilderFast(new Pose2d(32, -43, Math.toRadians(225)))
                 .setReversed(true)
-                .strafeToSplineHeading(new Vector2d(42, -46), Math.toRadians(135));
-        TrajectoryActionBuilder pushSecondSampleB = drive.actionBuilder(new Pose2d(42, -46, Math.toRadians(135)))
+                .strafeToSplineHeading(new Vector2d(40, -46), Math.toRadians(135));
+        TrajectoryActionBuilder pushSecondSampleB = drive.actionBuilder(new Pose2d(40, -46, Math.toRadians(135)))
                 .setReversed(true)
-                .strafeToSplineHeading(new Vector2d(42, -41.5), Math.toRadians(225));
-        TrajectoryActionBuilder pushSecondSample2B = drive.actionBuilderFast(new Pose2d(42, -41.5, Math.toRadians(225)))
+                .strafeToSplineHeading(new Vector2d(39.5, -41.5), Math.toRadians(225));
+        TrajectoryActionBuilder pushSecondSample2B = drive.actionBuilderFast(new Pose2d(39.5, -41.5, Math.toRadians(225)))
                 .setReversed(true)
-                .strafeToSplineHeading(new Vector2d(42, -46), Math.toRadians(135));
-        TrajectoryActionBuilder pushThirdSampleB = drive.actionBuilder(new Pose2d(42, -46, Math.toRadians(135)))
+                .strafeToSplineHeading(new Vector2d(35, -46), Math.toRadians(135));
+        TrajectoryActionBuilder pushThirdSampleB = drive.actionBuilder(new Pose2d(35, -46, Math.toRadians(135)))
                 .setReversed(true)
-                .strafeToSplineHeading(new Vector2d(43, -46), Math.toRadians(225))
-                .strafeToConstantHeading(new Vector2d(49.5, -41));
-//                .strafeToSplineHeading(new Vector2d(49.5, -41), Math.toRadians(225));
-        TrajectoryActionBuilder pushThirdSample2B = drive.actionBuilderFast(new Pose2d(49.5, -41, Math.toRadians(225)))
+//                .strafeToSplineHeading(new Vector2d(41, -46), Math.toRadians(225));
+                .setTangent(Math.toRadians(0)) // starting tangent
+                .splineToLinearHeading(new Pose2d(49.5, -41.5, Math.toRadians(225)), Math.toRadians(0));
+        TrajectoryActionBuilder pushThirdSample2B = drive.actionBuilderFast(new Pose2d(49.5, -41.5, Math.toRadians(225)))
+//                .strafeToConstantHeading(new Vector2d(49.5, -41));
                 .setReversed(true)
-                .strafeToConstantHeading(new Vector2d(40, -41)) // TODO: change to spline heading if its faster and we don't hit the wall
-                .strafeToSplineHeading(new Vector2d(42, -46), Math.toRadians(135)); // TODO: change to spline heading if its faster and we don't hit the wall
-        TrajectoryActionBuilder intakeSecondSpecimenB = drive.actionBuilder(new Pose2d(42, -46, Math.toRadians(135)))
+                .setTangent(Math.toRadians(180)) // starting tangent
+                .splineToLinearHeading(new Pose2d(40, -46, Math.toRadians(135)), Math.toRadians(270));
+        TrajectoryActionBuilder pushThirdSample3B = drive.actionBuilderFast(new Pose2d(49.5, -41, Math.toRadians(225)))
+                .setReversed(true)
+//                .strafeToConstantHeading(new Vector2d(40, -41)) // TODO: change to spline heading if its faster and we don't hit the wall
+                .strafeToSplineHeading(new Vector2d(40, -46), Math.toRadians(135)); // TODO: change to spline heading if its faster and we don't hit the wall
+        TrajectoryActionBuilder intakeSecondSpecimenB = drive.actionBuilder(new Pose2d(40, -46, Math.toRadians(135)))
 //                .setTangent(Math.toRadians(180))
 //                .splineToConstantHeading(new Vector2d(36, -57), Math.toRadians(270));
                 .setReversed(false)
-                .strafeToLinearHeading(new Vector2d(42, -45), Math.toRadians(270));
+                .strafeToLinearHeading(new Vector2d(40, -45), Math.toRadians(270));
         TrajectoryActionBuilder intakeSecondSpecimen2B = intakeSecondSpecimenB.endTrajectory().fresh()
-                .strafeTo(new Vector2d(42, -54));
+                .strafeTo(new Vector2d(42, -54.75));
         TrajectoryActionBuilder depositSecondSpecimen1B = intakeSecondSpecimen2B.endTrajectory().fresh()
 //                .setReversed(false)
 ////                .setTangent(180)
 ////                .splineToSplineHeading(new Pose2d(2, -38, Math.toRadians(90)), Math.toRadians(90));
 //                .strafeToConstantHeading(new Vector2d(2, -55))
                 .setTangent(Math.toRadians(180))
-                .splineToConstantHeading(new Vector2d(1.5, -46.5), Math.toRadians(90), velConstraint35);
+                .splineToConstantHeading(new Vector2d(1.5, -46.5), Math.toRadians(90), velConstraint40);
         TrajectoryActionBuilder depositSecondSpecimen2B = drive.actionBuilderFast(new Pose2d(1.5, -55, Math.toRadians(270)))
                 .strafeTo(new Vector2d(1.5, -46.5));
         TrajectoryActionBuilder pickUpThirdSpecimen1B = drive.actionBuilder(new Pose2d(1.5, -46.5, Math.toRadians(270)))
                 .setTangent(Math.toRadians(0))
-                .splineToConstantHeading(new Vector2d(36, -55), Math.toRadians(270), midVelConstraint);
+                .splineToConstantHeading(new Vector2d(36, -55), Math.toRadians(270), velConstraint35);
         TrajectoryActionBuilder pickUpThirdSpecimen2B = pickUpThirdSpecimen1B.endTrajectory().fresh()
                 .strafeTo(new Vector2d(36, -55));
         TrajectoryActionBuilder depositThirdSpecimen1B = pickUpThirdSpecimen2B.endTrajectory().fresh()
@@ -816,13 +827,13 @@ public class FourSpecimen extends AutoBase {
 //                .splineToSplineHeading(new Pose2d(5, -38, Math.toRadians(90)), Math.toRadians(90));
 //                .strafeToConstantHeading(new Vector2d(-2, -55));
                 .setTangent(Math.toRadians(180))
-                .splineToConstantHeading(new Vector2d(-2, -46.5), Math.toRadians(90), velConstraint35);
+                .splineToConstantHeading(new Vector2d(-2, -46.5), Math.toRadians(90), velConstraint40);
         TrajectoryActionBuilder depositThirdSpecimen2B = drive.actionBuilderFast(new Pose2d(-2, -55, Math.toRadians(270)))
                 .strafeTo(new Vector2d(-2, -46.5));
 
         TrajectoryActionBuilder pickUpFourthSpecimen1B = drive.actionBuilder(new Pose2d(-2, -46.5, Math.toRadians(270)))
                 .setTangent(Math.toRadians(0))
-                .splineToConstantHeading(new Vector2d(36, -55), Math.toRadians(270), midVelConstraint);
+                .splineToConstantHeading(new Vector2d(36, -55), Math.toRadians(270), velConstraint35);
         TrajectoryActionBuilder pickUpFourthSpecimen2B = pickUpFourthSpecimen1B.endTrajectory().fresh()
                 .strafeTo(new Vector2d(36, -55));
         TrajectoryActionBuilder depositFourthSpecimen1B = pickUpFourthSpecimen2B.endTrajectory().fresh()
@@ -830,7 +841,7 @@ public class FourSpecimen extends AutoBase {
 //                .splineToSplineHeading(new Pose2d(5, -38, Math.toRadians(90)), Math.toRadians(90));
 //                .strafeToConstantHeading(new Vector2d(-6, -55));
                 .setTangent(Math.toRadians(180))
-                .splineToConstantHeading(new Vector2d(-6, -46.5), Math.toRadians(90), velConstraint35);
+                .splineToConstantHeading(new Vector2d(-6, -46.5), Math.toRadians(90), velConstraint40);
         TrajectoryActionBuilder depositFourthSpecimen2B = drive.actionBuilderFast(new Pose2d(-6, -55, Math.toRadians(270)))
                 .strafeTo(new Vector2d(-6, -46.5));
         TrajectoryActionBuilder moveBackToObservationZoneB = drive.actionBuilder(new Pose2d(-6, -46.5, Math.toRadians(270)))
@@ -845,6 +856,7 @@ public class FourSpecimen extends AutoBase {
 
         moveToThirdSample = pushThirdSampleB.build();
         moveToThirdSample2 = pushThirdSample2B.build();
+        moveToThirdSample3 = pushThirdSample3B.build();
 
         pickUpSecondSpecimen1 = intakeSecondSpecimenB.build();
         pickUpSecondSpecimen2 = intakeSecondSpecimen2B.build();
