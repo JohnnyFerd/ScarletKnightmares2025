@@ -1,8 +1,9 @@
 package org.firstinspires.ftc.teamcode.opmodes.teleop;
 
-import static java.lang.Math.atan2;
 import static java.lang.Math.pow;
 import static java.lang.Math.sqrt;
+import static java.lang.Math.toDegrees;
+import static java.lang.Math.atan2;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -34,13 +35,13 @@ public class DiffySwerveTest extends LinearOpMode {
                 currentGamepad1.copy(gamepad1);
 
                 double x = currentGamepad1.left_stick_x;
-                double y = currentGamepad1.left_stick_y;
+                double y = -currentGamepad1.left_stick_y;
 
-                double speed = (sqrt(pow(x,2) + pow(y,2)))/sqrt(2);
+                double rawMag = sqrt(pow(x, 2) + pow(y, 2));
+                double speed = rawMag / sqrt(2);
 
-                double heading = atan2(y,x);
-
-                swerve.setDesiredState(speed, heading);
+                double heading = toDegrees(atan2(y, x));
+                swerve.update(speed, heading);
 
                 telemetry.update();
             }

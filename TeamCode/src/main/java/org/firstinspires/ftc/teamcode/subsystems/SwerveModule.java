@@ -5,12 +5,13 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.teamcode.util.SwervePIDController;
 
 public class SwerveModule
 {
     private DcMotorEx motor1;
     private DcMotorEx motor2;
-    private DcMotorEx encoder; // incremental encoder on one of the motors
+    private DcMotorEx encoder;
 
     private final HardwareMap hwMap;
     private final Telemetry telemetry;
@@ -18,7 +19,7 @@ public class SwerveModule
 
     private final SwervePIDController headingPID;
     private static final int TICKS_PER_REV = 8192;
-    private static final double TICKS_PER_RAD = TICKS_PER_REV / (2.0 * Math.PI);
+    private static final double TICKS_PER_DEG = TICKS_PER_REV / 360.0; // convert ticks to degrees
 
     public SwerveModule(String motor1Name, String motor2Name, String encoderName,
                         HardwareMap hwMap, Telemetry telemetry, ElapsedTime timer)
@@ -34,46 +35,45 @@ public class SwerveModule
         headingPID = new SwervePIDController(encoderName, hwMap, telemetry);
     }
 
-    private double ticksToRadians(int ticks)
+    private double ticksToDegrees(int ticks)
     {
-        return ticks / TICKS_PER_RAD;
+        return ticks / TICKS_PER_DEG;
     }
 
     private double angleWrap(double angle)
     {
-        while (angle > Math.PI) angle -= 2.0 * Math.PI;
-        while (angle < -Math.PI) angle += 2.0 * Math.PI;
+        while (angle > 180.0) angle -= 360.0;
+        while (angle < -180.0) angle += 360.0;
         return angle;
     }
 
-    public void setTargetHeading(double headingRadians)
+    public void setTargetHeading(double headingDegrees)
     {
-        headingPID.setTargetHeading(headingRadians);
+        headingPID.setTargetHeading(headingDegrees);
     }
 
     /**
-     * Sets desired wheel speed and heading for incremental encoder.
-     * Wheel reversal implemented for shortest path.
+     * Sets desired wheel speed and heading
      * @param driveSpeed - forward/backward command (-1 to 1)
-     * @param headingRadians - desired heading in radians
+     * @param headingDegrees - desired heading in degrees
      */
-    public void setDesiredState(double driveSpeed, double headingRadians)
+    public void update(double driveSpeed, double headingDegrees)
     {
         // Current wheel angle from incremental encoder
-        double currentHeading = ticksToRadians(encoder.getCurrentPosition());
+        double currentHeading = ticksToDegrees(encoder.getCurrentPosition());
 
         // Shortest path error
-        double error = angleWrap(headingRadians - currentHeading);
+        double error = angleWrap(headingDegrees - currentHeading);
 
         // Wheel reversal if path > 90°
-        if (Math.abs(error) > Math.PI / 2)
+        if (Math.abs(error) > 90.0)
         {
             driveSpeed *= -1; // reverse wheel
-            headingRadians = angleWrap(headingRadians + Math.PI); // rotate 180°
+            headingDegrees = angleWrap(headingDegrees + 180.0); // rotate 180°
         }
 
         // Update PID target
-        setTargetHeading(headingRadians);
+        setTargetHeading(headingDegrees);
 
         // PID output for heading correction
         double angleOutput = headingPID.update();
@@ -97,9 +97,7 @@ public class SwerveModule
         // Telemetry
         telemetry.addData("Motor1 Power", motor1Power);
         telemetry.addData("Motor2 Power", motor2Power);
-        telemetry.addData("Current Heading", currentHeading);
-        telemetry.addData("Target Heading", headingRadians);
-
-        telemetry.update();
+        telemetry.addData("Current Heading (deg)", currentHeading);
+        telemetry.addData("Target Heading (deg)", headingDegrees);
     }
 }

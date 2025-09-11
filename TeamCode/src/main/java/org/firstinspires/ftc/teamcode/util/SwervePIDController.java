@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.subsystems;
+package org.firstinspires.ftc.teamcode.util;
 
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -20,11 +20,11 @@ public class SwervePIDController {
 
     //encoder constants
     private static final int TICKS_PER_REV = 8192;
-    private static final double TICKS_PER_RAD = (TICKS_PER_REV) / (2.0 * Math.PI);
+    private static final double TICKS_PER_DEG = TICKS_PER_REV / 360.0;
 
     //PID state
     private double prevError = 0.0;
-    private double targetPos = 0.0;   // target heading in radians
+    private double targetPos = 0.0;   // target heading in degrees
     private double integralSum = 0.0;
 
     public SwervePIDController(String encoderName, HardwareMap hwMap, Telemetry telemetry) {
@@ -34,22 +34,22 @@ public class SwervePIDController {
         this.encoder = hwMap.get(DcMotorEx.class, encoderName);
     }
 
-    private double ticksToRadians(int ticks) {
-        return ticks / TICKS_PER_RAD;
+    private double ticksToDegrees(int ticks) {
+        return ticks / TICKS_PER_DEG;
     }
 
     private double angleWrap(double angle) {
-        while (angle > Math.PI) angle -= 2.0 * Math.PI;
-        while (angle < -Math.PI) angle += 2.0 * Math.PI;
+        while (angle > 180.0) angle -= 360.0;
+        while (angle < -180.0) angle += 360.0;
         return angle;
     }
 
-    public void setTargetHeading(double headingRadians) {
-        targetPos = headingRadians;
+    public void setTargetHeading(double headingDegrees) {
+        targetPos = headingDegrees;
     }
 
     public double update() {
-        double currentHeading = ticksToRadians(encoder.getCurrentPosition());
+        double currentHeading = ticksToDegrees(encoder.getCurrentPosition());
         double error = angleWrap(targetPos - currentHeading);
 
         double dt = timer.seconds();
