@@ -24,7 +24,7 @@ public class Drivetrain extends Subsystem {
 
     private double prevPowerFL, prevPowerFR, prevPowerBL, prevPowerBR;
 
-    public boolean isFieldCentric = true;
+    public boolean isFieldCentric = false;
     public boolean orthogonalMode = false;
 
     public static double MAX_SPEED = 1.0;
