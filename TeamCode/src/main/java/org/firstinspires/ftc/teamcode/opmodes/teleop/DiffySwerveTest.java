@@ -21,6 +21,7 @@ public class DiffySwerveTest extends LinearOpMode {
         Gamepad currentGamepad1 = new Gamepad();
         Gamepad previousGamepad1 = new Gamepad();
         ElapsedTime timer = new ElapsedTime();
+        boolean killPow = false;
 
         telemetry.addData("Status", "Initialized");
         telemetry.addData("Elapsed time", RobotSettings.SUPER_TIME.toString());
@@ -38,10 +39,18 @@ public class DiffySwerveTest extends LinearOpMode {
                 double y = -currentGamepad1.left_stick_y;
 
                 double rawMag = sqrt(pow(x, 2) + pow(y, 2));
-                double speed = rawMag / sqrt(2);
+                double speed = rawMag / sqrt(2);        //making sure speed <= 1
 
                 double heading = toDegrees(atan2(y, x));
-                swerve.update(speed, heading);
+
+                if (currentGamepad1.a && !previousGamepad1.a) {killPow = !killPow;}
+
+                telemetry.addData("Elapsed time", RobotSettings.SUPER_TIME.toString());
+                telemetry.addData("Active", !killPow);
+                telemetry.addData("Target Speed", speed);
+                telemetry.addData("Target Heading", heading);
+
+                swerve.update(speed, heading, killPow);
 
                 telemetry.update();
             }

@@ -13,6 +13,8 @@ public class SwerveModule
     private DcMotorEx motor2;
     private DcMotorEx encoder;
 
+    private double heading;
+
     private final HardwareMap hwMap;
     private final Telemetry telemetry;
     private final ElapsedTime timer;
@@ -49,7 +51,13 @@ public class SwerveModule
 
     public void setTargetHeading(double headingDegrees)
     {
+        heading = headingDegrees;
         headingPID.setTargetHeading(headingDegrees);
+    }
+
+    public double getTargetHeading()
+    {
+        return heading;
     }
 
     /**
@@ -57,7 +65,7 @@ public class SwerveModule
      * @param driveSpeed - forward/backward command (-1 to 1)
      * @param headingDegrees - desired heading in degrees
      */
-    public void update(double driveSpeed, double headingDegrees)
+    public void update(double driveSpeed, double headingDegrees, boolean killPow)
     {
         // Current wheel angle from incremental encoder
         double currentHeading = ticksToDegrees(encoder.getCurrentPosition());
@@ -76,11 +84,11 @@ public class SwerveModule
         setTargetHeading(headingDegrees);
 
         // PID output for heading correction
-        double angleOutput = headingPID.update();
+        double turnPow = headingPID.update();
 
         // Differential motor mixing
-        double motor1Power = driveSpeed + angleOutput;
-        double motor2Power = driveSpeed - angleOutput;
+        double motor1Power = driveSpeed + turnPow;
+        double motor2Power = driveSpeed - turnPow;
 
         // Normalize if needed
         double max = Math.max(Math.abs(motor1Power), Math.abs(motor2Power));
@@ -91,13 +99,15 @@ public class SwerveModule
         }
 
         // Apply powers
-        motor1.setPower(motor1Power);
-        motor2.setPower(motor2Power);
+        if (!killPow)
+        {
+            motor1.setPower(motor1Power);
+            motor2.setPower(motor2Power);
+        }
 
         // Telemetry
         telemetry.addData("Motor1 Power", motor1Power);
         telemetry.addData("Motor2 Power", motor2Power);
-        telemetry.addData("Current Heading (deg)", currentHeading);
-        telemetry.addData("Target Heading (deg)", headingDegrees);
+        telemetry.addData("Real Heading", currentHeading);
     }
 }
