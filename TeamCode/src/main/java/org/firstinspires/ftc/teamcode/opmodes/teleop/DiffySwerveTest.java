@@ -43,14 +43,9 @@ public class DiffySwerveTest extends LinearOpMode {
 
                 double heading = toDegrees(atan2(y, x));
 
-                if (currentGamepad1.a && !previousGamepad1.a) {killPow = !killPow;}
+                if (currentGamepad1.a && !previousGamepad1.a) {swerve.toggleKillPow();}
 
-                telemetry.addData("Elapsed time", RobotSettings.SUPER_TIME.toString());
-                telemetry.addData("Active", !killPow);
-                telemetry.addData("Target Speed", speed);
-                telemetry.addData("Target Heading", heading);
-
-                swerve.update(speed, heading, killPow);
+                swerve.update(speed, heading);
 
                 telemetry.update();
             }

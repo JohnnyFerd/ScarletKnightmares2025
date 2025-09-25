@@ -1,9 +1,7 @@
 package org.firstinspires.ftc.teamcode.subsystems;
-
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
-
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.util.SwervePIDController;
 
@@ -20,6 +18,8 @@ public class SwerveModule
     private final ElapsedTime timer;
 
     private final SwervePIDController headingPID;
+
+    private boolean killPow = true;
     private static final int TICKS_PER_REV = 8192;
     private static final double TICKS_PER_DEG = TICKS_PER_REV / 360.0; // convert ticks to degrees
 
@@ -60,12 +60,22 @@ public class SwerveModule
         return heading;
     }
 
+    public void toggleKillPow()
+    {
+        killPow = !killPow;
+    }
+
+    public boolean getkillPow()
+    {
+        return killPow;
+    }
+
     /**
      * Sets desired wheel speed and heading
      * @param driveSpeed - forward/backward command (-1 to 1)
      * @param headingDegrees - desired heading in degrees
      */
-    public void update(double driveSpeed, double headingDegrees, boolean killPow)
+    public void update(double driveSpeed, double headingDegrees)
     {
         // Current wheel angle from incremental encoder
         double currentHeading = ticksToDegrees(encoder.getCurrentPosition());
@@ -106,8 +116,12 @@ public class SwerveModule
         }
 
         // Telemetry
+        telemetry.addData("Elapsed time", timer.toString());
+        telemetry.addData("Active", !killPow);
+        telemetry.addData("Target Speed", driveSpeed);
+        telemetry.addData("Target Heading", headingDegrees);
+        telemetry.addData("Real Heading", currentHeading);
         telemetry.addData("Motor1 Power", motor1Power);
         telemetry.addData("Motor2 Power", motor2Power);
-        telemetry.addData("Real Heading", currentHeading);
     }
 }
