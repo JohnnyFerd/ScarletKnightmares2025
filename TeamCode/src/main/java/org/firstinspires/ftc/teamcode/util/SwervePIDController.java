@@ -11,7 +11,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 @Config
 public class SwervePIDController {
     //TODO set PID constants
-    public static double Kp = 0.0;
+    public static double Kp = 0.005;
     public static double Ki = 0.0;
     public static double Kd = 0.0;
 

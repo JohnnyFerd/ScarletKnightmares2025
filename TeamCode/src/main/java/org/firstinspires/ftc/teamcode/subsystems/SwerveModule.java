@@ -1,16 +1,18 @@
 package org.firstinspires.ftc.teamcode.subsystems;
+import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.util.SwervePIDController;
 
+@Config
 public class SwerveModule
 {
     private DcMotorEx motor1;
     private DcMotorEx motor2;
     private DcMotorEx encoder;
-
     private double heading;
 
     private final HardwareMap hwMap;
@@ -19,11 +21,12 @@ public class SwerveModule
 
     private final SwervePIDController headingPID;
 
+    public static boolean telemActive = false;
     private boolean killPow = true;
     private static final int TICKS_PER_REV = 8192;
     private static final double TICKS_PER_DEG = TICKS_PER_REV / 360.0; // convert ticks to degrees
 
-    public SwerveModule(String motor1Name, String motor2Name, String encoderName,
+    public SwerveModule(String motor1Name, boolean motor1Forward, String motor2Name, Boolean motor2Forward, String encoderName,
                         HardwareMap hwMap, Telemetry telemetry, ElapsedTime timer)
     {
         this.hwMap = hwMap;
@@ -31,7 +34,13 @@ public class SwerveModule
         this.timer = timer;
 
         this.motor1 = hwMap.get(DcMotorEx.class, motor1Name);
+        if(motor1Forward) {motor1.setDirection(DcMotorSimple.Direction.FORWARD);}
+        else {motor1.setDirection(DcMotorSimple.Direction.REVERSE);}
+
         this.motor2 = hwMap.get(DcMotorEx.class, motor2Name);
+        if(motor2Forward) {motor2.setDirection(DcMotorSimple.Direction.FORWARD);}
+        else {motor2.setDirection(DcMotorSimple.Direction.REVERSE);}
+
         this.encoder = hwMap.get(DcMotorEx.class, encoderName);
 
         headingPID = new SwervePIDController(encoderName, hwMap, telemetry);
@@ -69,6 +78,8 @@ public class SwerveModule
     {
         return killPow;
     }
+
+    public void toggleTelem(){telemActive = !telemActive;}
 
     /**
      * Sets desired wheel speed and heading
@@ -116,12 +127,15 @@ public class SwerveModule
         }
 
         // Telemetry
-        telemetry.addData("Elapsed time", timer.toString());
-        telemetry.addData("Active", !killPow);
-        telemetry.addData("Target Speed", driveSpeed);
-        telemetry.addData("Target Heading", headingDegrees);
-        telemetry.addData("Real Heading", currentHeading);
-        telemetry.addData("Motor1 Power", motor1Power);
-        telemetry.addData("Motor2 Power", motor2Power);
+        if (telemActive)
+        {
+            telemetry.addData("Elapsed time", timer.toString());
+            telemetry.addData("Active", !killPow);
+            telemetry.addData("Target Speed", driveSpeed);
+            telemetry.addData("Target Heading", headingDegrees);
+            telemetry.addData("Real Heading", currentHeading);
+            telemetry.addData("Motor1 Power", motor1Power);
+            telemetry.addData("Motor2 Power", motor2Power);
+        }
     }
 }

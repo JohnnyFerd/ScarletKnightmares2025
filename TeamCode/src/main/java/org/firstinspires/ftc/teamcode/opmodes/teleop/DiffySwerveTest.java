@@ -1,7 +1,5 @@
 package org.firstinspires.ftc.teamcode.opmodes.teleop;
 
-import static java.lang.Math.pow;
-import static java.lang.Math.sqrt;
 import static java.lang.Math.toDegrees;
 import static java.lang.Math.atan2;
 
@@ -11,6 +9,7 @@ import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.settings.RobotSettings;
+import org.firstinspires.ftc.teamcode.subsystems.SwerveDrive;
 import org.firstinspires.ftc.teamcode.subsystems.SwerveModule;
 
 @TeleOp(name = "Diffy Swerve Test", group = "Testing")
@@ -21,13 +20,16 @@ public class DiffySwerveTest extends LinearOpMode {
         Gamepad currentGamepad1 = new Gamepad();
         Gamepad previousGamepad1 = new Gamepad();
         ElapsedTime timer = new ElapsedTime();
-        boolean killPow = false;
+        double heading = 0;
 
         telemetry.addData("Status", "Initialized");
         telemetry.addData("Elapsed time", RobotSettings.SUPER_TIME.toString());
         telemetry.update();
 
-        SwerveModule swerve = new SwerveModule("motor1", "motor2", "motor1", hardwareMap, telemetry, timer);
+        SwerveModule leftPod = new SwerveModule("motor1", true,"motor2",true, "motor1", hardwareMap, telemetry, timer);
+        SwerveModule rightPod = new SwerveModule("motor3", true,"motor4",true,"motor3", hardwareMap, telemetry, timer);
+
+        SwerveDrive swerveDrive = new SwerveDrive(leftPod, rightPod, telemetry, timer);
 
         waitForStart();
         if (opModeIsActive()) {
@@ -37,16 +39,11 @@ public class DiffySwerveTest extends LinearOpMode {
 
                 double x = currentGamepad1.left_stick_x;
                 double y = -currentGamepad1.left_stick_y;
+                double r = currentGamepad1.right_stick_x;
 
-                double rawMag = sqrt(pow(x, 2) + pow(y, 2));
-                double speed = rawMag / sqrt(2);        //making sure speed <= 1
+                if (currentGamepad1.a && !previousGamepad1.a) {swerveDrive.toggleKillPow();}
 
-                double heading = toDegrees(atan2(y, x));
-
-                if (currentGamepad1.a && !previousGamepad1.a) {swerve.toggleKillPow();}
-
-                swerve.update(speed, heading);
-
+                swerveDrive.drive(x,y,r);
                 telemetry.update();
             }
         }
