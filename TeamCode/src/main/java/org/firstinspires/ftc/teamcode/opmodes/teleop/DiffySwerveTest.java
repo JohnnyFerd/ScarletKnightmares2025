@@ -1,71 +1,49 @@
 package org.firstinspires.ftc.teamcode.opmodes.teleop;
 
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
+import static java.lang.Math.toDegrees;
+import static java.lang.Math.atan2;
+
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Gamepad;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.settings.RobotSettings;
+import org.firstinspires.ftc.teamcode.subsystems.SwerveDrive;
+import org.firstinspires.ftc.teamcode.subsystems.SwerveModule;
 
-@Disabled
 @TeleOp(name = "Diffy Swerve Test", group = "Testing")
 public class DiffySwerveTest extends LinearOpMode {
-
-    public static double MOTOR1_POWER = 0;
-    public static double MOTOR2_Power = 0;
-
     @Override
     public void runOpMode() throws InterruptedException {
 
         Gamepad currentGamepad1 = new Gamepad();
         Gamepad previousGamepad1 = new Gamepad();
+        ElapsedTime timer = new ElapsedTime();
+        double heading = 0;
 
         telemetry.addData("Status", "Initialized");
         telemetry.addData("Elapsed time", RobotSettings.SUPER_TIME.toString());
         telemetry.update();
 
-        DcMotorEx motor1 = hardwareMap.get(DcMotorEx.class, "motor1");
-        DcMotorEx motor2 = hardwareMap.get(DcMotorEx.class, "motor2");
+        SwerveModule leftPod = new SwerveModule("motor1", true,"motor2",true, "motor1", hardwareMap, telemetry, timer);
+        SwerveModule rightPod = new SwerveModule("motor3", true,"motor4",true,"motor3", hardwareMap, telemetry, timer);
 
-        motor1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        motor2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
-        motor1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        motor2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
-
+        SwerveDrive swerveDrive = new SwerveDrive(leftPod, rightPod, telemetry, timer);
 
         waitForStart();
         if (opModeIsActive()) {
             while (opModeIsActive()) {
-
                 previousGamepad1.copy(currentGamepad1);
                 currentGamepad1.copy(gamepad1);
 
-                if (gamepad1.left_stick_y > 0) {
-                    motor1.setPower(gamepad1.left_stick_y);
-                }else if (gamepad1.left_stick_y < 0) {
-                    motor1.setPower(gamepad1.left_stick_y);
-                }else {
-                    motor1.setPower(MOTOR1_POWER);
-                }
+                double x = currentGamepad1.left_stick_x;
+                double y = -currentGamepad1.left_stick_y;
+                double r = currentGamepad1.right_stick_x;
 
-                if (gamepad1.right_stick_x > 0) {
-                    motor2.setPower(gamepad1.right_stick_x);
-                }else if (gamepad1.right_stick_x < 0) {
-                    motor2.setPower(gamepad1.right_stick_x);
-                }else {
-                    motor2.setPower(MOTOR2_Power);
-                }
+                if (currentGamepad1.a && !previousGamepad1.a) {swerveDrive.toggleKillPow();}
 
-                double encoderPos = (motor1.getCurrentPosition());
-                double degrees = (encoderPos % 8192.0) / 8192.0 * 360.0;
-
-                telemetry.addData("Encoder Pos: ", encoderPos);
-                telemetry.addData("Degrees", degrees);
-
+                swerveDrive.drive(x,y,r);
                 telemetry.update();
             }
         }
