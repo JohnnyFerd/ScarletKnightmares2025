@@ -31,6 +31,7 @@ public class AprilTag extends Subsystem {
 
     // Holds goal label if found
     public String goalLabel = "None";
+    public String patternLabel = "None";
 
     public AprilTag(HardwareMap hwMap, Telemetry telemetry) {
         this.telemetry = telemetry;
@@ -57,9 +58,9 @@ public class AprilTag extends Subsystem {
             // Assign label based on ID
             switch (detection.id) {
                 case 20: goalLabel = "bluegoal"; break;
-                case 21: goalLabel = "GPP"; break;
-                case 22: goalLabel = "PGP"; break;
-                case 23: goalLabel = "PPG"; break;
+                case 21: patternLabel = "GPP"; break;
+                case 22: patternLabel = "PGP"; break;
+                case 23: patternLabel = "PPG"; break;
                 case 24: goalLabel = "redgoal"; break;
                 default: goalLabel = "None"; break;
             }
@@ -74,7 +75,7 @@ public class AprilTag extends Subsystem {
             for (AprilTagDetection detection : currentDetections) {
                 telemetry.addData("AprilTag ID", detection.id);
                 telemetry.addData("Label", goalLabel);
-
+                telemetry.addData("Label", patternLabel);
                 // Show raw pose if available
                 if (detection.rawPose != null) {
                     telemetry.addData("Raw X (m)", "%.2f", detection.rawPose.x);

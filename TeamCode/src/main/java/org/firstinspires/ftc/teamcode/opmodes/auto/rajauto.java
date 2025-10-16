@@ -39,10 +39,7 @@ public class rajauto extends AutoBase {
             return;
         }
 
-        // Once started, read detected tag
-        String detectedTag = aprilTag.goalLabel;
-        telemetry.addData("Detected Tag", detectedTag);
-        telemetry.update();
+
 
         // Base trajectory — simple strafe left
         Action moveLeft = drive.actionBuilder(new Pose2d(0, 0, 0))
@@ -50,16 +47,21 @@ public class rajauto extends AutoBase {
                 .build();
 
         Actions.runBlocking(moveLeft);
-
+       // Once started, read detected tag
+        String detectedgoalTag = aprilTag.goalLabel;
+        String detectedpatternTag = aprilTag.patternLabel;
+        telemetry.addData("Detected Tag", detectedgoalTag);
+        telemetry.addData("Detected Tag", detectedpatternTag);
+        telemetry.update();
         // Optional tag-based adjustment
-        if (detectedTag.equals("PPG")) {
+        if (detectedpatternTag.equals("PPG")) {
             telemetry.addLine("Detected ppg — moving farther forward");
             Actions.runBlocking(
                     drive.actionBuilder(drive.pose)
                             .strafeTo(new Vector2d(-20, 0))
                             .build()
             );
-        } else if (detectedTag.equals("PGP")) {
+        } else if (detectedpatternTag.equals("PGP")) {
             telemetry.addLine("Detected PGP — moving right slightly");
             Actions.runBlocking(
                     drive.actionBuilder(drive.pose)
