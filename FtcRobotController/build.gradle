@@ -1,9 +1,10 @@
 import java.text.SimpleDateFormat
+apply plugin: 'com.android.application'
 
 //
 // build.gradle in FtcRobotController
 //
-apply plugin: 'com.android.library'
+
 
 android {
 
