@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.subsystems;
 import com.acmerobotics.dashboard.config.Config;
+import com.acmerobotics.roadrunner.Vector2d;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -33,8 +34,9 @@ public class SwerveModule
     private static final double TICKS_PER_DEG = TICKS_PER_REV / 360.0;
 
     public SwerveModule(String podName, String motor1Name, boolean motor1Forward, String motor2Name, Boolean motor2Forward, String encoderName,
-                        HardwareMap hwMap, Telemetry telemetry, ElapsedTime timer)
+                        boolean encoderForward, HardwareMap hwMap, Telemetry telemetry, ElapsedTime timer)
     {
+
         this.hwMap = hwMap;
         this.telemetry = telemetry;
         this.timer = timer;
@@ -50,21 +52,20 @@ public class SwerveModule
         if(motor2Forward) {motor2.setDirection(DcMotorSimple.Direction.FORWARD);}
         else {motor2.setDirection(DcMotorSimple.Direction.REVERSE);}
 
-        motor1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        motor2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
-        motor1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        motor2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        motor1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        motor2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
 
         this.encoder = hwMap.get(DcMotorEx.class, encoderName);
+        encoder.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        encoder.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
-        headingPID = new SwervePIDController(encoderName, hwMap, telemetry);
+        headingPID = new SwervePIDController(encoderName, encoderForward, hwMap, telemetry);
     }
 
     private double ticksToDegrees(int ticks)
     {
-        return ticks / TICKS_PER_DEG;
+        return (ticks / TICKS_PER_DEG);
     }
 
     private double angleWrap(double angle)
@@ -124,8 +125,9 @@ public class SwerveModule
         // Shortest path error
         double error = angleWrap(headingDegrees - currentHeading);
 
-        // Wheel reversal if path > 90°
-        if (Math.abs(error) > 90.0)
+        // Wheel reversal if path > 110°
+        //Was 90 deg but would flip when not necessary
+        if (Math.abs(error) > 110)
         {
             driveSpeed *= -1; // reverse wheel
             headingDegrees = angleWrap(headingDegrees + 180.0); // rotate 180°
@@ -138,8 +140,8 @@ public class SwerveModule
         double turnPow = headingPID.update();
 
         // Differential motor mixing
-        double motor1Power = driveSpeed + turnPow;
-        double motor2Power = driveSpeed - turnPow;
+        double motor1Power = turnPow + driveSpeed;
+        double motor2Power = turnPow - driveSpeed;
 
         // Normalize if needed
         double max = Math.max(Math.abs(motor1Power), Math.abs(motor2Power));
@@ -168,6 +170,8 @@ public class SwerveModule
             telemetry.addData(name+" Target Speed", driveSpeed);
             telemetry.addData(name+" Target Heading", headingDegrees);
             telemetry.addData(name+" Real Heading", currentHeading);
+            telemetry.addData(name+" Turn Pow", turnPow);
+            telemetry.addData(name+" Speed Pow", driveSpeed);
             telemetry.addData(motor1Name+" Power", motor1Power);
             telemetry.addData(motor2Name+" Power", motor2Power);
         }
