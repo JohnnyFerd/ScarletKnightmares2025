@@ -46,7 +46,6 @@ public class JVBoysSoccerRobot {
     public Servo servoClawR;
     public Servo servoWrist;
 
-
     public DcMotorEx motorRigL, motorRigR;
 
     private int hertzCounter = 0;

@@ -19,8 +19,7 @@ public class SwervePIDController {
     private DcMotorEx encoder;
     private HardwareMap hwMap;
     private Telemetry telemetry;
-    private ElapsedTime timer;
-    private boolean encoderForward;
+    private ElapsedTime timer;  //a new timer is made, bc timer resets each loop
 
     //encoder constants
     private static final int TICKS_PER_REV = 8192;
@@ -31,12 +30,11 @@ public class SwervePIDController {
     private double targetPos = 0.0;   // target heading in degrees
     private double integralSum = 0.0;
 
-    public SwervePIDController(String encoderName, boolean encoderForward, HardwareMap hwMap, Telemetry telemetry) {
+    public SwervePIDController(String encoderName, HardwareMap hwMap, Telemetry telemetry) {
         this.hwMap = hwMap;
         this.telemetry = telemetry;
-        this.timer = new ElapsedTime(); //a new timer is made, bc timer resets each loop
+        this.timer = new ElapsedTime();
         this.encoder = hwMap.get(DcMotorEx.class, encoderName);
-        this.encoderForward = encoderForward;
     }
 
     private double ticksToDegrees(int ticks) {
@@ -49,31 +47,28 @@ public class SwervePIDController {
         return angle;
     }
 
-    public void setTargetHeading(double headingDegrees) {
-        targetPos = headingDegrees;
-    }
+    public void setTargetHeading(double headingDegrees) {targetPos = headingDegrees;}
 
     public double update() {
         double currentHeading = ticksToDegrees(encoder.getCurrentPosition());
-        if(!encoderForward){currentHeading *= -1.0;}
-            double error = angleWrap(targetPos - currentHeading);
+        double error = angleWrap(targetPos - currentHeading);
 
-            double dt = timer.seconds();
-            double derivative = (error - prevError) / dt;
-            integralSum += error * dt;
+        double dt = timer.seconds();
+        double derivative = (error - prevError) / dt;
+        integralSum += error * dt;
 
-            double output = Kp * error + Ki * integralSum + Kd * derivative;
+        double output = Kp * error + Ki * integralSum + Kd * derivative;
 
-            prevError = error;
-            timer.reset();
+        prevError = error;
+        timer.reset();
 
-            return output;
-        }
-
-        public void setPID (double kP, double kI, double kD)
-        {
-            this.Kp = kP;
-            this.Ki = kI;
-            this.Kd = kD;
-        }
+        return output;
     }
+
+    public void setPID(double kP, double kI, double kD)
+    {
+        this.Kp = kP;
+        this.Ki = kI;
+        this.Kd = kD;
+    }
+}

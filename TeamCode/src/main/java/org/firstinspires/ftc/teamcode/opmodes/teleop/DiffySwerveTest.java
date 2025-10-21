@@ -34,8 +34,8 @@ public class DiffySwerveTest extends LinearOpMode {
         telemetry.addData("Elapsed time", RobotSettings.SUPER_TIME.toString());
         telemetry.update();
 
-        SwerveModule leftPod = new SwerveModule("leftPod","motor1", true,"motor2",true, "motor1", false, hardwareMap, telemetry, timer);
-        SwerveModule rightPod = new SwerveModule("rightPod","motor3", true,"motor4",false,"motor3", false, hardwareMap, telemetry, timer);
+        SwerveModule leftPod = new SwerveModule("leftPod","motor1", true,"motor2",true, "motor1", hardwareMap, telemetry, timer);
+        SwerveModule rightPod = new SwerveModule("rightPod","motor3", true,"motor4",false,"motor3", hardwareMap, telemetry, timer);
 
         SwerveDrive swerveDrive = new SwerveDrive(leftPod, rightPod, telemetry, timer);
         swerveDrive.toggleModuleTelem(true);
