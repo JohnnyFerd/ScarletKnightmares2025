@@ -12,6 +12,10 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 public class Shooter {
     private final DcMotorEx shooter1;
     private final DcMotorEx shooter2;
+
+    public static boolean shooter1Forward = false;
+    public static boolean shooter2Forward = false;
+
     private final Servo shooterServo1;
     private final Servo shooterServo2;
     private final Servo paddle1;
@@ -26,15 +30,11 @@ public class Shooter {
     public static double paddle1Pos = .55;
     public static double paddle2Pos = .15;
 
-    public static double shooter1Power = 1;
-    public static double shooter2Power = 1;
-
-
     public static double angle = 0;
     private final HardwareMap hwMap;
     private final Telemetry telemetry;
     private final ElapsedTime timer;
-    public Shooter(String shooter1Name, boolean shooter1Forward, String shooter2Name, boolean shooter2Forward, String shooterServo1, String shooterServo2, String paddle1, String paddle2, HardwareMap hwMap, Telemetry telemetry, ElapsedTime timer)
+    public Shooter(String shooter1Name, String shooter2Name, String shooterServo1, String shooterServo2, String paddle1, String paddle2, HardwareMap hwMap, Telemetry telemetry, ElapsedTime timer)
     {
         this.hwMap = hwMap;
         this.telemetry = telemetry;
@@ -50,12 +50,13 @@ public class Shooter {
         this.paddle2 = hwMap.get(Servo.class, paddle2);
 
 
-        this.shooterServo1.setPosition(0);
-        this.paddle1.setPosition(0);
-        this.paddle2.setPosition(0);
+        this.shooterServo1.setPosition(angle);
+        this.shooterServo2.setPosition(1-angle);
+        this.paddle1.setPosition(paddle1Down);
+        this.paddle2.setPosition(paddle2Down);
 
-        if (!shooter1Forward) {shooter1.setDirection(DcMotorSimple.Direction.FORWARD);} else {shooter1.setDirection(DcMotorSimple.Direction.REVERSE);}
-        if (!shooter2Forward) {shooter2.setDirection(DcMotorSimple.Direction.REVERSE);} else {shooter2.setDirection(DcMotorSimple.Direction.FORWARD);}
+        if (shooter1Forward) {shooter1.setDirection(DcMotorSimple.Direction.FORWARD);} else {shooter1.setDirection(DcMotorSimple.Direction.REVERSE);}
+        if (shooter2Forward) {shooter2.setDirection(DcMotorSimple.Direction.REVERSE);} else {shooter2.setDirection(DcMotorSimple.Direction.FORWARD);}
         shooter1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         shooter2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
     }
@@ -64,8 +65,8 @@ public class Shooter {
     {
         if (shoot)
         {
-            shooter1.setPower(shooter1Power);
-            shooter2.setPower(shooter2Power);
+            shooter1.setPower(1);
+            shooter2.setPower(1);
         }
         else {
             shooter1.setPower(0);

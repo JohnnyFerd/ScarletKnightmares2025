@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.opmodes.AlanStuff;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.Gamepad;
@@ -11,6 +12,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.settings.RobotSettings;
 import org.firstinspires.ftc.teamcode.subsystems.JVBoysSoccerRobot;
 
+@Disabled
 @TeleOp(name = "Outreach Teleop", group = "Outreach")
 public class OutreachOpmode extends LinearOpMode {
 
