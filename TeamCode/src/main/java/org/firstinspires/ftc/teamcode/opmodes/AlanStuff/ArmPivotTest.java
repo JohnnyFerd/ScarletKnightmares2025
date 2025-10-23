@@ -1,23 +1,19 @@
-package org.firstinspires.ftc.teamcode.opmodes.teleop;
+package org.firstinspires.ftc.teamcode.opmodes.AlanStuff;
 
 import com.acmerobotics.dashboard.FtcDashboard;
-import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.settings.RobotSettings;
-import org.firstinspires.ftc.teamcode.subsystems.Arm;
 import org.firstinspires.ftc.teamcode.subsystems.JVBoysSoccerRobot;
-import org.firstinspires.ftc.teamcode.util.BulkReading;
 
 @Disabled
-@TeleOp (name = "Arm Test", group = "Testing")
-public class ArmTest extends LinearOpMode {
+@TeleOp (name = "Arm Pivot Test", group = "Testing")
+public class ArmPivotTest extends LinearOpMode {
 
     private HardwareMap hwMap;
     private JVBoysSoccerRobot robot;
@@ -27,15 +23,16 @@ public class ArmTest extends LinearOpMode {
     private Gamepad currentGamepad2;
     private Gamepad previousGamepad2;
 
-    public static int GOAL_POSITION = 0;
+    public static double PRESET1 = 0;
+    public static double PRESET2 = 1;
 
     private enum TestState {
-        DROP_POS,
-        OFF,
+        PRESET1,
+        PRESET2,
         NOTHING
     }
 
-    private TestState testState = TestState.OFF;
+    private TestState testState = TestState.PRESET1;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -62,9 +59,8 @@ public class ArmTest extends LinearOpMode {
                 currentGamepad2.copy(gamepad2);
 
                 telemetry.addLine("CONTROLS: ");
-                telemetry.addLine("    DPAD UP: Turn motors on / off ");
-                telemetry.addData("GOAL POSITION", GOAL_POSITION);
-                telemetry.addData("CURRENT POSITION", BulkReading.pMotorArmR);
+                telemetry.addLine("    DPAD UP: Turn servo preset 1, servo preset 2 ");
+
                 armControls();
 
                 robot.addTelemetry();
@@ -80,19 +76,18 @@ public class ArmTest extends LinearOpMode {
         switch (testState) {
             case NOTHING:
                 break;
-            case OFF:
-                telemetry.addLine("MOTORS: OFF");
-                robot.armSubsystem.armState = Arm.ArmState.AT_REST;
+            case PRESET1:
+                telemetry.addData("PRESET 1", PRESET1);
+                robot.armSubsystem.setPivot(PRESET1);
                 if (currentGamepad1.dpad_up && !previousGamepad1.dpad_up) {
-                    robot.armSubsystem.armState = Arm.ArmState.BASIC_PID;
-                    robot.armSubsystem.referencePos = GOAL_POSITION;
-                    testState = TestState.DROP_POS;
+                    testState = TestState.PRESET2;
                 }
                 break;
-            case DROP_POS:
-                telemetry.addLine("MOTORS: ON");
+            case PRESET2:
+                telemetry.addData("PRESET 2", PRESET2);
+                robot.armSubsystem.setPivot(PRESET2);
                 if (currentGamepad1.dpad_up && !previousGamepad1.dpad_up) {
-                    testState = TestState.OFF;
+                    testState = TestState.PRESET1;
                 }
                 break;
         }
