@@ -28,7 +28,25 @@ apply from: '../build.dependencies.gradle'
 apply plugin: 'org.team11260.fast-load-plugin'
 
 android {
-    namespace = 'org.firstinspires.ftc.teamcode'
+    compileSdkVersion 33
+
+    defaultConfig {
+        applicationId "org.firstinspires.ftc.teamcode"
+        minSdkVersion 24
+        targetSdkVersion 33
+        versionCode 1
+        versionName "1.0"
+        namespace = 'org.firstinspires.ftc.teamcode'
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+
+    buildFeatures {
+        buildConfig = true
+    }
 
     packagingOptions {
         jniLibs.useLegacyPackaging true
