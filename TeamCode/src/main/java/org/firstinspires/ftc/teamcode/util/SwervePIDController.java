@@ -11,9 +11,9 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 @Config
 public class SwervePIDController {
     //TODO set PID constants
-    private double Kp;
-    private double Ki;
-    private double Kd;
+    public static double Kp = 0.005;
+    public static double Ki = 0.0;
+    public static double Kd = 0.0;
 
     //hardware
     private DcMotorEx encoder;
@@ -47,7 +47,9 @@ public class SwervePIDController {
         return angle;
     }
 
-    public void setTargetHeading(double headingDegrees) {targetPos = headingDegrees;}
+    public void setTargetHeading(double headingDegrees) {
+        targetPos = headingDegrees;
+    }
 
     public double update() {
         double currentHeading = ticksToDegrees(encoder.getCurrentPosition());
@@ -63,12 +65,5 @@ public class SwervePIDController {
         timer.reset();
 
         return output;
-    }
-
-    public void setPID(double kP, double kI, double kD)
-    {
-        this.Kp = kP;
-        this.Ki = kI;
-        this.Kd = kD;
     }
 }

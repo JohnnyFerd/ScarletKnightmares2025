@@ -37,58 +37,36 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 -->
 
 <resources>
-    <string name="pref_rc_connected">Robot Controller Connected</string>
-    <string name="pref_warn_about_2_4_ghz_band">Warn About 2.4 GHz Band</string>
-    <string name="pref_warn_about_obsolete_software">Warn About Obsolete Software</string>
-    <string name="pref_warn_about_mismatched_app_versions">Warn About Mismatched App Versions</string>
-    <string name="pref_warn_about_incorrect_clocks">Warn About Incorrect Clocks</string>
-    <string name="pref_wifi_automute">Wi-Fi Auto Mute</string>
-    <string name="pref_pairing_kind">Pairing Kind</string>
-    <string name="pref_app_theme">App Theme</string>
 
-    <!-- Toasts -->
-    <string name="toastRobotSetupComplete">Robot Setup Complete</string>
-    <string name="toastRestartRobotComplete">Restart Robot Complete</string>
+  <string name="app_name">FTC Robot Controller</string>
 
-    <!-- Permissions -->
-    <string name="permRcWriteExternalStorageExplain">Permission to write to external storage is required.</string>
-    <string name="permRcReadExternalStorageExplain">Permission to read from external storage is required.</string>
-    <string name="permRcCameraExplain">Permission to access the camera is required.</string>
-    <string name="permAccessLocationExplain">Permission to access location is required.</string>
-    <string name="permReadPhoneState">Permission to read phone state is required.</string>
-    <string name="permGenericExplain">Permission is required for this operation.</string>
+  <!-- Menu -->
+  <string name="inspection_mode_menu_item">Self Inspect</string>
+  <string name="program_and_manage_menu_item">Program &amp; Manage</string>
+  <string name="blocks_menu_item">Blocks</string>
+  <string name="settings_menu_item">Settings</string>
+  <string name="restart_robot_menu_item">Restart Robot</string>
+  <string name="configure_robot_menu_item">Configure Robot</string>
+  <string name="about_menu_item">About</string>
+  <string name="exit_menu_item">Exit</string>
 
-    <!-- App Theme Change Notification -->
-    <string name="appThemeChangeRestartNotifyRC">App theme has been changed. Restart the Robot Controller for the changes to take effect.</string>
-    <string name="app_name">FTC Robot Controller</string>
+  <!-- Toast messages -->
+  <string name="toastWifiConfigurationComplete">Configuration Complete</string>
+  <string name="toastRestartingRobot">Restarting Robot</string>
+  <string name="toastWifiUpBeforeProgrammingMode">The Robot Controller must be fully up and running before entering Program and Manage Mode.</string>
 
-    <!-- Menu -->
-    <string name="inspection_mode_menu_item">Self Inspect</string>
-    <string name="program_and_manage_menu_item">Program &amp; Manage</string>
-    <string name="blocks_menu_item">Blocks</string>
-    <string name="settings_menu_item">Settings</string>
-    <string name="restart_robot_menu_item">Restart Robot</string>
-    <string name="configure_robot_menu_item">Configure Robot</string>
-    <string name="about_menu_item">About</string>
-    <string name="exit_menu_item">Exit</string>
+  <!-- for interpreting pref_app_theme contents. may be override in merged resources -->
+  <integer-array name="app_theme_ids">
+      <item>@style/AppThemeRedRC</item>
+      <item>@style/AppThemeGreenRC</item>
+      <item>@style/AppThemeBlueRC</item>
+      <item>@style/AppThemePurpleRC</item>
+      <item>@style/AppThemeOrangeRC</item>
+      <item>@style/AppThemeTealRC</item>
+  </integer-array>
 
-    <!-- Toast messages -->
-    <string name="toastWifiConfigurationComplete">Configuration Complete</string>
-    <string name="toastRestartingRobot">Restarting Robot</string>
-    <string name="toastWifiUpBeforeProgrammingMode">The Robot Controller must be fully up and running before entering Program and Manage Mode.</string>
+  <string translatable="false" name="pref_ftc_season_year_of_current_rc">pref_ftc_season_year_of_current_rc_new</string>
 
-    <!-- for interpreting pref_app_theme contents. may be override in merged resources -->
-    <integer-array name="app_theme_ids">
-        <item>@style/AppThemeRedRC</item>
-        <item>@style/AppThemeGreenRC</item>
-        <item>@style/AppThemeBlueRC</item>
-        <item>@style/AppThemePurpleRC</item>
-        <item>@style/AppThemeOrangeRC</item>
-        <item>@style/AppThemeTealRC</item>
-    </integer-array>
-
-    <string translatable="false" name="pref_ftc_season_year_of_current_rc">pref_ftc_season_year_of_current_rc_new</string>
-
-    <string name="packageName">@string/packageNameRobotController</string>
+  <string name="packageName">@string/packageNameRobotController</string>
 
 </resources>

@@ -69,33 +69,15 @@ public class SwerveDrive {
             telemetry.addData("x", x);
             telemetry.addData("y", y);
             telemetry.addData("r", rot);
+            telemetry.addData("Left Heading", leftPod.getTargetHeading());
+            telemetry.addData("Right Heading", rightPod.getTargetHeading());
         }
     }
 
     public void toggleKillPow()
     {
         killPow = !killPow;
-        leftPod.toggleKillPow(killPow);
-        rightPod.toggleKillPow(killPow);
+        leftPod.toggleKillPow();
+        rightPod.toggleKillPow();
     }
-
-    public void setPID(double kP1, double kI1, double kD1, double kP2, double kI2, double kD2)
-    {
-        leftPod.setPID(kP1, kI1, kD1);
-        rightPod.setPID(kP2, kI2, kD2);
-    }
-
-    public void toggleModuleTelem(boolean input)
-    {
-        leftPod.toggleTelem(input);
-        rightPod.toggleTelem(input);
-    }
-
-    public void toggleModuleTelem()
-    {
-        leftPod.toggleTelem();
-        rightPod.toggleTelem();
-    }
-
-
 }

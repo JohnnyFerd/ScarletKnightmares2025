@@ -23,17 +23,14 @@ public class Shooter {
 
     public static double paddle1Down = .55;
     public static double paddle2Down = .15;
-
-    public static double paddle1Up = .3;
-    public static double paddle2Up = .4;
-
-    public static double paddle1Pos = .55;
-    public static double paddle2Pos = .15;
-
-    public static double angle = 0;
+    public static double paddle1Up = .25;
+    public static double paddle2Up = .45;
+    public static double pow = 1;
+    public static double angle = 0.5;
     private final HardwareMap hwMap;
     private final Telemetry telemetry;
     private final ElapsedTime timer;
+
     public Shooter(String shooter1Name, String shooter2Name, String shooterServo1, String shooterServo2, String paddle1, String paddle2, HardwareMap hwMap, Telemetry telemetry, ElapsedTime timer)
     {
         this.hwMap = hwMap;
@@ -59,39 +56,37 @@ public class Shooter {
         if (shooter2Forward) {shooter2.setDirection(DcMotorSimple.Direction.REVERSE);} else {shooter2.setDirection(DcMotorSimple.Direction.FORWARD);}
         shooter1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         shooter2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
     }
 
     public void update(boolean shoot)
     {
         if (shoot)
         {
-            shooter1.setPower(1);
-            shooter2.setPower(1);
+            shooter1.setPower(pow);
+            shooter2.setPower(pow);
         }
         else {
             shooter1.setPower(0);
             shooter2.setPower(0);
         }
 
-        if (paddle1.getPosition() != paddle1Pos) {paddle1.setPosition(paddle1Pos);paddle2.setPosition(paddle2Pos);}
-        if (shooterServo1.getPosition() != angle) {shooterServo1.setPosition(angle); shooterServo2.setPosition(1 - angle);}
-
     }
 
     public void setAngle(double angle)
     {
-        this.angle = angle;
+        shooterServo1.setPosition(angle); shooterServo2.setPosition(1 - angle);
     }
 
     public void setPaddle(double temp1, double temp2)
     {
-        paddle1Pos = temp1;
-        paddle2Pos = temp2;
+        paddle1.setPosition(temp1);
+        paddle2.setPosition(temp2);
     }
 
     public void togglePaddle()
     {
-        if (paddle1Pos == paddle1Down) {paddle1Pos = paddle1Up; paddle2Pos = paddle2Up;}
-        else {paddle1Pos = paddle1Down; paddle2Pos = paddle2Down;}
+        if (paddle1.getPosition() == paddle1Down) {paddle1.setPosition(paddle1Up); paddle2.setPosition(paddle2Up);}
+        else {paddle1.setPosition(paddle1Down); paddle2.setPosition(paddle2Down);}
     }
 }
