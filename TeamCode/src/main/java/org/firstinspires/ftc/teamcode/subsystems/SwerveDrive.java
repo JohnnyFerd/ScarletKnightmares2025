@@ -11,7 +11,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 
 @Config
-public class SwerveDrive {
+public class SwerveDrive extends Subsystem{
     private final SwerveModule leftPod;
     private final SwerveModule rightPod;
 
@@ -79,5 +79,20 @@ public class SwerveDrive {
         killPow = !killPow;
         leftPod.toggleKillPow();
         rightPod.toggleKillPow();
+    }
+
+    @Override
+    public void addTelemetry() {
+
+    }
+
+    @Override
+    public void update() {
+
+    }
+
+    @Override
+    public void stop() {
+
     }
 }

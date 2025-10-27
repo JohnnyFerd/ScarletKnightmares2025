@@ -9,8 +9,6 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.teamcode.settings.RobotSettings;
 import org.firstinspires.ftc.teamcode.subsystems.Shooter;
 
-
-@Config
 @TeleOp(name = "ShooterTester", group = "Testing")
 public class ShooterTester extends LinearOpMode {
 
@@ -33,7 +31,7 @@ public class ShooterTester extends LinearOpMode {
                 currentGamepad1.copy(gamepad1);
 
                 if (currentGamepad1.a && !previousGamepad1.a) {shooter.togglePaddle();}
-                shooter.update(currentGamepad1.right_trigger > .1);
+                shooter.setVelocity(currentGamepad1.right_trigger);
             }
         }
     }

@@ -8,9 +8,7 @@ public class UseTelemetry {
     public static boolean ROBOT_TELEMETRY = true;
 
     public static boolean DRIVETRAIN_TELEMETRY = false;
-    public static boolean ARM_TELEMETRY = true;
-    public static boolean SLIDE_TELEMETRY = false;
-    public static boolean CLAW_TELEMETRY = false;
+    public static boolean SHOOTER_TELEMETRY = true;
     public static boolean MOTION_PROFILE_TELEMETRY = false;
 
 }
