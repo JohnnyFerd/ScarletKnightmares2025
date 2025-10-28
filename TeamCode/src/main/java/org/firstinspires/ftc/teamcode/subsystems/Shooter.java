@@ -126,7 +126,7 @@ public class Shooter extends Subsystem {
     @Override
     public void update()
     {
-        setAngle(angle);
+
     }
 
     @Override

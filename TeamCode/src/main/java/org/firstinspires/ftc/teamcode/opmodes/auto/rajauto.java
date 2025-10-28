@@ -6,12 +6,14 @@
     import com.acmerobotics.roadrunner.Vector2d;
     import com.acmerobotics.roadrunner.ftc.Actions;
     import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+    import com.qualcomm.robotcore.util.ElapsedTime;
 
     import org.firstinspires.ftc.robotcore.external.hardware.camera.Camera;
     import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
     import org.firstinspires.ftc.teamcode.opmodes.AlanStuff.AutoBase;
     import org.firstinspires.ftc.teamcode.roadrunner.MecanumDrive;
     import org.firstinspires.ftc.teamcode.subsystems.AprilTag;
+    import org.firstinspires.ftc.teamcode.subsystems.Shooter;
 
     @Config
     @Autonomous(name = "Raj Simple Auto", group = "Testing")
@@ -19,13 +21,22 @@
 
         private MecanumDrive drive;
         private AprilTag aprilTag;
-
+        private Shooter shooter;
 
         @Override
         public void runOpMode() throws InterruptedException {
             // Initialize subsystems
+            ElapsedTime timer = new ElapsedTime();
             drive = new MecanumDrive(hardwareMap, new Pose2d(0, 0, 0));
             aprilTag = new AprilTag(hardwareMap, telemetry);
+            shooter = new Shooter(
+                    "shooter1", "shooter2",     // motor names
+                    "shooterServo1", "shooterServo2", // servo names
+                    "paddle1", "paddle2",       // paddle servos
+                    hardwareMap,
+                    telemetry,
+                    timer
+            );
 
             telemetry.addLine("Initializing camera...");
             telemetry.update();
@@ -88,6 +99,17 @@
                                     .build()
                     );
                 }
+                telemetry.addLine("Spinning up shooter...");
+                telemetry.update();
+
+                shooter.setVelocity(.5); // full speed
+                sleep(1000);
+
+                shooter.togglePaddle(); // simulate firing
+                sleep(100);
+
+                shooter.togglePaddle(); // reset paddle
+                shooter.setVelocity(0);
             } else {
                telemetry.addLine("No tag — default path");
             }
@@ -95,6 +117,9 @@
             telemetry.update();
 
           // Stop vision safely
-           aprilTag.stop();
+            shooter.update();
+            shooter.stop();
+
+            aprilTag.stop();
         }
     }
