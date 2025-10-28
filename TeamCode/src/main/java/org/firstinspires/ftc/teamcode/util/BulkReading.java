@@ -17,10 +17,6 @@ public class BulkReading {
 
     public static double vFL = 0, vFR = 0, vBL = 0, vBR = 0;
 
-    public static int pMotorArmL = 0, pMotorArmR = 0;
-    public static int pMotorLinkage = 0;
-    public static int pSlide = 0;
-
     public BulkReading(JVBoysSoccerRobot robot) {
         this.robot = robot;
     }
@@ -32,7 +28,6 @@ public class BulkReading {
 
     public void readAll() {
         if (isAuto) {
-            pMotorArmR = robot.motorArmR.getCurrentPosition();
         }else {
             pFL = robot.motorFL.getCurrentPosition();
             pFR = robot.motorFR.getCurrentPosition();
@@ -44,10 +39,6 @@ public class BulkReading {
 //            vBL = robot.motorBL.getVelocity();
 //            vBR = robot.motorBR.getVelocity();
 //
-//            pMotorArmL = robot.motorArmL.getCurrentPosition();
-            pMotorArmR = robot.motorArmR.getCurrentPosition();
-            pMotorLinkage = 0;
-//            pSlide = robot
         }
     }
 }

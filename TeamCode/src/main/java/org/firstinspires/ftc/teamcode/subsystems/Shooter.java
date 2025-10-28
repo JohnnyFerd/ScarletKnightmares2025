@@ -33,6 +33,10 @@ public class Shooter extends Subsystem {
     public static double paddle1Up = .25;
     public static double paddle2Up = .45;
 
+    public static double paddle1Pos = paddle1Down;
+    public static double paddle2Pos = paddle2Down;
+
+
     //TODO tune motor PID for velocity
     public static double maxVelocity = 6000;
     public static double P = 10;
@@ -46,13 +50,12 @@ public class Shooter extends Subsystem {
     public static double angle = 0.5;
     private final HardwareMap hwMap;
     private final Telemetry telemetry;
-    private final ElapsedTime timer;
+    private final ElapsedTime timer = new ElapsedTime();
 
     public Shooter(String shooter1Name, String shooter2Name, String shooterServo1, String shooterServo2, String paddle1, String paddle2, HardwareMap hwMap, Telemetry telemetry, ElapsedTime timer)
     {
         this.hwMap = hwMap;
         this.telemetry = telemetry;
-        this.timer = timer;
 
         this.shooter1 = hwMap.get(DcMotorEx.class, shooter1Name);
         this.shooter2 = hwMap.get(DcMotorEx.class, shooter2Name);
@@ -73,11 +76,19 @@ public class Shooter extends Subsystem {
         if (shooter2Forward) {shooter2.setDirection(DcMotorSimple.Direction.REVERSE);} else {shooter2.setDirection(DcMotorSimple.Direction.FORWARD);}
         shooter1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         shooter2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+    }
 
+    public Shooter(HardwareMap hwMap, Telemetry telemetry, JVBoysSoccerRobot robot)
+    {
+        this.hwMap = hwMap;
+        this.telemetry = telemetry;
 
-        PIDFCoefficients pidf = new PIDFCoefficients(P,I,D,F);
-        shooter1.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidf);
-        shooter2.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidf);
+        paddle1 = robot.paddle1;
+        paddle2 = robot.paddle2;
+        shooterServo1 = robot.shooterServo1;
+        shooterServo2 = robot.shooterServo2;
+        shooter1 = robot.shooter1;
+        shooter2 = robot.shooter2;
     }
 
 
@@ -96,24 +107,25 @@ public class Shooter extends Subsystem {
 
     public void setAngle(double angle)
     {
-        shooterServo1.setPosition(angle); shooterServo2.setPosition(1 - angle);
+        this.angle = angle;
     }
+
 
     public void setPaddle(double temp1, double temp2)
     {
-        paddle1.setPosition(temp1);
-        paddle2.setPosition(temp2);
+        paddle1Pos = temp1;
+        paddle2Pos = temp2;
     }
 
     public void togglePaddle()
     {
-        if (paddle1.getPosition() == paddle1Down) {paddle1.setPosition(paddle1Up); paddle2.setPosition(paddle2Up);}
-        else {paddle1.setPosition(paddle1Down); paddle2.setPosition(paddle2Down);}
+        if (paddle1.getPosition() == paddle1Down) {paddle1Pos = paddle1Up; paddle2Pos = paddle2Up;}
+        else {paddle1Pos = paddle1Down; paddle2Pos = paddle2Down;}
     }
 
     @Override
     public void addTelemetry() {
-        if (UseTelemetry.DRIVETRAIN_TELEMETRY) {
+        if (UseTelemetry.SHOOTER_TELEMETRY) {
             telemetry.addLine("Shooter Telemetry: ON");
 
             telemetry.addData("   SHOOTER1/SHOOTER2 Velocity", "%4.0f, %4.0f", shooter1.getVelocity(), shooter2.getVelocity());
@@ -123,15 +135,17 @@ public class Shooter extends Subsystem {
     }
         }
 
+        //updates servos so position can be updated through dashboard
     @Override
     public void update()
     {
-        setAngle(angle);
+        if (shooterServo1.getPosition() != angle) {setAngle(angle);}
+        if (paddle1.getPosition() != paddle1Pos) {paddle1.setPosition(paddle1Pos);}
+        if (paddle2.getPosition() != paddle2Pos) {paddle2.setPosition(paddle2Pos);}
     }
 
     @Override
     public void stop()
     {
-
     }
 }
