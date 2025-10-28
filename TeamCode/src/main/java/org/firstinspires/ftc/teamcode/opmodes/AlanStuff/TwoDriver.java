@@ -132,28 +132,28 @@ public class TwoDriver extends LinearOpMode {
     }
 
     public void riggingControls() {
-        if (FINAL_RIGGING) {
+         if (FINAL_RIGGING) {
             if (currentGamepad1.x) {
                 if (currentGamepad1.left_bumper) {
                     robot.motorRigL.setPower(0);
                 }else {
-                    robot.motorRigL.setPower(RobotSettings.RIGGING_FEEDFORWARD);
+                    //robot.motorRigL.setPower(RobotSettings.RIGGING_FEEDFORWARD);
                 }
                 if (currentGamepad1.right_bumper) {
                     robot.motorRigR.setPower(0);
                 }else {
-                    robot.motorRigR.setPower(RobotSettings.RIGGING_FEEDFORWARD);
+                    //robot.motorRigR.setPower(RobotSettings.RIGGING_FEEDFORWARD);
                 }
             }else {
                 if (currentGamepad1.left_bumper) {
-                    robot.motorRigL.setPower(RobotSettings.RIGGING_POWER);
+                    //robot.motorRigL.setPower(RobotSettings.RIGGING_POWER);
                 }else {
-                    robot.motorRigL.setPower(RobotSettings.RIGGING_FEEDFORWARD);
+                    //robot.motorRigL.setPower(RobotSettings.RIGGING_FEEDFORWARD);
                 }
                 if (currentGamepad1.right_bumper) {
-                    robot.motorRigR.setPower(RobotSettings.RIGGING_POWER);
+                    //robot.motorRigR.setPower(RobotSettings.RIGGING_POWER);
                 }else {
-                    robot.motorRigR.setPower(RobotSettings.RIGGING_FEEDFORWARD);
+                    //robot.motorRigR.setPower(RobotSettings.RIGGING_FEEDFORWARD);
                 }
             }
 //            if (currentGamepad1.dpad_up && !previousGamepad1.dpad_up) {
@@ -165,25 +165,25 @@ public class TwoDriver extends LinearOpMode {
 
             if (currentGamepad1.x) {
                 if (currentGamepad1.left_bumper) {
-                    robot.motorRigL.setPower(-1 * RobotSettings.RIGGING_POWER);
+                    //robot.motorRigL.setPower(-1 * RobotSettings.RIGGING_POWER);
                 }else {
-                    robot.motorRigL.setPower(0);
+                    //robot.motorRigL.setPower(0);
                 }
                 if (currentGamepad1.right_bumper) {
-                    robot.motorRigR.setPower(-1 * RobotSettings.RIGGING_POWER);
+                    //robot.motorRigR.setPower(-1 * RobotSettings.RIGGING_POWER);
                 }else {
-                    robot.motorRigR.setPower(0);
+                    //robot.motorRigR.setPower(0);
                 }
             }else {
                 if (currentGamepad1.left_bumper) {
-                    robot.motorRigL.setPower(RobotSettings.RIGGING_POWER);
+                    //robot.motorRigL.setPower(RobotSettings.RIGGING_POWER);
                 }else {
-                    robot.motorRigL.setPower(0);
+                    //robot.motorRigL.setPower(0);
                 }
                 if (currentGamepad1.right_bumper) {
-                    robot.motorRigR.setPower(RobotSettings.RIGGING_POWER);
+                    //robot.motorRigR.setPower(RobotSettings.RIGGING_POWER);
                 }else {
-                    robot.motorRigR.setPower(0);
+                    //robot.motorRigR.setPower(0);
                 }
             }
 
@@ -195,11 +195,11 @@ public class TwoDriver extends LinearOpMode {
     }
 
     public void clawControls() {
-        if (BulkReading.pMotorArmR > RobotSettings.ARM_VERTICAL_THRESHOLD) {
+        /**if (BulkReading.pMotorArmR > RobotSettings.ARM_VERTICAL_THRESHOLD) {
             reversed = true;
         }else {
             reversed = false;
-        }
+        } **/
 //        if (currentGamepad2.left_bumper && !previousGamepad2.left_bumper) {
 //            if (reversed) {
 //                rightClosed = !rightClosed;

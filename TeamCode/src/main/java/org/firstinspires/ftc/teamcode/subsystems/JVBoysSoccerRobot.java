@@ -17,6 +17,7 @@ import org.firstinspires.ftc.teamcode.opmodes.AlanStuff.Claw;
 import org.firstinspires.ftc.teamcode.settings.UseTelemetry;
 import org.firstinspires.ftc.teamcode.util.BulkReading;
 import org.firstinspires.ftc.teamcode.settings.RobotSettings;
+import org.firstinspires.ftc.teamcode.settings.*;
 
 import java.util.Arrays;
 import java.util.List;
@@ -145,11 +146,7 @@ public class JVBoysSoccerRobot {
     }
 
     public void initRiggingHardware() {
-        motorRigL = hwMap.get(DcMotorEx.class, RobotSettings.RIGGING_LEFT);
-        motorRigR = hwMap.get(DcMotorEx.class, RobotSettings.RIGGING_RIGHT);
 
-        motorRigL.setDirection(RobotSettings.RIGGING_LEFT_REVERSED ? DcMotor.Direction.REVERSE : DcMotor.Direction.FORWARD);
-        motorRigR.setDirection(RobotSettings.RIGGING_RIGHT_REVERSED ? DcMotor.Direction.REVERSE : DcMotor.Direction.FORWARD);
     }
 
     public void initDrivetrainHardware() {
@@ -175,39 +172,11 @@ public class JVBoysSoccerRobot {
     }
 
     public void initArmHardware(boolean resetEncoder) {
-        motorArmL = hwMap.get(DcMotorEx.class, RobotSettings.ARM_LMOTOR_NAME);
-        motorArmR = hwMap.get(DcMotorEx.class, RobotSettings.ARM_RMOTOR_NAME);
 
-        motorArmL.setDirection(RobotSettings.ARM_LMOTOR_REVERSED ? DcMotor.Direction.REVERSE : DcMotor.Direction.FORWARD);
-        motorArmR.setDirection(RobotSettings.ARM_RMOTOR_REVERSED ? DcMotor.Direction.REVERSE : DcMotor.Direction.FORWARD);
-
-        if (resetEncoder) {
-            motorArmR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        }
-
-        motorArmL.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        motorArmR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     }
 
     public void initClawHardware() {
-        servoPivotL = hwMap.servo.get(RobotSettings.ARM_LPIVOT_NAME);
-        servoPivotR = hwMap.servo.get(RobotSettings.ARM_RPIVOT_NAME);
-        servoPivotL.setDirection(RobotSettings.ARM_LPIVOT_REVERSED ? Servo.Direction.REVERSE : Servo.Direction.FORWARD);
-        servoPivotR.setDirection(RobotSettings.ARM_RPIVOT_REVERSED ? Servo.Direction.REVERSE : Servo.Direction.FORWARD);
 
-//        servoWristDiffyL = hwMap.servo.get(RobotSettings.CLAW_LWRIST_NAME);
-//        servoWristDiffyR = hwMap.servo.get(RobotSettings.CLAW_RWRIST_NAME);
-//        servoWristDiffyL.setDirection(RobotSettings.CLAW_LWRIST_REVERSED ? Servo.Direction.REVERSE : Servo.Direction.FORWARD);
-//        servoWristDiffyR.setDirection(RobotSettings.CLAW_RWRIST_REVERSED ? Servo.Direction.REVERSE : Servo.Direction.FORWARD);
-
-        servoClawL = hwMap.servo.get(RobotSettings.CLAW_SERVOL_NAME);
-        servoClawL.setDirection(RobotSettings.CLAW_SERVOL_REVERSED ? Servo.Direction.REVERSE : Servo.Direction.FORWARD);
-
-        servoClawR = hwMap.servo.get(RobotSettings.CLAW_SERVOR_NAME);
-        servoClawR.setDirection(RobotSettings.CLAW_SERVOR_REVERSED ? Servo.Direction.REVERSE : Servo.Direction.FORWARD);
-
-        servoWrist = hwMap.servo.get(RobotSettings.CLAW_WRIST_SERVO);
-        servoWrist.setDirection(RobotSettings.CLAW_WRIST_REVERSED ? Servo.Direction.REVERSE : Servo.Direction.FORWARD);
     }
 
     public void addTelemetry() {

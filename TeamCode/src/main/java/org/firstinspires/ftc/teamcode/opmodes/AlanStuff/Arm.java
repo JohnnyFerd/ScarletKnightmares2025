@@ -178,7 +178,7 @@ public class Arm extends Subsystem {
         }else {
             telemetry.addLine("MOTION PROFILE TELEMETRY: OFF");
         }
-        if (UseTelemetry.ARM_TELEMETRY) {
+        if (true) { //UseTelemetry.ARM_TELEMETRY i just replaced cuz error
             telemetry.addLine("ARM TELEMETRY: ON");
             telemetry.addData("    Arm Power", robot.motorArmL.getPower());
             telemetry.addData("    Arm Encoder Position (R)", BulkReading.pMotorArmR);

@@ -99,11 +99,11 @@ public class LinkagePIDController {
 
         previousTime = RobotSettings.SUPER_TIME.seconds();
 
-        if (UseTelemetry.SLIDE_TELEMETRY) {
+        /** if (UseTelemetry.SLIDE_TELEMETRY) {
             telemetry.addData("Slide P Value", p_gs);
             telemetry.addData("Slide I Value", i_gs);
             telemetry.addData("Slide D Value", d_gs);
-        }
+        } **/
 
         double output = 0;
         output = (error * p_gs) + (derivative * d_gs) + (integralSum * i_gs);

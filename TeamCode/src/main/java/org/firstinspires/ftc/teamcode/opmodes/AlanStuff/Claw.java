@@ -105,13 +105,13 @@ public class Claw extends Subsystem {
 
     @Override
     public void addTelemetry() {
-        if (UseTelemetry.CLAW_TELEMETRY) {
+        /**if (UseTelemetry.CLAW_TELEMETRY) {
             telemetry.addLine("CLAW TELEMETRY: ON");
 //            telemetry.addLine("ARM TELEMETRY: ON");
 
         }else {
             telemetry.addLine("CLAW TELEMETRY: OFF");
-        }
+        } **/
     }
 
     @Override

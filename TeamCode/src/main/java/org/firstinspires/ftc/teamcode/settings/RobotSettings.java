@@ -12,6 +12,7 @@ public class RobotSettings {
     public static ElapsedTime SUPER_TIME = new ElapsedTime();
 
     public static double POSE_STORAGE = 0;
+    public static double TOTAL_ENCODER_TICKS = 100;
     public static boolean STORE_POSE = false;
 
     // DRIVETRAIN

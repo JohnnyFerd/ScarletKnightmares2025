@@ -10,11 +10,15 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.settings.UseTelemetry;
+import org.firstinspires.ftc.teamcode.subsystems.Shooter;
+import com.qualcomm.robotcore.util.ElapsedTime;
+
 
 @Config
 public class Shooter extends Subsystem {
     private final DcMotorEx shooter1;
     private final DcMotorEx shooter2;
+
 
     public static boolean shooter1Forward = false;
     public static boolean shooter2Forward = false;
@@ -35,6 +39,8 @@ public class Shooter extends Subsystem {
     public static double I = 0;
     public static double D = 0;
     public static double F = 0;
+
+    private Shooter shooter;
 
 
     public static double angle = 0.5;
@@ -120,6 +126,7 @@ public class Shooter extends Subsystem {
     @Override
     public void update()
     {
+        setAngle(angle);
     }
 
     @Override

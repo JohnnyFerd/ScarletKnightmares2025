@@ -64,11 +64,11 @@ public class ArmPIDController {
 
         previousTime = RobotSettings.SUPER_TIME.seconds();
         double output;
-        if (UseTelemetry.ARM_TELEMETRY) {
+        /** if (UseTelemetry.ARM_TELEMETRY) {
             telemetry.addData("Arm P Value", p);
             telemetry.addData("Arm I Value", i);
             telemetry.addData("Arm D Value", d);
-        }
+        } **/
         output = (error * p) + (derivative * d) + (integralSum * i);
         previousRefPos = reference;
         return output;
