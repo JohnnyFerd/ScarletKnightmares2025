@@ -14,7 +14,7 @@ import org.firstinspires.ftc.teamcode.subsystems.Drivetrain;
 import org.firstinspires.ftc.teamcode.subsystems.JVBoysSoccerRobot;
 import org.firstinspires.ftc.teamcode.subsystems.Shooter;
 
-@TeleOp(name = "ShooterTester", group = "Testing")
+@TeleOp(name = "ShooterOpMode")
 public class ShooterTester extends LinearOpMode {
     Gamepad currentGamepad1 = new Gamepad();
     Gamepad previousGamepad1 = new Gamepad();
