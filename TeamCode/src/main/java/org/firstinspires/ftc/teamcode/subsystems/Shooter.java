@@ -34,7 +34,7 @@ public class Shooter extends Subsystem {
     public static double paddle2Up = .45;
 
     //TODO tune motor PID for velocity
-    public static double maxVelocity = 6000;
+    public static double maxVelocity = 4100;
     public static double P = 10;
     public static double I = 0;
     public static double D = 0;
@@ -43,7 +43,7 @@ public class Shooter extends Subsystem {
     private Shooter shooter;
 
 
-    public static double angle = 0.5;
+    public static double angle = 0.41;
     private final HardwareMap hwMap;
     private final Telemetry telemetry;
     private final ElapsedTime timer;

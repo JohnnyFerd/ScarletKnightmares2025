@@ -8,16 +8,14 @@
     import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
     import com.qualcomm.robotcore.util.ElapsedTime;
 
-    import org.firstinspires.ftc.robotcore.external.hardware.camera.Camera;
-    import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
     import org.firstinspires.ftc.teamcode.opmodes.AlanStuff.AutoBase;
     import org.firstinspires.ftc.teamcode.roadrunner.MecanumDrive;
     import org.firstinspires.ftc.teamcode.subsystems.AprilTag;
     import org.firstinspires.ftc.teamcode.subsystems.Shooter;
 
     @Config
-    @Autonomous(name = "Raj Simple Auto", group = "Testing")
-    public class rajauto extends AutoBase {
+    @Autonomous(name = "Raj Auto Blue", group = "Testing")
+    public class rajautoblue extends AutoBase {
 
         private MecanumDrive drive;
         private AprilTag aprilTag;
@@ -29,14 +27,7 @@
             ElapsedTime timer = new ElapsedTime();
             drive = new MecanumDrive(hardwareMap, new Pose2d(0, 0, 0));
             aprilTag = new AprilTag(hardwareMap, telemetry);
-            shooter = new Shooter(
-                    "shooter1", "shooter2",     // motor names
-                    "shooterServo1", "shooterServo2", // servo names
-                    "paddle1", "paddle2",       // paddle servos
-                    hardwareMap,
-                    telemetry,
-                    timer
-            );
+            Shooter shooter = new Shooter("shooter1", "shooter2", "1shooter", "2shooter", "paddle1", "paddle2", hardwareMap, telemetry, timer);
 
             telemetry.addLine("Initializing camera...");
             telemetry.update();
@@ -72,49 +63,45 @@
             telemetry.addData("Detected Tag", detectedpatternTag);
             telemetry.update();
             // Optional tag-based adjustment
-            if (detectedpatternTag.equals("PPG")) {
-                telemetry.addLine("Detected ppg — moving farther forward");
-                Actions.runBlocking(
-                        drive.actionBuilder(drive.pose)
-                                .strafeTo(new Vector2d(-0, 0))
-                                .build()
+            telemetry.addData("Detected smth gonna turn to goal", detectedpatternTag);
+            telemetry.addData("Detected smth gonna turn to goal", detectedgoalTag);
+            Actions.runBlocking(
+            drive.actionBuilder(drive.pose)
+                 .turn(Math.toRadians(37))
+                 .build()
                 );
-            } else if (detectedpatternTag.equals("PGP")) {
-                telemetry.addLine("Detected PGP — moving right slightly");
-                Actions.runBlocking(
-                        drive.actionBuilder(drive.pose)
-                        .turn(Math.toRadians(27))
-                                .build()
-                );
-                for(int i = 0; i<200 ; i++)
-                    aprilTag.update();
-
-                detectedgoalTag = aprilTag.goalLabel;
-                detectedpatternTag = aprilTag.patternLabel;
-                telemetry.addLine("bluegoal detected");
-                if(detectedgoalTag.equals("bluegoal")) {
-                    Actions.runBlocking(
-                            drive.actionBuilder(drive.pose)
-                                    .strafeTo(new Vector2d(-15, 0))
-                                    .build()
-                    );
-                }
-                telemetry.addLine("Spinning up shooter...");
-                telemetry.update();
-
-                shooter.setVelocity(.5); // full speed
-                sleep(1000);
-
-                shooter.togglePaddle(); // simulate firing
-                sleep(100);
-
-                shooter.togglePaddle(); // reset paddle
-                shooter.setVelocity(0);
-            } else {
-               telemetry.addLine("No tag — default path");
+            for(int i = 0; i<200 ; i++){
+                aprilTag.update();
             }
-
+            detectedgoalTag = aprilTag.goalLabel;
+            detectedpatternTag = aprilTag.patternLabel;
+            telemetry.addData("this goal detected", detectedgoalTag);
+            if(detectedgoalTag.equals("bluegoal")) {
+                  Actions.runBlocking(
+                        drive.actionBuilder(drive.pose)
+                               .strafeTo(new Vector2d(-0, -15))
+                               .build()
+                    );
+            }
+            telemetry.addLine("Spinning up shooter...");
             telemetry.update();
+            shooter.setVelocity(1); // full speed
+            sleep(1500);
+            shooter.togglePaddle(); // simulate firing
+            sleep(1000);
+            shooter.togglePaddle(); // reset paddle
+            sleep(1000);
+            shooter.togglePaddle(); // simulate firing
+            sleep(1000);
+            shooter.togglePaddle(); // reset paddle
+            sleep(1000);
+
+            shooter.togglePaddle(); // simulate firing
+            sleep(1000);
+            shooter.togglePaddle(); // reset paddle
+            shooter.setVelocity(0);
+
+
 
           // Stop vision safely
             shooter.update();
