@@ -30,7 +30,7 @@ public class RobotSettings {
 
     //SHOOTER
     public static final String SHOOTER1_NAME = "shooter1";
-    public static final boolean SHOOTER1_REVERSED = true;
+    public static final boolean SHOOTER1_REVERSED = false;
     public static final String SHOOTER2_NAME = "shooter2";
     public static final boolean SHOOTER2_REVERSED = true;
     public static final String SHOOTER1_SERVO_NAME = "shooter1Servo";

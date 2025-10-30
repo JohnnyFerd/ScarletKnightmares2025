@@ -18,6 +18,7 @@ import org.firstinspires.ftc.teamcode.subsystems.Shooter;
 public class ShooterTester extends LinearOpMode {
     Gamepad currentGamepad1 = new Gamepad();
     Gamepad previousGamepad1 = new Gamepad();
+    boolean shooterActive = false;
     ElapsedTime timer = new ElapsedTime();
     HardwareMap hwMap;
     private double previousX = 0, previousY = 0, previousR = 0;
@@ -89,8 +90,18 @@ public class ShooterTester extends LinearOpMode {
         previousR = r;
     }
 
-    public void shooterControl(){
-        if (currentGamepad1.a && !previousGamepad1.a) {robot.shooterSubsystem.togglePaddle();}
-        robot.shooterSubsystem.setVelocity(currentGamepad1.right_trigger);
+    public void shooterControl() {
+        if (currentGamepad1.a && !previousGamepad1.a) {
+            robot.shooterSubsystem.togglePaddle();
+        }
+        if (currentGamepad1.right_bumper && !previousGamepad1.right_bumper) {
+            if (shooterActive) {
+                robot.shooterSubsystem.setVelocity(0);
+                shooterActive = false;
+            } else {
+                robot.shooterSubsystem.setVelocity(1);
+                shooterActive = true;
+            }
+        }
     }
 }
