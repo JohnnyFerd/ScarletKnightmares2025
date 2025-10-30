@@ -149,7 +149,7 @@ public class Drivetrain extends Subsystem {
 
     @Override
     public void addTelemetry() {
-        if (UseTelemetry.SHOOTER_TELEMETRY) {
+        if (UseTelemetry.DRIVETRAIN_TELEMETRY) {
             telemetry.addLine("Drivetrain Telemetry: ON");
 
             telemetry.addData("   Front Left/Right Calculated Powers", "%4.2f, %4.2f", powerFL, powerFR);
