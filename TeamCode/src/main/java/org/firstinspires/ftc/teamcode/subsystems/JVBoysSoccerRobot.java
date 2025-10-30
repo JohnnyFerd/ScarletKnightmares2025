@@ -160,10 +160,6 @@ public class JVBoysSoccerRobot {
         shooterServo2.setPosition(.5);
         paddle1.setPosition(Shooter.paddle1Down);
         paddle2.setPosition(Shooter.paddle2Down);
-
-        PIDFCoefficients pidf = new PIDFCoefficients(Shooter.P,Shooter.I,Shooter.D,Shooter.F);
-        shooter1.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidf);
-        shooter2.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidf);
     }
 
 
