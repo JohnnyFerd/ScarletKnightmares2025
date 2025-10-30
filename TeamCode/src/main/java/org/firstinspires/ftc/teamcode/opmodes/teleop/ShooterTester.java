@@ -14,20 +14,40 @@ import org.firstinspires.ftc.teamcode.subsystems.Drivetrain;
 import org.firstinspires.ftc.teamcode.subsystems.JVBoysSoccerRobot;
 import org.firstinspires.ftc.teamcode.subsystems.Shooter;
 
+import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
+import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
+import org.opencv.core.*;
+import org.opencv.imgproc.Imgproc;
+import org.opencv.imgproc.Moments;
+import org.openftc.easyopencv.OpenCvCamera;
+import org.openftc.easyopencv.OpenCvCameraFactory;
+import org.openftc.easyopencv.OpenCvCameraRotation;
+import org.openftc.easyopencv.OpenCvPipeline;
+import com.acmerobotics.dashboard.FtcDashboard;
+import org.firstinspires.ftc.teamcode.subsystems.AprilTag;
+
 @TeleOp(name = "ShooterOpMode")
 public class ShooterTester extends LinearOpMode {
+    FtcDashboard dashboard = FtcDashboard.getInstance();
+    private AprilTag aprilTag;
     Gamepad currentGamepad1 = new Gamepad();
     Gamepad previousGamepad1 = new Gamepad();
     boolean shooterActive = false;
     ElapsedTime timer = new ElapsedTime();
     HardwareMap hwMap;
     private double previousX = 0, previousY = 0, previousR = 0;
+    public static double CENTER_TOLERANCE = 20;   // pixels off center allowed
+    public static double DISTANCE_TOLERANCE = 1.0; // inches tolerance
+    public static double TARGET_DISTANCE = 15.0;   // desired distance from tag
     JVBoysSoccerRobot robot;
     @Override
     public void runOpMode() throws InterruptedException {
         hwMap = hardwareMap;
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
-
+        aprilTag = new AprilTag(hardwareMap, telemetry);
         robot = new JVBoysSoccerRobot(hardwareMap, telemetry);
         RobotSettings.SUPER_TIME.reset();
         telemetry.addData("Status", "Initialized");
@@ -41,7 +61,7 @@ public class ShooterTester extends LinearOpMode {
             while (opModeIsActive()) {
                 previousGamepad1.copy(currentGamepad1);
                 currentGamepad1.copy(gamepad1);
-
+                lineupAuto();
                 drivetrainControls();
                 shooterControl();
                 robot.update(true, true);
@@ -49,6 +69,47 @@ public class ShooterTester extends LinearOpMode {
         }
     }
 
+    public void lineupAuto() {
+
+        while (currentGamepad1.y){
+            aprilTag.update();
+            AprilTagDetection detection = aprilTag.getLatestTag();
+
+            if (detection != null) {
+                // Horizontal offset from image center
+                double errorX = detection.center.x - (aprilTag.getImageWidth() / 2.0);
+                // Distance in inches from camera to tag
+                double distanceInches = aprilTag.getDistanceInches(detection);
+
+                telemetry.addData("Tag ID", detection.id);
+                telemetry.addData("X Error (px)", "%.2f", errorX);
+                telemetry.addData("Distance (in)", "%.2f", distanceInches);
+
+                double forward = 0;
+                double rotate = 0;
+
+                // Step 1: Rotate to face tag
+                if (Math.abs(errorX) > CENTER_TOLERANCE) {
+                    rotate = (errorX > 0) ? 0.15 : -0.15; // adjust speed as needed
+                }
+
+                // Step 2: Move forward/backward to target distance
+                if (Math.abs(distanceInches - TARGET_DISTANCE) > DISTANCE_TOLERANCE) {
+                    forward = (distanceInches > TARGET_DISTANCE) ? 0.5 : -0.5;
+                }
+
+                // Drive forward/back with rotation correction
+                robot.drivetrainSubsystem.moveXYR(0, -forward, rotate);
+
+            } else {
+                telemetry.addLine("No tag detected");
+                robot.drivetrainSubsystem.moveXYR(0, 0, 0);
+            }
+
+            telemetry.update();
+        }
+
+    }
     public void drivetrainControls() {
         double x = gamepad1.left_stick_x * 1.05;
         double y = gamepad1.left_stick_y * -1;

@@ -1,5 +1,10 @@
     package org.firstinspires.ftc.teamcode.opmodes.auto;
 
+    import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.hardwareMap;
+    import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.telemetry;
+
+    import static java.lang.Thread.sleep;
+
     import com.acmerobotics.dashboard.config.Config;
     import com.acmerobotics.roadrunner.Action;
     import com.acmerobotics.roadrunner.Pose2d;

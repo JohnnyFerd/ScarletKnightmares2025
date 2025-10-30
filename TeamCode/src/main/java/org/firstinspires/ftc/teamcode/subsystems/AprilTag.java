@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.subsystems;
 
 import android.util.Size;
 
+import com.acmerobotics.dashboard.FtcDashboard;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
@@ -36,6 +37,7 @@ public class AprilTag extends Subsystem {
     public AprilTag(HardwareMap hwMap, Telemetry telemetry) {
         this.telemetry = telemetry;
 
+
         // Build the AprilTag processor
         aprilTag = new AprilTagProcessor.Builder().build();
 
@@ -46,6 +48,7 @@ public class AprilTag extends Subsystem {
                 .addProcessor(aprilTag)
                 .enableLiveView(true)  // show on FTC Dashboard
                 .build();
+        FtcDashboard.getInstance().startCameraStream(visionPortal, 30);
     }
 
     @Override
