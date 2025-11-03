@@ -24,26 +24,26 @@ public class Shooter extends Subsystem {
     private final Servo paddle1;
     private final Servo paddle2;
 
-    public static double paddle1Down = .55;
+    public static double paddle1Down = .8;
     public static double paddle2Down = .15;
-    public static double paddle1Up = .2;
-    public static double paddle2Up = .5;
+    public static double paddle1Up = .55;
+    public static double paddle2Up = .4;
 
     public static double paddle1Pos = paddle1Down;
     public static double paddle2Pos = paddle2Down;
 
 
     //TODO tune motor PID for velocity
-    public static double maxVelocity = 1600;
+    public static double maxVelocity = 1700;
     public static double P = 100;
     public static double I = 10;
     public static double D = 10;
-    public static double F = 0;
+    public static double F = 10;
 
     private Shooter shooter;
 
     public static boolean shooterActive = false;
-    public static double angle = 0.5;
+    public static double angle = 0.525;
     private final HardwareMap hwMap;
     private final Telemetry telemetry;
     private final ElapsedTime timer = new ElapsedTime();
