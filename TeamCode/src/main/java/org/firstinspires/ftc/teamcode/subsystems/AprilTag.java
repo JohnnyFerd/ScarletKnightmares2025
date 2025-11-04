@@ -121,7 +121,7 @@ public class AprilTag extends Subsystem {
 
     // Distance calculation using pinhole camera model
     private double calculateDistance(AprilTagDetection detection) {
-        if (detection.metadata == null) return -1;
+        if (currentDetections == null) return -1;
 
         double pixelWidth = Math.abs(detection.corners[0].x - detection.corners[1].x);
         if (pixelWidth <= 0) return -1;

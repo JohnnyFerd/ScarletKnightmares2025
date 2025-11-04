@@ -22,10 +22,13 @@ public class ShooterTester extends LinearOpMode {
     // === Dashboard Configurable Variables ===
     public static double CENTER_TOLERANCE = 20.0;   // pixels off center allowed
     public static double DISTANCE_TOLERANCE = 1.0;  // inches tolerance
-    public static double TARGET_DISTANCE = 15.0;    // desired distance from tag
+    public static double TARGET_DISTANCE = 50.0;    // desired distance from tag
     public static double ROTATE_SPEED = 0.15;       // rotation correction speed
     public static double DRIVE_SPEED = 0.5;         // forward/back correction speed
     public static double CAMERA_LATERAL_OFFSET = 0.0; // inches, right is positive
+    public static double SHOOTING_DISTANCE = 138.69;
+    public static double CAMERA_YAW_OFFSET_DEG = -4.0; // negative if camera points slightly right
+    public double CurrentDistance = 0;
 
     private AprilTag aprilTag;
     private JVBoysSoccerRobot robot;
@@ -60,16 +63,26 @@ public class ShooterTester extends LinearOpMode {
                 lineupAuto();
                 drivetrainControls();
                 shooterControl();
-
+                aprilTag.update();
                 robot.update(true, true);
             }
         }
     }
 
     public void lineupAuto() {
-        if (currentGamepad1.left_bumper) {
-            aprilTag.update();
-            AprilTagDetection detection = aprilTag.getLatestTag();
+        aprilTag.update();
+        AprilTagDetection detection = aprilTag.getLatestTag();
+        if (detection != null) {
+            double errorX = detection.center.x - (aprilTag.getImageWidth() / 2.0);
+
+            // Adjust horizontal error for lateral camera offset
+            double pixelsPerInch = aprilTag.getImageWidth() / (2 * TARGET_DISTANCE); // rough scaling
+            errorX -= CAMERA_LATERAL_OFFSET * pixelsPerInch;
+
+            CurrentDistance = aprilTag.getDistanceInches(detection);
+        }
+        if (currentGamepad1.left_bumper && CurrentDistance < SHOOTING_DISTANCE ) {
+
 
             if (detection != null) {
                 double errorX = detection.center.x - (aprilTag.getImageWidth() / 2.0);
@@ -79,7 +92,7 @@ public class ShooterTester extends LinearOpMode {
                 errorX -= CAMERA_LATERAL_OFFSET * pixelsPerInch;
 
                 double distanceInches = aprilTag.getDistanceInches(detection);
-
+                CurrentDistance = distanceInches;
                 telemetry.addData("Tag ID", detection.id);
                 telemetry.addData("X Error (px)", "%.2f", errorX);
                 telemetry.addData("Distance (in)", "%.2f", distanceInches);
@@ -94,7 +107,7 @@ public class ShooterTester extends LinearOpMode {
                     forward = (distanceInches > TARGET_DISTANCE) ? DRIVE_SPEED : -DRIVE_SPEED;
                 }
 
-                robot.drivetrainSubsystem.moveXYR(0, -forward, rotate);
+                robot.drivetrainSubsystem.moveXYR(0, forward, rotate);
             } else {
                 telemetry.addLine("No tag detected");
                 robot.drivetrainSubsystem.moveXYR(0, 0, 0);
