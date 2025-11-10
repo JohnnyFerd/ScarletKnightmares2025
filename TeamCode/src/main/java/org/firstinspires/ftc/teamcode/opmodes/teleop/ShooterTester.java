@@ -6,7 +6,6 @@ import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.Gamepad;
-import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.settings.RobotSettings;
@@ -14,21 +13,30 @@ import org.firstinspires.ftc.teamcode.subsystems.JVBoysSoccerRobot;
 import org.firstinspires.ftc.teamcode.subsystems.AprilTag;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 
-@TeleOp(name = "ShooterOpMode")
+@TeleOp(name = "ShooterOpModePID")
 @Config
 public class ShooterTester extends LinearOpMode {
     FtcDashboard dashboard = FtcDashboard.getInstance();
 
     // === Dashboard Configurable Variables ===
-    public static double CENTER_TOLERANCE = 20.0;   // pixels off center allowed
-    public static double DISTANCE_TOLERANCE = 1.0;  // inches tolerance
-    public static double TARGET_DISTANCE = 50.0;    // desired distance from tag
-    public static double ROTATE_SPEED = 0.15;       // rotation correction speed
-    public static double DRIVE_SPEED = 0.5;         // forward/back correction speed
-    public static double CAMERA_LATERAL_OFFSET = 0.0; // inches, right is positive
-    public static double SHOOTING_DISTANCE = 138.69;
-    public static double CAMERA_YAW_OFFSET_DEG = -4.0; // negative if camera points slightly right
-    public double CurrentDistance = 0;
+    public static double DEGREE_OFFSET = 7.5; // adjustable on Dashboard
+    public static double FOV_HORIZONTAL = 60.0; // camera FOV
+    public static double TARGET_DISTANCE = 140.0; // inches from AprilTag to robot center
+    public static double CENTER_TOLERANCE = .5; // pixels allowed off center
+    public static double DISTANCE_TOLERANCE = 1.0; // inches allowed off target
+    public static double CAMERA_LATERAL_OFFSET = -6.5; // inches, right is positive
+    public static double CAMERA_YAW_OFFSET_DEG = -4.0; // degrees, camera points slightly right
+    public static double MAX_ROTATE_SPEED = 0.25;
+    public static double MAX_DRIVE_SPEED = 0.5;
+
+    // PID coefficients (tune in dashboard)
+    //TODO TUNE
+    public static double kP_rotate = 0.0025;
+    public static double kI_rotate = 0;
+    public static double kD_rotate = 0;
+    public static double kP_drive = -0.025;
+    public static double kI_drive = 0;
+    public static double kD_drive = 0;
 
     private AprilTag aprilTag;
     private JVBoysSoccerRobot robot;
@@ -37,87 +45,107 @@ public class ShooterTester extends LinearOpMode {
     private Gamepad previousGamepad1 = new Gamepad();
 
     private boolean shooterActive = false;
-    private double previousX = 0, previousY = 0, previousR = 0;
 
     private ElapsedTime timer = new ElapsedTime();
-    private HardwareMap hwMap;
+
+    // PID state
+    private double errorXPrev = 0;
+    private double distancePrev = 0;
+    private double integralRotate = 0;
+    private double integralDrive = 0;
 
     @Override
     public void runOpMode() throws InterruptedException {
-        hwMap = hardwareMap;
         telemetry = new MultipleTelemetry(telemetry, dashboard.getTelemetry());
         aprilTag = new AprilTag(hardwareMap, telemetry);
         robot = new JVBoysSoccerRobot(hardwareMap, telemetry);
 
-        RobotSettings.SUPER_TIME.reset();
         telemetry.addData("Status", "Initialized");
         telemetry.update();
 
         waitForStart();
-        if (opModeIsActive()) {
-            RobotSettings.SUPER_TIME.reset();
-            while (opModeIsActive()) {
-                previousGamepad1.copy(currentGamepad1);
-                currentGamepad1.copy(gamepad1);
+        RobotSettings.SUPER_TIME.reset();
 
-                lineupAuto();
-                drivetrainControls();
-                shooterControl();
-                aprilTag.update();
-                robot.update(true, true);
-            }
+        while (opModeIsActive()) {
+            previousGamepad1.copy(currentGamepad1);
+            currentGamepad1.copy(gamepad1);
+
+            aprilTag.update(); // update AprilTag once per loop
+
+            drivetrainControls(); // always drive
+            shooterControl();     // shooter toggle
+            lineupCorrection();   // adds correction if left bumper held
+
+            robot.update(true, true);
         }
     }
 
-    public void lineupAuto() {
-        aprilTag.update();
+    // === AprilTag correction overlay (PID) ===
+    public void lineupCorrection() {
+        if (!currentGamepad1.left_bumper) return; // only apply when held
+
         AprilTagDetection detection = aprilTag.getLatestTag();
-        if (detection != null) {
-            double errorX = detection.center.x - (aprilTag.getImageWidth() / 2.0);
-
-            // Adjust horizontal error for lateral camera offset
-            double pixelsPerInch = aprilTag.getImageWidth() / (2 * TARGET_DISTANCE); // rough scaling
-            errorX -= CAMERA_LATERAL_OFFSET * pixelsPerInch;
-
-            CurrentDistance = aprilTag.getDistanceInches(detection);
+        if (detection == null) {
+            telemetry.addLine("No tag detected");
+            return;
         }
-        if (currentGamepad1.left_bumper && CurrentDistance < SHOOTING_DISTANCE ) {
 
+        double errorX = detection.center.x - (aprilTag.getImageWidth() / 2.0);
+        double distanceInches = aprilTag.getDistanceInches(detection);
 
-            if (detection != null) {
-                double errorX = detection.center.x - (aprilTag.getImageWidth() / 2.0);
+        // Convert offset compensation
+        double pixelsPerInch = aprilTag.getImageWidth() / (2 * TARGET_DISTANCE);
+        errorX -= CAMERA_LATERAL_OFFSET * pixelsPerInch;
+        double yawOffsetPixels = Math.tan(Math.toRadians(CAMERA_YAW_OFFSET_DEG)) * distanceInches * pixelsPerInch;
+        errorX -= yawOffsetPixels;
 
-                // Adjust horizontal error for lateral camera offset
-                double pixelsPerInch = aprilTag.getImageWidth() / (2 * TARGET_DISTANCE); // rough scaling
-                errorX -= CAMERA_LATERAL_OFFSET * pixelsPerInch;
+        // Convert degree offset to pixel offset based on FOV
+        double pixelOffset = (aprilTag.getImageWidth() / 2.0) *
+                (Math.tan(Math.toRadians(DEGREE_OFFSET)) / Math.tan(Math.toRadians(FOV_HORIZONTAL / 2.0)));
 
-                double distanceInches = aprilTag.getDistanceInches(detection);
-                CurrentDistance = distanceInches;
-                telemetry.addData("Tag ID", detection.id);
-                telemetry.addData("X Error (px)", "%.2f", errorX);
-                telemetry.addData("Distance (in)", "%.2f", distanceInches);
+        // Apply left/right rotation bias
+        errorX -= pixelOffset;
 
-                double forward = 0;
-                double rotate = 0;
+        // Time step
+        double dt = Math.max(0.001, timer.seconds());
+        timer.reset();
 
-                if (Math.abs(errorX) > CENTER_TOLERANCE) {
-                    rotate = (errorX > 0) ? ROTATE_SPEED : -ROTATE_SPEED;
-                }
-                if (Math.abs(distanceInches - TARGET_DISTANCE) > DISTANCE_TOLERANCE) {
-                    forward = (distanceInches > TARGET_DISTANCE) ? DRIVE_SPEED : -DRIVE_SPEED;
-                }
+        // === ROTATION PID ===
+        double errorRotate = errorX;
+        integralRotate += errorRotate * dt;
+        double derivativeRotate = (errorRotate - errorXPrev) / dt;
+        double rotateCorrection = kP_rotate * errorRotate + kI_rotate * integralRotate + kD_rotate * derivativeRotate;
+        errorXPrev = errorRotate;
 
-                robot.drivetrainSubsystem.moveXYR(0, forward, rotate);
-            } else {
-                telemetry.addLine("No tag detected");
-                robot.drivetrainSubsystem.moveXYR(0, 0, 0);
-            }
-        }
+        // === DRIVE PID ===
+        double errorDrive = distanceInches - TARGET_DISTANCE;
+        integralDrive += errorDrive * dt;
+        double derivativeDrive = (errorDrive - distancePrev) / dt;
+        double forwardCorrection = kP_drive * errorDrive + kI_drive * integralDrive + kD_drive * derivativeDrive;
+        distancePrev = errorDrive;
+
+        // Dead zones
+        if (Math.abs(errorRotate) < CENTER_TOLERANCE) rotateCorrection = 0;
+        if (Math.abs(errorDrive) < DISTANCE_TOLERANCE) forwardCorrection = 0;
+
+        // Limit speeds
+        rotateCorrection = Math.max(-MAX_ROTATE_SPEED, Math.min(MAX_ROTATE_SPEED, rotateCorrection));
+        forwardCorrection = Math.max(-MAX_DRIVE_SPEED, Math.min(MAX_DRIVE_SPEED, forwardCorrection));
+
+        robot.drivetrainSubsystem.moveXYR(0, forwardCorrection, rotateCorrection);
+
+        telemetry.addData("Tag ID", detection.id);
+        telemetry.addData("X Error (px)", "%.2f", errorRotate);
+        telemetry.addData("Distance (in)", "%.2f", distanceInches);
+        telemetry.addData("Rotate PID", "%.3f", rotateCorrection);
+        telemetry.addData("Forward PID", "%.3f", forwardCorrection);
     }
 
+    // === Manual Drivetrain Controls ===
     public void drivetrainControls() {
+
         double x = gamepad1.left_stick_x * 1.05;
-        double y = gamepad1.left_stick_y * -1;
+        double y = -gamepad1.left_stick_y;
         double r = gamepad1.right_stick_x;
 
         if (currentGamepad1.dpad_down && !previousGamepad1.dpad_down) {
@@ -129,26 +157,19 @@ public class ShooterTester extends LinearOpMode {
         } else if (currentGamepad1.right_trigger > 0.01 || currentGamepad1.left_trigger > 0.01) {
             x *= 0.65; y *= 0.65; r *= 0.65;
         }
-            robot.drivetrainSubsystem.moveXYR(x, y, r);
 
+        if (!currentGamepad1.left_bumper) {robot.drivetrainSubsystem.moveXYR(x, y, r);}
 
-        previousX = x;
-        previousY = y;
-        previousR = r;
     }
 
+    // === Shooter Controls ===
     public void shooterControl() {
         if (currentGamepad1.a && !previousGamepad1.a) {
             robot.shooterSubsystem.togglePaddle();
         }
         if (currentGamepad1.right_bumper && !previousGamepad1.right_bumper) {
-            if (shooterActive) {
-                robot.shooterSubsystem.setVelocity(0);
-                shooterActive = false;
-            } else {
-                robot.shooterSubsystem.setVelocity(1);
-                shooterActive = true;
-            }
+            shooterActive = !shooterActive;
+            robot.shooterSubsystem.setVelocity(shooterActive ? 1 : 0);
         }
     }
 }
