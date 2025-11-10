@@ -81,13 +81,7 @@
             detectedgoalTag = aprilTag.goalLabel;
             detectedpatternTag = aprilTag.patternLabel;
             telemetry.addData("this goal detected", detectedgoalTag);
-            if(detectedgoalTag.equals("bluegoal")) {
-                  Actions.runBlocking(
-                        drive.actionBuilder(drive.pose)
-                               .strafeTo(new Vector2d(-0, -15))
-                               .build()
-                    );
-            }
+
             telemetry.addLine("Spinning up shooter...");
             telemetry.update();
             shooter.setVelocity(1); // full speed
