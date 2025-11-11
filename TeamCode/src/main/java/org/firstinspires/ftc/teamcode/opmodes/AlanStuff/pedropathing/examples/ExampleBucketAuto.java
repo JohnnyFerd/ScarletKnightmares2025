@@ -47,7 +47,7 @@
 //    /** Start Pose of our robot */
 //    private final Pose startPose = new Pose(9, 111, Math.toRadians(270));
 //
-//    /** Scoring Pose of our robot. It is facing the submersible at a -45 degree (315 degree) angle. */
+//    /** Scoring Pose of our robot. It is facing the submersible at a -45 degree (315 degree) initAngle. */
 //    private final Pose scorePose = new Pose(14, 129, Math.toRadians(315));
 //
 //    /** Lowest (First) Sample from the Spike Mark */
@@ -85,7 +85,7 @@
 //         *    * Constant Heading Interpolation:
 //         *    - Pedro will maintain one heading throughout the entire path.
 //         *    * Tangential Heading Interpolation:
-//         *    - Pedro will follows the angle of the path such that the robot is always driving forward when it follows the path.
+//         *    - Pedro will follows the initAngle of the path such that the robot is always driving forward when it follows the path.
 //         * PathChains hold Path(s) within it and are able to hold their end point, meaning that they will holdPoint until another path is followed.
 //         * Here is a explanation of the difference between Paths and PathChains <https://pedropathing.com/commonissues/pathtopathchain.html> */
 //

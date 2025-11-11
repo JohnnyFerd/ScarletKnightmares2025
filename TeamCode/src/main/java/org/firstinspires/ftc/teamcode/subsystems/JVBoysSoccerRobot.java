@@ -7,15 +7,12 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
-import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.robot.Robot;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
-import org.firstinspires.ftc.robotserver.internal.webserver.CoreRobotWebServer;
 import org.firstinspires.ftc.teamcode.settings.UseTelemetry;
 import org.firstinspires.ftc.teamcode.util.BulkReading;
 import org.firstinspires.ftc.teamcode.settings.RobotSettings;
@@ -30,8 +27,8 @@ import java.util.List;
  */
 public class JVBoysSoccerRobot {
 
-    private HardwareMap hwMap;
-    private Telemetry telemetry;
+    public HardwareMap hwMap;
+    public Telemetry telemetry;
     public BulkReading BR;
     private List<LynxModule> allHubs;
     private List<Subsystem> subsystems;
@@ -40,6 +37,8 @@ public class JVBoysSoccerRobot {
     // Subsystems
     public Drivetrain drivetrainSubsystem;
     public Shooter shooterSubsystem;
+
+    public AprilTag aprilTag;
 
     // Hardware
     public DcMotorEx motorFL, motorFR, motorBL, motorBR;
@@ -61,6 +60,8 @@ public class JVBoysSoccerRobot {
             hub.setBulkCachingMode(LynxModule.BulkCachingMode.AUTO);
         }
 
+        aprilTag = new AprilTag(hwMap, telemetry);
+
         initIMU();
         initHardware();
         drivetrainSubsystem = new Drivetrain(hwMap, telemetry, this);
@@ -74,7 +75,7 @@ public class JVBoysSoccerRobot {
         }
         telemetry.addData("INIT YAW: ", drivetrainSubsystem.initYaw);
 
-        subsystems = Arrays.asList(drivetrainSubsystem, shooterSubsystem);
+        subsystems = Arrays.asList(drivetrainSubsystem, shooterSubsystem, aprilTag);
         BR = new BulkReading(this);
 
     }
@@ -93,10 +94,13 @@ public class JVBoysSoccerRobot {
                 hub.setBulkCachingMode(LynxModule.BulkCachingMode.AUTO);
             }
 
+            aprilTag = new AprilTag(hwMap, telemetry);
+
             initIMU();
             initHardware();
-
-            subsystems = Arrays.asList(drivetrainSubsystem, shooterSubsystem);
+            drivetrainSubsystem = new Drivetrain(hwMap, telemetry, this);
+            shooterSubsystem = new Shooter(hwMap, telemetry, this);
+            subsystems = Arrays.asList(drivetrainSubsystem, shooterSubsystem, aprilTag);
 
             RobotSettings.POSE_STORAGE = imu.getRobotOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle;
             telemetry.addData("PoseStorage: ", RobotSettings.POSE_STORAGE);
@@ -114,6 +118,7 @@ public class JVBoysSoccerRobot {
     public void initHardware() {
         initDrivetrainHardware();
         initShooterHardware();
+        initAprilTag();
     }
 
     public void initDrivetrainHardware() {
@@ -159,6 +164,11 @@ public class JVBoysSoccerRobot {
         paddle1.setPosition(Shooter.paddle1Down);
         paddle2.setPosition(Shooter.paddle2Down);
     }
+
+    public void initAprilTag() {
+        aprilTag.init();
+    }
+
 
 
 

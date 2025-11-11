@@ -49,7 +49,7 @@ public class Drivetrain extends Subsystem {
 
     /**
      * As a last measure, if switching between auto and teleop the robot is not perfectly straight
-     * You can rotate the robot in teleop, and then set the initial yaw as its current angle
+     * You can rotate the robot in teleop, and then set the initial yaw as its current initAngle
      */
     public void resetInitYaw() {
         lastAngle = robot.imu.getRobotOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);

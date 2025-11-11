@@ -13,163 +13,244 @@ import org.firstinspires.ftc.teamcode.subsystems.JVBoysSoccerRobot;
 import org.firstinspires.ftc.teamcode.subsystems.AprilTag;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 
-@TeleOp(name = "ShooterOpModePID")
 @Config
+@TeleOp(name = "ShooterOpModePID", group = "TeleOp")
 public class ShooterTester extends LinearOpMode {
-    FtcDashboard dashboard = FtcDashboard.getInstance();
 
-    // === Dashboard Configurable Variables ===
-    public static double DEGREE_OFFSET = 7.5; // adjustable on Dashboard
-    public static double FOV_HORIZONTAL = 60.0; // camera FOV
-    public static double TARGET_DISTANCE = 140.0; // inches from AprilTag to robot center
-    public static double CENTER_TOLERANCE = .5; // pixels allowed off center
-    public static double DISTANCE_TOLERANCE = 1.0; // inches allowed off target
-    public static double CAMERA_LATERAL_OFFSET = -6.5; // inches, right is positive
-    public static double CAMERA_YAW_OFFSET_DEG = -4.0; // degrees, camera points slightly right
+    private final FtcDashboard dashboard = FtcDashboard.getInstance();
+
+    // === Shooter Alignment / PID Tunables ===
+    public static double DEGREE_OFFSET = 12;
+    public static double TARGET_DISTANCE = 140.0;
+    public static double CENTER_TOLERANCE = 0.5;
+    public static double DISTANCE_TOLERANCE = 1.0;
+
+    public static double kP_rotate = 0.0025, kI_rotate = 0, kD_rotate = 0;
+    public static double kP_drive = -0.025, kI_drive = 0, kD_drive = 0;
     public static double MAX_ROTATE_SPEED = 0.25;
     public static double MAX_DRIVE_SPEED = 0.5;
 
-    // PID coefficients (tune in dashboard)
-    //TODO TUNE
-    public static double kP_rotate = 0.0025;
-    public static double kI_rotate = 0;
-    public static double kD_rotate = 0;
-    public static double kP_drive = -0.025;
-    public static double kI_drive = 0;
-    public static double kD_drive = 0;
-
-    private AprilTag aprilTag;
+    // === Subsystems ===
     private JVBoysSoccerRobot robot;
+    private AprilTag aprilTag;
 
-    private Gamepad currentGamepad1 = new Gamepad();
-    private Gamepad previousGamepad1 = new Gamepad();
+    // === Gamepad State ===
+    private final Gamepad currentGamepad1 = new Gamepad();
+    private final Gamepad previousGamepad1 = new Gamepad();
+    private final Gamepad currentGamepad2 = new Gamepad();
+    private final Gamepad previousGamepad2 = new Gamepad();
 
-    private boolean shooterActive = false;
-
-    private ElapsedTime timer = new ElapsedTime();
-
-    // PID state
+    // === PID Tracking ===
     private double errorXPrev = 0;
     private double distancePrev = 0;
     private double integralRotate = 0;
     private double integralDrive = 0;
+    private final ElapsedTime timer = new ElapsedTime();
+
+    // === Shooter Sequence Variables ===
+    private boolean sequenceActive = false;
+    private int sequenceStep = 0;
+    private double sequenceTimer = 0;
+    private boolean shooterActive = false;
+
+    // === Configurable delays for each step (dashboard adjustable) ===
+    public static double DELAY_0_UP_TO_DOWN = 0.5;
+    public static double DELAY_1_DOWN_TO_UP = 0.45;
+    public static double DELAY_2_UP_TO_DOWN = 0.75;
+    public static double DELAY_3_DOWN_TO_UP = 0.6;
+    public static double DELAY_4_UPLAST_TO_DOWN = 0.8;
+    public static double DELAY_5_DOWN_TO_START = 0.5;
+
+    // === AprilTag Handling ===
+    private AprilTagDetection lastDetection = null;
+    private final ElapsedTime lastDetectionTimer = new ElapsedTime();
+    public static double TAG_HOLD_TIME = 0.3; // seconds to keep last known detection
+    public static int TARGET_TAG_ID = 20;     // only track this tag
+    private boolean usingAprilTagAlignment = false;
 
     @Override
     public void runOpMode() throws InterruptedException {
         telemetry = new MultipleTelemetry(telemetry, dashboard.getTelemetry());
-        aprilTag = new AprilTag(hardwareMap, telemetry);
-        robot = new JVBoysSoccerRobot(hardwareMap, telemetry);
 
-        telemetry.addData("Status", "Initialized");
+        robot = new JVBoysSoccerRobot(hardwareMap, telemetry);
+        aprilTag = robot.aprilTag;
+
+        telemetry.addLine("Initialized - Ready to Start");
         telemetry.update();
 
         waitForStart();
         RobotSettings.SUPER_TIME.reset();
+        timer.reset();
 
         while (opModeIsActive()) {
-            previousGamepad1.copy(currentGamepad1);
-            currentGamepad1.copy(gamepad1);
+            updateGamepadStates();
 
-            aprilTag.update(); // update AprilTag once per loop
-
-            drivetrainControls(); // always drive
-            shooterControl();     // shooter toggle
-            lineupCorrection();   // adds correction if left bumper held
+            handleAprilTagCorrection();
+            handleDrivetrainControls();
+            handleShooterControls();
 
             robot.update(true, true);
+            telemetry.update();
         }
     }
 
-    // === AprilTag correction overlay (PID) ===
-    public void lineupCorrection() {
-        if (!currentGamepad1.left_bumper) return; // only apply when held
-
-        AprilTagDetection detection = aprilTag.getLatestTag();
-        if (detection == null) {
-            telemetry.addLine("No tag detected");
+    // === AprilTag Auto-Alignment with Hold, Anti-Flicker, and Tag Filter ===
+    private void handleAprilTagCorrection() {
+        if (!currentGamepad1.left_bumper) {
+            usingAprilTagAlignment = false;
             return;
         }
+
+        AprilTagDetection detection = aprilTag.getLatestTag();
+
+        if (detection != null && detection.id == TARGET_TAG_ID) {
+            lastDetection = detection;
+            lastDetectionTimer.reset();
+        } else if (lastDetection != null && lastDetection.id == TARGET_TAG_ID && lastDetectionTimer.seconds() < TAG_HOLD_TIME) {
+            detection = lastDetection;
+        } else {
+            usingAprilTagAlignment = false;
+            return;
+        }
+
+        usingAprilTagAlignment = true;
 
         double errorX = detection.center.x - (aprilTag.getImageWidth() / 2.0);
         double distanceInches = aprilTag.getDistanceInches(detection);
 
-        // Convert offset compensation
         double pixelsPerInch = aprilTag.getImageWidth() / (2 * TARGET_DISTANCE);
-        errorX -= CAMERA_LATERAL_OFFSET * pixelsPerInch;
-        double yawOffsetPixels = Math.tan(Math.toRadians(CAMERA_YAW_OFFSET_DEG)) * distanceInches * pixelsPerInch;
-        errorX -= yawOffsetPixels;
+        errorX -= aprilTag.CAMERA_LATERAL_OFFSET * pixelsPerInch;
+        errorX -= Math.tan(Math.toRadians(aprilTag.CAMERA_YAW_OFFSET_DEG)) * distanceInches * pixelsPerInch;
+        errorX -= (aprilTag.getImageWidth() / 2.0) *
+                (Math.tan(Math.toRadians(DEGREE_OFFSET)) / Math.tan(Math.toRadians(aprilTag.CAMERA_FOV_DEG / 2.0)));
 
-        // Convert degree offset to pixel offset based on FOV
-        double pixelOffset = (aprilTag.getImageWidth() / 2.0) *
-                (Math.tan(Math.toRadians(DEGREE_OFFSET)) / Math.tan(Math.toRadians(FOV_HORIZONTAL / 2.0)));
-
-        // Apply left/right rotation bias
-        errorX -= pixelOffset;
-
-        // Time step
         double dt = Math.max(0.001, timer.seconds());
         timer.reset();
 
-        // === ROTATION PID ===
+        // Rotation PID
         double errorRotate = errorX;
         integralRotate += errorRotate * dt;
         double derivativeRotate = (errorRotate - errorXPrev) / dt;
         double rotateCorrection = kP_rotate * errorRotate + kI_rotate * integralRotate + kD_rotate * derivativeRotate;
         errorXPrev = errorRotate;
 
-        // === DRIVE PID ===
+        // Drive PID
         double errorDrive = distanceInches - TARGET_DISTANCE;
         integralDrive += errorDrive * dt;
         double derivativeDrive = (errorDrive - distancePrev) / dt;
         double forwardCorrection = kP_drive * errorDrive + kI_drive * integralDrive + kD_drive * derivativeDrive;
         distancePrev = errorDrive;
 
-        // Dead zones
         if (Math.abs(errorRotate) < CENTER_TOLERANCE) rotateCorrection = 0;
         if (Math.abs(errorDrive) < DISTANCE_TOLERANCE) forwardCorrection = 0;
 
-        // Limit speeds
-        rotateCorrection = Math.max(-MAX_ROTATE_SPEED, Math.min(MAX_ROTATE_SPEED, rotateCorrection));
-        forwardCorrection = Math.max(-MAX_DRIVE_SPEED, Math.min(MAX_DRIVE_SPEED, forwardCorrection));
+        rotateCorrection = clamp(rotateCorrection, -MAX_ROTATE_SPEED, MAX_ROTATE_SPEED);
+        forwardCorrection = clamp(forwardCorrection, -MAX_DRIVE_SPEED, MAX_DRIVE_SPEED);
 
         robot.drivetrainSubsystem.moveXYR(0, forwardCorrection, rotateCorrection);
 
-        telemetry.addData("Tag ID", detection.id);
+        telemetry.addData("Tracking Tag", TARGET_TAG_ID);
+        telemetry.addData("Detected Tag ID", detection.id);
         telemetry.addData("X Error (px)", "%.2f", errorRotate);
         telemetry.addData("Distance (in)", "%.2f", distanceInches);
         telemetry.addData("Rotate PID", "%.3f", rotateCorrection);
         telemetry.addData("Forward PID", "%.3f", forwardCorrection);
+        telemetry.addData("Tag Hold Time", "%.2f s", lastDetectionTimer.seconds());
     }
 
     // === Manual Drivetrain Controls ===
-    public void drivetrainControls() {
+    private void handleDrivetrainControls() {
+        if (usingAprilTagAlignment) return;
 
-        double x = gamepad1.left_stick_x * 1.05;
-        double y = -gamepad1.left_stick_y;
-        double r = gamepad1.right_stick_x;
+        double x = -gamepad2.left_stick_x * 1.05;
+        double y = gamepad2.left_stick_y;
+        double r = gamepad2.right_stick_x;
 
-        if (currentGamepad1.dpad_down && !previousGamepad1.dpad_down) {
+        if (currentGamepad1.dpad_down && !previousGamepad1.dpad_down)
             robot.drivetrainSubsystem.resetInitYaw();
-        }
 
-        if (currentGamepad1.right_trigger > 0.01 && currentGamepad1.left_trigger > 0.01) {
-            x *= 0.3; y *= 0.3; r *= 0.3;
-        } else if (currentGamepad1.right_trigger > 0.01 || currentGamepad1.left_trigger > 0.01) {
-            x *= 0.65; y *= 0.65; r *= 0.65;
-        }
+        double speedScale = 1.0;
+        if (currentGamepad2.right_trigger > 0.01 && currentGamepad2.left_trigger > 0.01) speedScale = 0.3;
+        else if (currentGamepad2.right_trigger > 0.01 || currentGamepad2.left_trigger > 0.01) speedScale = 0.65;
 
-        if (!currentGamepad1.left_bumper) {robot.drivetrainSubsystem.moveXYR(x, y, r);}
+        x *= speedScale;
+        y *= speedScale;
+        r *= speedScale;
 
+        robot.drivetrainSubsystem.moveXYR(x, y, r);
     }
 
     // === Shooter Controls ===
-    public void shooterControl() {
-        if (currentGamepad1.a && !previousGamepad1.a) {
-            robot.shooterSubsystem.togglePaddle();
+    private void handleShooterControls() {
+        // Reset sequence on X press
+        if (currentGamepad1.x && !previousGamepad1.x) {
+            sequenceActive = false;
+            sequenceStep = 0;
+            sequenceTimer = 0;
+            robot.shooterSubsystem.paddleDown();
         }
+
+        // Paddle Sequence (hold A)
+        if (currentGamepad1.a) {
+            if (!sequenceActive) {
+                sequenceActive = true;
+                sequenceStep = 0;
+                sequenceTimer = 0;
+            }
+
+            double dt = timer.seconds();
+            timer.reset();
+            sequenceTimer += dt;
+
+            double currentDelay = getCurrentStepDelay();
+
+            if (sequenceTimer >= currentDelay) {
+                sequenceTimer = 0;
+                switch (sequenceStep) {
+                    case 0: robot.shooterSubsystem.paddleUp(); break;
+                    case 1: robot.shooterSubsystem.paddleDown(); break;
+                    case 2: robot.shooterSubsystem.paddleUp(); break;
+                    case 3: robot.shooterSubsystem.paddleDown(); break;
+                    case 4: robot.shooterSubsystem.paddleUpLast(); break;
+                    case 5: robot.shooterSubsystem.paddleDown(); break;
+                }
+                sequenceStep = (sequenceStep + 1) % 6;
+            }
+        } else {
+            sequenceActive = false;
+        }
+
+        // Manual Paddle
+        if (currentGamepad1.b && !previousGamepad1.b)
+            robot.shooterSubsystem.paddleUp();
+
+        // Toggle Shooter Flywheel
         if (currentGamepad1.right_bumper && !previousGamepad1.right_bumper) {
             shooterActive = !shooterActive;
             robot.shooterSubsystem.setVelocity(shooterActive ? 1 : 0);
         }
+    }
+
+    private double getCurrentStepDelay() {
+        switch (sequenceStep) {
+            case 0: return DELAY_0_UP_TO_DOWN;
+            case 1: return DELAY_1_DOWN_TO_UP;
+            case 2: return DELAY_2_UP_TO_DOWN;
+            case 3: return DELAY_3_DOWN_TO_UP;
+            case 4: return DELAY_4_UPLAST_TO_DOWN;
+            case 5: return DELAY_5_DOWN_TO_START;
+            default: return 0.5;
+        }
+    }
+
+    private void updateGamepadStates() {
+        previousGamepad1.copy(currentGamepad1);
+        currentGamepad1.copy(gamepad1);
+        previousGamepad2.copy(currentGamepad2);
+        currentGamepad2.copy(gamepad2);
+    }
+
+    private double clamp(double value, double min, double max) {
+        return Math.max(min, Math.min(max, value));
     }
 }

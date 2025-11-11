@@ -2,16 +2,11 @@ package org.firstinspires.ftc.teamcode.subsystems;
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.hardware.PIDCoefficients;
-import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.settings.UseTelemetry;
-import org.firstinspires.ftc.teamcode.subsystems.Shooter;
-import com.qualcomm.robotcore.util.ElapsedTime;
 
 
 @Config
@@ -26,15 +21,23 @@ public class Shooter extends Subsystem {
 
     public static double paddle1Down = .8;
     public static double paddle2Down = .15;
-    public static double paddle1Up = .6;
-    public static double paddle2Up = .35;
+    public static double paddle1UpFar = .6;
+    public static double paddle2UpFar = .35;
+
+    public static double paddle1UpClose = .4;
+    public static double paddle2UpClose = .45;
+
+    public static int FarShotVelo = 1750;
+    public static int CloseShotVelo = 1325;
+
+    public static double paddle1UpFarLast = .575;
+    public static double paddle2UpFarLast = .375;
 
     public static double paddle1Pos = paddle1Down;
     public static double paddle2Pos = paddle2Down;
 
 
     //TODO tune motor PID for velocity
-    public static double maxVelocity = 1750;
     public static double P = 100;
     public static double I = 10;
     public static double D = 10;
@@ -43,7 +46,7 @@ public class Shooter extends Subsystem {
     private Shooter shooter;
 
     public static boolean shooterActive = false;
-    public static double angle = 0.575;
+    public static double angle = .6;
     private final HardwareMap hwMap;
     private final Telemetry telemetry;
     private final ElapsedTime timer = new ElapsedTime();
@@ -64,7 +67,7 @@ public class Shooter extends Subsystem {
 
 
         this.shooterServo1.setPosition(angle);
-        this.shooterServo2.setPosition(1-angle);
+        this.shooterServo2.setPosition(1- angle);
         this.paddle1.setPosition(paddle1Down);
         this.paddle2.setPosition(paddle2Down);
 
@@ -86,16 +89,15 @@ public class Shooter extends Subsystem {
     }
 
 
-    //Sets velocity of motors for shooter based off of percent of max speed
     public void setVelocity(double temp)
     {
-        if (Math.abs(temp) > 1){
-            shooter1.setVelocity(maxVelocity);
-            shooter2.setVelocity(maxVelocity);
+        if (Math.abs(temp) > 2000){
+            shooter1.setVelocity(2000);
+            shooter2.setVelocity(2000);
         }
         else {
-            shooter1.setVelocity(temp * maxVelocity);
-            shooter2.setVelocity(temp * maxVelocity);
+            shooter1.setVelocity(temp);
+            shooter2.setVelocity(temp);
         }
     }
 
@@ -111,10 +113,22 @@ public class Shooter extends Subsystem {
         paddle2Pos = temp2;
     }
 
-    public void togglePaddle()
+    public void paddleUp()
     {
-        if (paddle1.getPosition() == paddle1Down) {paddle1Pos = paddle1Up; paddle2Pos = paddle2Up;}
-        else {paddle1Pos = paddle1Down; paddle2Pos = paddle2Down;}
+        paddle1Pos = paddle1UpFar; paddle2Pos = paddle2UpFar;
+    }
+    public void paddleDown()
+    {
+        paddle1Pos = paddle1Down; paddle2Pos = paddle2Down;
+    }
+    public void paddleUpLast()
+    {
+        paddle1Pos = paddle1UpFarLast; paddle2Pos = paddle2UpFarLast;
+    }
+
+    public void paddleUpClose()
+    {
+        paddle1Pos = paddle1UpClose; paddle2Pos = paddle2UpClose;
     }
 
 
@@ -134,7 +148,7 @@ public class Shooter extends Subsystem {
     @Override
     public void update()
     {
-        if (shooterServo2.getPosition() != angle) {shooterServo1.setPosition(1-angle); shooterServo2.setPosition(angle);}
+        if (shooterServo2.getPosition() != angle) {shooterServo1.setPosition(1- angle); shooterServo2.setPosition(angle);}
         if (paddle1.getPosition() != paddle1Pos) {paddle1.setPosition(paddle1Pos);}
         if (paddle2.getPosition() != paddle2Pos) {paddle2.setPosition(paddle2Pos);}
     }

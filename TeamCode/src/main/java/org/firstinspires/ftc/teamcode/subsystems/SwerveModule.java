@@ -88,7 +88,7 @@ public class SwerveModule
      */
     public void update(double driveSpeed, double headingDegrees)
     {
-        // Current wheel angle from incremental encoder
+        // Current wheel initAngle from incremental encoder
         double currentHeading = ticksToDegrees(encoder.getCurrentPosition());
 
         // Shortest path error
