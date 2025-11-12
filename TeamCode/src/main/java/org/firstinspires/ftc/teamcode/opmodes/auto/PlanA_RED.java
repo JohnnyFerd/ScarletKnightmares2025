@@ -1,7 +1,5 @@
 package org.firstinspires.ftc.teamcode.opmodes.auto;
 
-import static java.lang.Thread.sleep;
-
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.Pose2d;
@@ -16,8 +14,8 @@ import org.firstinspires.ftc.teamcode.subsystems.JVBoysSoccerRobot;
 import org.firstinspires.ftc.teamcode.subsystems.Shooter;
 
 @Config
-@Autonomous(name = "PlanA_Blue", group = "Testing")
-public class PlanA_BLUE extends AutoBase {
+@Autonomous(name = "PlanA_RED", group = "Testing")
+public class PlanA_RED extends AutoBase {
 
     private AprilTag aprilTag;
     public JVBoysSoccerRobot robot;
@@ -63,7 +61,7 @@ public class PlanA_BLUE extends AutoBase {
         Actions.runBlocking(
                 drive.actionBuilder(drive.pose)
                         .strafeTo(new Vector2d(drive.pose.position.x + 35, drive.pose.position.y))
-                        .turn(Math.toRadians(5))
+                        .turn(Math.toRadians(-5))
                         .build()
         );
         // Spin up shooter at slightly lower velocity
@@ -91,13 +89,13 @@ public class PlanA_BLUE extends AutoBase {
         Pose2d current = drive.pose;
         Action move2 = drive.actionBuilder(current)
                 .turn(Math.toRadians(75))
-                .strafeTo(new Vector2d(current.position.x-25, current.position.y+5))
+                .strafeTo(new Vector2d(current.position.x-25, current.position.y-5))
                 .build();
         Actions.runBlocking(move2);
 
         current = drive.pose;
         Action move3 = drive.actionBuilder(current)
-                .strafeTo(new Vector2d(current.position.x-4, current.position.y-10))
+                .strafeTo(new Vector2d(current.position.x+4, current.position.y-10))
                 .build();
         Actions.runBlocking(move3);
 
