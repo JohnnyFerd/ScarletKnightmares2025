@@ -22,6 +22,9 @@ public class PlanA_BLUE extends AutoBase {
     private AprilTag aprilTag;
     public JVBoysSoccerRobot robot;
     private MecanumDrive drive;
+    public static double move7x = 20;
+    public static double move7y = -15;
+    public static double turnAngle = 60;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -29,6 +32,7 @@ public class PlanA_BLUE extends AutoBase {
         robot = new JVBoysSoccerRobot(hardwareMap, telemetry, true);
         drive = new MecanumDrive(hardwareMap, new Pose2d(0, 0, 0));
         aprilTag = robot.aprilTag;
+
 
         telemetry.addLine("Initializing camera...");
         telemetry.update();
@@ -90,14 +94,14 @@ public class PlanA_BLUE extends AutoBase {
 
         Pose2d current = drive.pose;
         Action move2 = drive.actionBuilder(current)
-                .turn(Math.toRadians(75))
+                .turn(Math.toRadians(turnAngle))
                 .strafeTo(new Vector2d(current.position.x-25, current.position.y+5))
                 .build();
         Actions.runBlocking(move2);
 
         current = drive.pose;
         Action move3 = drive.actionBuilder(current)
-                .strafeTo(new Vector2d(current.position.x-4, current.position.y-10))
+                .strafeTo(new Vector2d(current.position.x-8, current.position.y-10))
                 .build();
         Actions.runBlocking(move3);
 
@@ -111,9 +115,30 @@ public class PlanA_BLUE extends AutoBase {
         //TODO RAJ it works for every line above this, it gets fucked on move5
         current = drive.pose;
         Action move5 = drive.actionBuilder(current)
-                .strafeTo(new Vector2d(current.position.x+60, current.position.y))
+                .strafeTo(new Vector2d(current.position.x+35, current.position.y))
                 .build();
         Actions.runBlocking(move5);
+        current = drive.pose;
+        Action move6 = drive.actionBuilder(current)
+                .strafeTo(new Vector2d(current.position.x-35, current.position.y))
+                .build();
+        Actions.runBlocking(move6);
+        current = drive.pose;
+        Action move7 = drive.actionBuilder(current)
+                .strafeTo(new Vector2d(current.position.x+move7x, current.position.y+move7y))
+                .build();
+        Actions.runBlocking(move7);
+
+        current=drive.pose;
+        Action move9 = drive.actionBuilder(current)
+                .strafeTo(new Vector2d(current.position.x-5, current.position.y-10))
+                .build();
+        Actions.runBlocking(move9);
+        current=drive.pose;
+        Action move10 = drive.actionBuilder(current)
+                .strafeTo(new Vector2d(current.position.x+5, current.position.y-30))
+                .build();
+        Actions.runBlocking(move10);
 
         // Stop vision and shooter safely
         robot.shooterSubsystem.update();

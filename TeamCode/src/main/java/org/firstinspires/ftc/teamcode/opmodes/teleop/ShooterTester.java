@@ -11,10 +11,11 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.teamcode.settings.RobotSettings;
 import org.firstinspires.ftc.teamcode.subsystems.JVBoysSoccerRobot;
 import org.firstinspires.ftc.teamcode.subsystems.AprilTag;
+import org.firstinspires.ftc.teamcode.subsystems.Shooter;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 
 @Config
-@TeleOp(name = "ShooterOpModePID", group = "TeleOp")
+@TeleOp(name = "ShooterOpMode")
 public class ShooterTester extends LinearOpMode {
 
     private final FtcDashboard dashboard = FtcDashboard.getInstance();
@@ -227,7 +228,7 @@ public class ShooterTester extends LinearOpMode {
         // Toggle Shooter Flywheel
         if (currentGamepad1.right_bumper && !previousGamepad1.right_bumper) {
             shooterActive = !shooterActive;
-            robot.shooterSubsystem.setVelocity(shooterActive ? 1 : 0);
+            robot.shooterSubsystem.setVelocity(shooterActive ? Shooter.FarShotVelo : 0);
         }
     }
 
