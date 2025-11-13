@@ -69,16 +69,16 @@ public class PlanA_RED extends AutoBase {
         sleep(1000);
 
         // Fire sequence
-        robot.shooterSubsystem.paddleUpClose();
+        robot.shooterSubsystem.paddleUp();
         sleep(750);
         robot.shooterSubsystem.paddleDown();
         sleep(900);
-        robot.shooterSubsystem.paddleUpClose();
+        robot.shooterSubsystem.paddleUp();
         sleep(900);
         robot.shooterSubsystem.paddleDown();
 
         sleep(1250);
-        robot.shooterSubsystem.paddleUpClose();
+        robot.shooterSubsystem.paddleUp();
         sleep(1000);
         robot.shooterSubsystem.paddleDown();
 

@@ -15,8 +15,8 @@ import org.firstinspires.ftc.teamcode.subsystems.Shooter;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 
 @Config
-@TeleOp(name = "ShooterOpMode")
-public class ShooterTester extends LinearOpMode {
+@TeleOp(name = "OpModeRed", group = "TeleOp")
+public class OpModeRed extends LinearOpMode {
 
     private final FtcDashboard dashboard = FtcDashboard.getInstance();
 
@@ -66,7 +66,7 @@ public class ShooterTester extends LinearOpMode {
     private AprilTagDetection lastDetection = null;
     private final ElapsedTime lastDetectionTimer = new ElapsedTime();
     public static double TAG_HOLD_TIME = 0.3; // seconds to keep last known detection
-    public static int TARGET_TAG_ID = 20;     // only track this tag
+    public static int TARGET_TAG_ID = 21;     // only track this tag
     private boolean usingAprilTagAlignment = false;
 
     @Override
@@ -95,7 +95,6 @@ public class ShooterTester extends LinearOpMode {
         }
     }
 
-    // === AprilTag Auto-Alignment with Hold, Anti-Flicker, and Tag Filter ===
     private void handleAprilTagCorrection() {
         if (!currentGamepad1.left_bumper) {
             usingAprilTagAlignment = false;
@@ -229,6 +228,11 @@ public class ShooterTester extends LinearOpMode {
         if (currentGamepad1.right_bumper && !previousGamepad1.right_bumper) {
             shooterActive = !shooterActive;
             robot.shooterSubsystem.setVelocity(shooterActive ? Shooter.FarShotVelo : 0);
+        }
+        else if (currentGamepad1.right_trigger > .1 && !(previousGamepad1.right_trigger < .1))
+        {
+            shooterActive = !shooterActive;
+            robot.shooterSubsystem.setVelocity(shooterActive ? Shooter.CloseShotVelo : 0);
         }
     }
 

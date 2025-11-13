@@ -16,8 +16,8 @@ import org.firstinspires.ftc.teamcode.subsystems.JVBoysSoccerRobot;
 import org.firstinspires.ftc.teamcode.subsystems.Shooter;
 
 @Config
-@Autonomous(name = "PlanB_BLUE", group = "Testing")
-public class PlanB_BLUE extends AutoBase {
+@Autonomous(name = "PlanB_RED", group = "Testing")
+public class PlanB_RED extends AutoBase {
 
     private AprilTag aprilTag;
     public JVBoysSoccerRobot robot;
@@ -63,7 +63,7 @@ public class PlanB_BLUE extends AutoBase {
         Actions.runBlocking(
                 drive.actionBuilder(drive.pose)
                         .strafeTo(new Vector2d(drive.pose.position.x - 2, drive.pose.position.y))
-                        .turn(Math.toRadians(31))
+                        .turn(Math.toRadians(-31))
                         .build()
         );
 
