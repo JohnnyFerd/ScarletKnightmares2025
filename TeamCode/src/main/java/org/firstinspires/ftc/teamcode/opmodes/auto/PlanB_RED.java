@@ -16,7 +16,7 @@ import org.firstinspires.ftc.teamcode.subsystems.JVBoysSoccerRobot;
 import org.firstinspires.ftc.teamcode.subsystems.Shooter;
 
 @Config
-@Autonomous(name = "PlanB_RED", group = "Testing")
+@Autonomous(name = "PlanB_RED")
 public class PlanB_RED extends AutoBase {
 
     private AprilTag aprilTag;

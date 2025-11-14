@@ -14,7 +14,7 @@ import org.firstinspires.ftc.teamcode.subsystems.JVBoysSoccerRobot;
 import org.firstinspires.ftc.teamcode.subsystems.Shooter;
 
 @Config
-@Autonomous(name = "PlanA_RED", group = "Testing")
+@Autonomous(name = "PlanA_RED")
 public class PlanA_RED extends AutoBase {
 
     private AprilTag aprilTag;
@@ -105,8 +105,6 @@ public class PlanA_RED extends AutoBase {
                 .build();
         Actions.runBlocking(move4);
 
-
-        //TODO RAJ it works for every line above this, it gets fucked on move5
         current = drive.pose;
         Action move5 = drive.actionBuilder(current)
                 .strafeTo(new Vector2d(current.position.x+60, current.position.y))

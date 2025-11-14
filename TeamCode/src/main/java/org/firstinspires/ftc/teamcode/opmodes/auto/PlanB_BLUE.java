@@ -16,7 +16,7 @@ import org.firstinspires.ftc.teamcode.subsystems.JVBoysSoccerRobot;
 import org.firstinspires.ftc.teamcode.subsystems.Shooter;
 
 @Config
-@Autonomous(name = "PlanB_BLUE", group = "Testing")
+@Autonomous(name = "PlanB_BLUE")
 public class PlanB_BLUE extends AutoBase {
 
     private AprilTag aprilTag;
@@ -63,7 +63,7 @@ public class PlanB_BLUE extends AutoBase {
         Actions.runBlocking(
                 drive.actionBuilder(drive.pose)
                         .strafeTo(new Vector2d(drive.pose.position.x - 2, drive.pose.position.y))
-                        .turn(Math.toRadians(31))
+                        .turn(Math.toRadians(25))
                         .build()
         );
 
@@ -76,21 +76,21 @@ public class PlanB_BLUE extends AutoBase {
         telemetry.addLine("Spinning up shooter...");
         telemetry.update();
         robot.shooterSubsystem.setVelocity(Shooter.FarShotVelo);
-        sleep(1000);
+        sleep(1500);
 
         // Fire sequence
         robot.shooterSubsystem.paddleUp();
-        sleep(300);
+        sleep(1500);
         robot.shooterSubsystem.paddleDown();
 
-        sleep(1000);
+        sleep(1500);
         robot.shooterSubsystem.paddleUp();
-        sleep(300);
+        sleep(1500);
         robot.shooterSubsystem.paddleDown();
 
-        sleep(1000);
+        sleep(1500);
         robot.shooterSubsystem.paddleUpLast();
-        sleep(300);
+        sleep(1500);
         robot.shooterSubsystem.paddleDown();
 
         robot.shooterSubsystem.setVelocity(0);

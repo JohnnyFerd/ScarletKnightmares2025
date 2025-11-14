@@ -15,7 +15,7 @@ import org.firstinspires.ftc.teamcode.subsystems.Shooter;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 
 @Config
-@TeleOp(name = "OpModeBlue", group = "TeleOp")
+@TeleOp(name = "OpModeRed")
 public class OpModeRed extends LinearOpMode {
     private final FtcDashboard dashboard = FtcDashboard.getInstance();
 
