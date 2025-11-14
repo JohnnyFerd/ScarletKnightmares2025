@@ -27,9 +27,9 @@ public class Shooter extends Subsystem {
     public static double paddle2UpClose = .55;
     public static double paddle1UpFarLast = .575;
     public static double paddle2UpFarLast = .375;
-    public static int FarShotVelo = 1725;
-    public static int FarShotAutoVelo = 1650;
-    public static int CloseShotVelo = 1325;
+    public static int FarShotVelo = 1735;
+    public static int FarShotAutoVelo = 1655;
+    public static int CloseShotVelo = 1425;
 
     public static double paddle1Pos = paddle1Down;
     public static double paddle2Pos = paddle2Down;
@@ -42,7 +42,7 @@ public class Shooter extends Subsystem {
     private double velocity = 0;
 
     public static boolean shooterActive = false;
-    public static double angle = .425;
+    public static double angle = .40;
 
     private final HardwareMap hwMap;
     private final Telemetry telemetry;

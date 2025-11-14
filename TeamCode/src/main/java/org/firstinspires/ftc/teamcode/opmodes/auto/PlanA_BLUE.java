@@ -138,11 +138,8 @@ public class PlanA_BLUE extends AutoBase {
                 .strafeTo(new Vector2d(current.position.x+move8x, current.position.y+move8y))
                 .build();
         Actions.runBlocking(move8);
-        current=drive.pose;
-        Action move9 = drive.actionBuilder(current)
-                .strafeTo(new Vector2d(current.position.x+move9x, current.position.y+move9y))
-                .build();
-        Actions.runBlocking(move9);
+
+
 
         // Stop vision and shooter safely
         robot.shooterSubsystem.update();

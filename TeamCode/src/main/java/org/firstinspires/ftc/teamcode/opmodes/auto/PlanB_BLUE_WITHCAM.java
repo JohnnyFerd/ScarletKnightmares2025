@@ -1,9 +1,6 @@
 package org.firstinspires.ftc.teamcode.opmodes.auto;
 
-import static java.lang.Thread.sleep;
-
 import com.acmerobotics.dashboard.config.Config;
-import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
@@ -16,8 +13,8 @@ import org.firstinspires.ftc.teamcode.subsystems.JVBoysSoccerRobot;
 import org.firstinspires.ftc.teamcode.subsystems.Shooter;
 
 @Config
-@Autonomous(name = "PlanB_BLUE")
-public class PlanB_BLUE extends AutoBase {
+@Autonomous(name = "PlanB_BLUE_WITH CAM")
+public class PlanB_BLUE_WITHCAM extends AutoBase {
 
     private AprilTag aprilTag;
     public JVBoysSoccerRobot robot;
@@ -106,4 +103,5 @@ public class PlanB_BLUE extends AutoBase {
         shooterThread.interrupt();
         aprilTag.stop();
     }
+
 }

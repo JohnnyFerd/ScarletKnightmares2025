@@ -62,8 +62,8 @@ public class PlanB_RED extends AutoBase {
         // Small forward adjustment before turning
         Actions.runBlocking(
                 drive.actionBuilder(drive.pose)
-                        .strafeTo(new Vector2d(drive.pose.position.x - 2, drive.pose.position.y))
-                        .turn(Math.toRadians(-31))
+                        .strafeTo(new Vector2d(drive.pose.position.x - 6, drive.pose.position.y))
+                        .turn(Math.toRadians(-20.67))
                         .build()
         );
 
@@ -75,26 +75,31 @@ public class PlanB_RED extends AutoBase {
         // Spin up shooter at slightly lower velocity
         telemetry.addLine("Spinning up shooter...");
         telemetry.update();
-        robot.shooterSubsystem.setVelocity(Shooter.FarShotVelo);
-        sleep(1000);
+        robot.shooterSubsystem.setVelocity(Shooter.FarShotAutoVelo);
+        sleep(2000);
 
         // Fire sequence
         robot.shooterSubsystem.paddleUp();
-        sleep(300);
+        sleep(2000);
         robot.shooterSubsystem.paddleDown();
 
-        sleep(1000);
+        sleep(2000);
         robot.shooterSubsystem.paddleUp();
-        sleep(300);
+        sleep(2000);
         robot.shooterSubsystem.paddleDown();
 
-        sleep(1000);
+        sleep(2000);
         robot.shooterSubsystem.paddleUpLast();
-        sleep(300);
+        sleep(2000);
         robot.shooterSubsystem.paddleDown();
 
         robot.shooterSubsystem.setVelocity(0);
-
+        Actions.runBlocking(
+                drive.actionBuilder(drive.pose)
+                        .strafeTo(new Vector2d(drive.pose.position.x - 15, drive.pose.position.y+10))
+                        .turn(Math.toRadians(20.67))
+                        .build()
+        );
         // Stop vision and shooter safely
         robot.shooterSubsystem.update();
         robot.shooterSubsystem.stop();
