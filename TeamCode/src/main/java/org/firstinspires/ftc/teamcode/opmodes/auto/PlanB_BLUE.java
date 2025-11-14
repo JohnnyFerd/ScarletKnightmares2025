@@ -75,26 +75,31 @@ public class PlanB_BLUE extends AutoBase {
         // Spin up shooter at slightly lower velocity
         telemetry.addLine("Spinning up shooter...");
         telemetry.update();
-        robot.shooterSubsystem.setVelocity(Shooter.FarShotVelo);
-        sleep(1500);
+        robot.shooterSubsystem.setVelocity(Shooter.FarShotAutoVelo);
+        sleep(2000);
 
         // Fire sequence
         robot.shooterSubsystem.paddleUp();
-        sleep(1500);
+        sleep(2000);
         robot.shooterSubsystem.paddleDown();
 
-        sleep(1500);
+        sleep(2000);
         robot.shooterSubsystem.paddleUp();
-        sleep(1500);
+        sleep(2000);
         robot.shooterSubsystem.paddleDown();
 
-        sleep(1500);
+        sleep(2000);
         robot.shooterSubsystem.paddleUpLast();
-        sleep(1500);
+        sleep(2000);
         robot.shooterSubsystem.paddleDown();
 
         robot.shooterSubsystem.setVelocity(0);
-
+        Actions.runBlocking(
+                drive.actionBuilder(drive.pose)
+                        .strafeTo(new Vector2d(drive.pose.position.x - 15, drive.pose.position.y-10))
+                        .turn(Math.toRadians(25))
+                        .build()
+        );
         // Stop vision and shooter safely
         robot.shooterSubsystem.update();
         robot.shooterSubsystem.stop();

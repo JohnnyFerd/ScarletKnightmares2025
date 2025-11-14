@@ -28,6 +28,7 @@ public class Shooter extends Subsystem {
     public static double paddle1UpFarLast = .575;
     public static double paddle2UpFarLast = .375;
     public static int FarShotVelo = 1725;
+    public static int FarShotAutoVelo = 1650;
     public static int CloseShotVelo = 1325;
 
     public static double paddle1Pos = paddle1Down;
