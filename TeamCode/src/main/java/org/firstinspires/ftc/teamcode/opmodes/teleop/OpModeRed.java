@@ -15,9 +15,8 @@ import org.firstinspires.ftc.teamcode.subsystems.Shooter;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 
 @Config
-@TeleOp(name = "OpModeRed", group = "TeleOp")
+@TeleOp(name = "OpModeBlue", group = "TeleOp")
 public class OpModeRed extends LinearOpMode {
-
     private final FtcDashboard dashboard = FtcDashboard.getInstance();
 
     // === Shooter Alignment / PID Tunables ===
@@ -65,7 +64,7 @@ public class OpModeRed extends LinearOpMode {
     // === AprilTag Handling ===
     private AprilTagDetection lastDetection = null;
     private final ElapsedTime lastDetectionTimer = new ElapsedTime();
-    public static double TAG_HOLD_TIME = 0.3; // seconds to keep last known detection
+    public static double TAG_HOLD_TIME = 0.1; // seconds to keep last known detection
     public static int TARGET_TAG_ID = 21;     // only track this tag
     private boolean usingAprilTagAlignment = false;
 
@@ -226,13 +225,25 @@ public class OpModeRed extends LinearOpMode {
 
         // Toggle Shooter Flywheel
         if (currentGamepad1.right_bumper && !previousGamepad1.right_bumper) {
-            shooterActive = !shooterActive;
-            robot.shooterSubsystem.setVelocity(shooterActive ? Shooter.FarShotVelo : 0);
+            // If already at Far speed, turn off; otherwise switch to Far speed
+            if (shooterActive && robot.shooterSubsystem.getVelocity() == Shooter.FarShotVelo) {
+                shooterActive = false;
+                robot.shooterSubsystem.setVelocity(0);
+            } else {
+                shooterActive = true;
+                robot.shooterSubsystem.setVelocity(Shooter.FarShotVelo);
+            }
         }
-        else if (currentGamepad1.right_trigger > .1 && !(previousGamepad1.right_trigger < .1))
-        {
-            shooterActive = !shooterActive;
-            robot.shooterSubsystem.setVelocity(shooterActive ? Shooter.CloseShotVelo : 0);
+
+        else if (currentGamepad1.right_trigger > 0.1 && previousGamepad1.right_trigger <= 0.1) {
+            // If already at Close speed, turn off; otherwise switch to Close speed
+            if (shooterActive && robot.shooterSubsystem.getVelocity() == Shooter.CloseShotVelo) {
+                shooterActive = false;
+                robot.shooterSubsystem.setVelocity(0);
+            } else {
+                shooterActive = true;
+                robot.shooterSubsystem.setVelocity(Shooter.CloseShotVelo);
+            }
         }
     }
 

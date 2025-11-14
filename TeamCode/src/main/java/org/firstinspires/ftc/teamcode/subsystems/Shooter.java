@@ -122,6 +122,11 @@ public class Shooter extends Subsystem {
         }
     }
 
+    public double getVelocity()
+    {
+        return velocity;
+    }
+
     @Override
     public void addTelemetry() {
         if (UseTelemetry.SHOOTER_TELEMETRY) {
