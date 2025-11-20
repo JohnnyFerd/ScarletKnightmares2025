@@ -62,8 +62,8 @@ public class PlanB_BLUE extends AutoBase {
         // Small forward adjustment before turning
         Actions.runBlocking(
                 drive.actionBuilder(drive.pose)
-                        .strafeTo(new Vector2d(drive.pose.position.x - 6, drive.pose.position.y))
-                        .turn(Math.toRadians(20.67))
+                        .strafeTo(new Vector2d(drive.pose.position.x - 8, drive.pose.position.y))
+                        .turn(Math.toRadians(21.67))
                         .build()
         );
 
@@ -97,9 +97,10 @@ public class PlanB_BLUE extends AutoBase {
         Actions.runBlocking(
                 drive.actionBuilder(drive.pose)
                         .strafeTo(new Vector2d(drive.pose.position.x - 15, drive.pose.position.y-10))
-                        .turn(Math.toRadians(20.67))
+                        .turn(Math.toRadians(21.67))
                         .build()
         );
+
         // Stop vision and shooter safely
         robot.shooterSubsystem.update();
         robot.shooterSubsystem.stop();

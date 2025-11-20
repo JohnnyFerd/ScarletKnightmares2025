@@ -169,8 +169,8 @@ public class OpModeRed extends LinearOpMode {
             robot.drivetrainSubsystem.resetInitYaw();
 
         double speedScale = 1.0;
-        if (currentGamepad2.right_trigger > 0.01 && currentGamepad2.left_trigger > 0.01) speedScale = 0.3;
-        else if (currentGamepad2.right_trigger > 0.01 || currentGamepad2.left_trigger > 0.01) speedScale = 0.65;
+        if (currentGamepad2.right_trigger > 0.01 && currentGamepad2.left_trigger > 0.01) speedScale = 0.1;
+        else if (currentGamepad2.right_trigger > 0.01 || currentGamepad2.left_trigger > 0.01) speedScale = 0.2;
 
         x *= speedScale;
         y *= speedScale;
