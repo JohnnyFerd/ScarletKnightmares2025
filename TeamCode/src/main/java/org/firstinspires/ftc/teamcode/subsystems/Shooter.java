@@ -19,17 +19,17 @@ public class Shooter extends Subsystem {
     private final Servo paddle1;
     private final Servo paddle2;
 
-    public static double paddle1Down = .8;
-    public static double paddle2Down = .15;
+    public static double paddle1Down = .75;
+    public static double paddle2Down = .2;
+    public static double paddle1UpMedium = .375;
+    public static double paddle2UpMedium = .575;
     public static double paddle1UpFar = .6;
     public static double paddle2UpFar = .35;
     public static double paddle1UpClose = .4;
     public static double paddle2UpClose = .55;
-    public static double paddle1UpFarLast = .575;
-    public static double paddle2UpFarLast = .375;
-    public static int FarShotVelo = 1725;
-    public static int FarShotAutoVelo = 1650;
-    public static int CloseShotVelo = 1325;
+    public static int FarShotVelo = 1850;
+    public static int MediumShotVelo = 1680;
+    public static int CloseShotVelo = 1450;
 
     public static double paddle1Pos = paddle1Down;
     public static double paddle2Pos = paddle2Down;
@@ -38,11 +38,10 @@ public class Shooter extends Subsystem {
     public static double I = 10;
     public static double D = 10;
     public static double F = 10;
-
     private double velocity = 0;
 
     public static boolean shooterActive = false;
-    public static double angle = .425;
+    public static double angle = .525;
 
     private final HardwareMap hwMap;
     private final Telemetry telemetry;
@@ -118,8 +117,8 @@ public class Shooter extends Subsystem {
             paddle1Pos = paddle1UpClose;
             paddle2Pos = paddle2UpClose;
         } else {
-            paddle1Pos = paddle1UpFarLast;
-            paddle2Pos = paddle2UpFarLast;
+            paddle1Pos = paddle1UpMedium;
+            paddle2Pos = paddle2UpMedium;
         }
     }
 
@@ -133,7 +132,7 @@ public class Shooter extends Subsystem {
         if (UseTelemetry.SHOOTER_TELEMETRY) {
             telemetry.addLine("Shooter Telemetry: ON");
             telemetry.addData("   SHOOTER1/SHOOTER2 Velocity", "%4.0f, %4.0f", shooter1.getVelocity(), shooter2.getVelocity());
-            telemetry.addData("   Shooter Angle", "%4.5f", angle);
+            telemetry.addData("   Shooter Angle", "%4.3f", angle);
             telemetry.addData("   Last Velocity", velocity);
         } else {
             telemetry.addLine("Shooter Telemetry: OFF");

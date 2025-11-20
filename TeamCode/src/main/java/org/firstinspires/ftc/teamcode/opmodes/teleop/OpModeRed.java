@@ -20,7 +20,7 @@ public class OpModeRed extends LinearOpMode {
     private final FtcDashboard dashboard = FtcDashboard.getInstance();
 
     // === Shooter Alignment / PID Tunables ===
-    public static double DEGREE_OFFSET = 12;
+    public static double DEGREE_OFFSET = -8;
     public static double TARGET_DISTANCE = 140.0;
     public static double CENTER_TOLERANCE = 0.5;
     public static double DISTANCE_TOLERANCE = 1.0;
@@ -65,7 +65,7 @@ public class OpModeRed extends LinearOpMode {
     private AprilTagDetection lastDetection = null;
     private final ElapsedTime lastDetectionTimer = new ElapsedTime();
     public static double TAG_HOLD_TIME = 0.1; // seconds to keep last known detection
-    public static int TARGET_TAG_ID = 21;     // only track this tag
+    public static int TARGET_TAG_ID = 24;     // only track this tag
     private boolean usingAprilTagAlignment = false;
 
     @Override
@@ -169,8 +169,8 @@ public class OpModeRed extends LinearOpMode {
             robot.drivetrainSubsystem.resetInitYaw();
 
         double speedScale = 1.0;
-        if (currentGamepad2.right_trigger > 0.01 && currentGamepad2.left_trigger > 0.01) speedScale = 0.3;
-        else if (currentGamepad2.right_trigger > 0.01 || currentGamepad2.left_trigger > 0.01) speedScale = 0.65;
+        if (currentGamepad2.right_trigger > 0.01 && currentGamepad2.left_trigger > 0.01) speedScale = 0.25;
+        else if (currentGamepad2.right_trigger > 0.01 || currentGamepad2.left_trigger > 0.01) speedScale = 0.5;
 
         x *= speedScale;
         y *= speedScale;
@@ -187,6 +187,15 @@ public class OpModeRed extends LinearOpMode {
             sequenceStep = 0;
             sequenceTimer = 0;
             robot.shooterSubsystem.paddleDown();
+        }
+
+        if (currentGamepad1.dpad_up && !previousGamepad1.dpad_up)
+        {
+            Shooter.angle += .025;
+        }
+        if (currentGamepad1.dpad_up && !previousGamepad1.dpad_up)
+        {
+            Shooter.angle -= .025;
         }
 
         // Paddle Sequence (hold A)

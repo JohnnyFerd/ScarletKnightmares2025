@@ -75,7 +75,7 @@ public class PlanB_BLUE extends AutoBase {
         // Spin up shooter at slightly lower velocity
         telemetry.addLine("Spinning up shooter...");
         telemetry.update();
-        robot.shooterSubsystem.setVelocity(Shooter.FarShotAutoVelo);
+        robot.shooterSubsystem.setVelocity(Shooter.FarShotVelo);
         sleep(2000);
 
         // Fire sequence

@@ -19,8 +19,10 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 public class OpModeBlue extends LinearOpMode {
     private final FtcDashboard dashboard = FtcDashboard.getInstance();
     // === Shooter Alignment / PID Tunables ===
-    public static double DEGREE_OFFSET = 12;
-    public static double TARGET_DISTANCE = 140.0;
+    public static double DEGREE_OFFSET = 10;
+    public static double CLOSE_TARGET_DISTANCE = 42;
+    public static double MEDIUM_TARGET_DISTANCE = 70;
+    public static double TARGET_DISTANCE = MEDIUM_TARGET_DISTANCE;
     public static double CENTER_TOLERANCE = 0.5;
     public static double DISTANCE_TOLERANCE = 1.0;
 
@@ -99,6 +101,15 @@ public class OpModeBlue extends LinearOpMode {
             return;
         }
 
+        if (robot.shooterSubsystem.getVelocity() == Shooter.CloseShotVelo)
+        {
+            TARGET_DISTANCE = CLOSE_TARGET_DISTANCE;
+        }
+        else
+        {
+            TARGET_DISTANCE = MEDIUM_TARGET_DISTANCE;
+        }
+
         AprilTagDetection detection = aprilTag.getLatestTag();
 
         if (detection != null && detection.id == TARGET_TAG_ID) {
@@ -168,8 +179,8 @@ public class OpModeBlue extends LinearOpMode {
             robot.drivetrainSubsystem.resetInitYaw();
 
         double speedScale = 1.0;
-        if (currentGamepad2.right_trigger > 0.01 && currentGamepad2.left_trigger > 0.01) speedScale = 0.3;
-        else if (currentGamepad2.right_trigger > 0.01 || currentGamepad2.left_trigger > 0.01) speedScale = 0.65;
+        if (currentGamepad2.right_trigger > 0.01 && currentGamepad2.left_trigger > 0.01) speedScale = 0.25;
+        else if (currentGamepad2.right_trigger > 0.01 || currentGamepad2.left_trigger > 0.01) speedScale = 0.5;
 
         x *= speedScale;
         y *= speedScale;
@@ -186,6 +197,14 @@ public class OpModeBlue extends LinearOpMode {
             sequenceStep = 0;
             sequenceTimer = 0;
             robot.shooterSubsystem.paddleDown();
+        }
+        if (currentGamepad1.dpad_up && !previousGamepad1.dpad_up)
+        {
+            Shooter.angle += .025;
+        }
+        if (currentGamepad1.dpad_up && !previousGamepad1.dpad_up)
+        {
+            Shooter.angle -= .025;
         }
 
         // Paddle Sequence (hold A)
@@ -224,18 +243,16 @@ public class OpModeBlue extends LinearOpMode {
 
         // Toggle Shooter Flywheel
         if (currentGamepad1.right_bumper && !previousGamepad1.right_bumper) {
-            // If already at Far speed, turn off; otherwise switch to Far speed
-            if (shooterActive && robot.shooterSubsystem.getVelocity() == Shooter.FarShotVelo) {
+            if (shooterActive && robot.shooterSubsystem.getVelocity() == Shooter.MediumShotVelo) {
                 shooterActive = false;
                 robot.shooterSubsystem.setVelocity(0);
             } else {
                 shooterActive = true;
-                robot.shooterSubsystem.setVelocity(Shooter.FarShotVelo);
+                robot.shooterSubsystem.setVelocity(Shooter.MediumShotVelo);
             }
         }
 
         else if (currentGamepad1.right_trigger > 0.1 && previousGamepad1.right_trigger <= 0.1) {
-            // If already at Close speed, turn off; otherwise switch to Close speed
             if (shooterActive && robot.shooterSubsystem.getVelocity() == Shooter.CloseShotVelo) {
                 shooterActive = false;
                 robot.shooterSubsystem.setVelocity(0);
@@ -243,7 +260,16 @@ public class OpModeBlue extends LinearOpMode {
                 shooterActive = true;
                 robot.shooterSubsystem.setVelocity(Shooter.CloseShotVelo);
             }
-        }
+        }x
+        else if (currentGamepad1.left_trigger > .1 && previousGamepad1.left_trigger <= .1)
+            if (shooterActive && robot.shooterSubsystem.getVelocity() == Shooter.FarShotVelo) {
+                shooterActive = false;
+                robot.shooterSubsystem.setVelocity(0);
+            } else {
+                shooterActive = true;
+                robot.shooterSubsystem.setVelocity(Shooter.FarShotVelo);
+            }
+
     }
 
     private double getCurrentStepDelay() {
