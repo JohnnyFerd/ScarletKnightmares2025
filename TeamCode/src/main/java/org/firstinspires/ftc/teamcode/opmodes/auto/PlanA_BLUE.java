@@ -25,12 +25,8 @@ public class PlanA_BLUE extends AutoBase {
     public static double move7x = 20;
     public static double move7y = -15;
     public static double move8x = -5;
-
     public static double move8y = -10;
-    public static double move9x = 60;
-
-    public static double move9y = -25;
-    public static double turnAngle = 60;
+    public static double turnAngle = 65;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -72,12 +68,11 @@ public class PlanA_BLUE extends AutoBase {
         // Move Back Before First Shot
         Actions.runBlocking(
                 drive.actionBuilder(drive.pose)
-                        .strafeTo(new Vector2d(drive.pose.position.x + 35, drive.pose.position.y))
-                        .turn(Math.toRadians(5))
+                        .strafeTo(new Vector2d(drive.pose.position.x + 40, drive.pose.position.y))
                         .build()
         );
         // Spin up shooter at slightly lower velocity
-        robot.shooterSubsystem.setVelocity(Shooter.CloseShotVelo);
+        robot.shooterSubsystem.setVelocity(Shooter.CloseShotVelo+30);
         sleep(1000);
 
         // Fire sequence
@@ -89,7 +84,7 @@ public class PlanA_BLUE extends AutoBase {
         sleep(900);
         robot.shooterSubsystem.paddleDown();
 
-        sleep(1250);
+        sleep(1750);
         robot.shooterSubsystem.paddleUp();
         sleep(1000);
         robot.shooterSubsystem.paddleDown();
@@ -137,12 +132,7 @@ public class PlanA_BLUE extends AutoBase {
         Action move8 = drive.actionBuilder(current)
                 .strafeTo(new Vector2d(current.position.x+move8x, current.position.y+move8y))
                 .build();
-        Actions.runBlocking(move8);
-        current=drive.pose;
-        Action move9 = drive.actionBuilder(current)
-                .strafeTo(new Vector2d(current.position.x+move9x, current.position.y+move9y))
-                .build();
-        Actions.runBlocking(move9);
+        //Actions.runBlocking(move8);
 
         // Stop vision and shooter safely
         robot.shooterSubsystem.update();

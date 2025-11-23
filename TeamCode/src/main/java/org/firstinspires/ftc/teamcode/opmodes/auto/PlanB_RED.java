@@ -62,8 +62,8 @@ public class PlanB_RED extends AutoBase {
         // Small forward adjustment before turning
         Actions.runBlocking(
                 drive.actionBuilder(drive.pose)
-                        .strafeTo(new Vector2d(drive.pose.position.x - 2, drive.pose.position.y))
-                        .turn(Math.toRadians(-31))
+                        .strafeTo(new Vector2d(drive.pose.position.x - 3, drive.pose.position.y))
+                        .turn(Math.toRadians(-25))
                         .build()
         );
 

@@ -260,7 +260,7 @@ public class OpModeBlue extends LinearOpMode {
                 shooterActive = true;
                 robot.shooterSubsystem.setVelocity(Shooter.CloseShotVelo);
             }
-        }x
+        }
         else if (currentGamepad1.left_trigger > .1 && previousGamepad1.left_trigger <= .1)
             if (shooterActive && robot.shooterSubsystem.getVelocity() == Shooter.FarShotVelo) {
                 shooterActive = false;
