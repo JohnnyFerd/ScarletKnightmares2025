@@ -16,7 +16,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.teamcode.settings.UseTelemetry;
 import org.firstinspires.ftc.teamcode.util.BulkReading;
 import org.firstinspires.ftc.teamcode.settings.RobotSettings;
-
+import org.firstinspires.ftc.teamcode.subsystems.Spindexer;
 import java.util.Arrays;
 import java.util.List;
 
@@ -36,15 +36,14 @@ public class JVBoysSoccerRobot {
 
     // Subsystems
     public Drivetrain drivetrainSubsystem;
-    public Shooter shooterSubsystem;
+
 
     public AprilTag aprilTag;
+    public Spindexer spindexer;
 
     // Hardware
-    public DcMotorEx motorFL, motorFR, motorBL, motorBR;
-    public DcMotorEx shooter1, shooter2;
-    public Servo shooterServo1, shooterServo2;
-    public Servo paddle1, paddle2;
+    public DcMotorEx motorFL, motorFR, motorBL, motorBR, motorSPINDEX;
+
 
     private int hertzCounter = 0;
     private double previousTime = 0;
@@ -65,7 +64,7 @@ public class JVBoysSoccerRobot {
         initIMU();
         initHardware();
         drivetrainSubsystem = new Drivetrain(hwMap, telemetry, this);
-        shooterSubsystem = new Shooter(hwMap, telemetry, this);
+
 
         if (RobotSettings.STORE_POSE) {
             drivetrainSubsystem.initYaw = RobotSettings.POSE_STORAGE;
@@ -75,7 +74,7 @@ public class JVBoysSoccerRobot {
         }
         telemetry.addData("INIT YAW: ", drivetrainSubsystem.initYaw);
 
-        subsystems = Arrays.asList(drivetrainSubsystem, shooterSubsystem, aprilTag);
+        subsystems = Arrays.asList(drivetrainSubsystem, aprilTag);
         BR = new BulkReading(this);
 
     }
@@ -99,8 +98,8 @@ public class JVBoysSoccerRobot {
             initIMU();
             initHardware();
             drivetrainSubsystem = new Drivetrain(hwMap, telemetry, this);
-            shooterSubsystem = new Shooter(hwMap, telemetry, this);
-            subsystems = Arrays.asList(drivetrainSubsystem, shooterSubsystem, aprilTag);
+
+            subsystems = Arrays.asList(drivetrainSubsystem, aprilTag, spindexer);
 
             RobotSettings.POSE_STORAGE = imu.getRobotOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle;
             telemetry.addData("PoseStorage: ", RobotSettings.POSE_STORAGE);
@@ -141,28 +140,15 @@ public class JVBoysSoccerRobot {
         motorBL.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         motorFR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         motorBR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
     }
 
     public void initShooterHardware(){
-        shooter1 = hwMap.get(DcMotorEx.class, RobotSettings.SHOOTER1_NAME);
-        shooter2 = hwMap.get(DcMotorEx.class, RobotSettings.SHOOTER2_NAME);
-        shooterServo1 = hwMap.get(Servo.class, RobotSettings.SHOOTER1_SERVO_NAME);
-        shooterServo2 = hwMap.get(Servo.class, RobotSettings.SHOOTER2_SERVO_NAME);
-        paddle1 = hwMap.get(Servo.class, RobotSettings.PADDLE1_NAME);
-        paddle2 = hwMap.get(Servo.class, RobotSettings.PADDLE2_NAME);
+        motorSPINDEX = hwMap.get(DcMotorEx.class, RobotSettings.SPIN_NAME);
 
-        shooter1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        shooter2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        shooter1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        shooter2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-        shooter1.setDirection(RobotSettings.SHOOTER1_REVERSED ? DcMotorSimple.Direction.REVERSE : DcMotorSimple.Direction.FORWARD);
-        shooter2.setDirection(RobotSettings.SHOOTER2_REVERSED ? DcMotorSimple.Direction.REVERSE : DcMotorSimple.Direction.FORWARD);
+        motorSPINDEX.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        shooterServo1.setPosition(.5);
-        shooterServo2.setPosition(.5);
-        paddle1.setPosition(Shooter.paddle1Down);
-        paddle2.setPosition(Shooter.paddle2Down);
     }
 
     public void initAprilTag() {

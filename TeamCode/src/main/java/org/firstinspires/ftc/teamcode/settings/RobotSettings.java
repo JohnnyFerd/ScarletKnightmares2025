@@ -21,7 +21,8 @@ public class RobotSettings {
     public static final String FR_NAME = "FR";
     public static final String BL_NAME = "BL";
     public static final String BR_NAME = "BR";
-
+    public static final String SPIN_NAME = "spindexer";
+//br-0, bl-1, fr-2, fl-3
     public static final boolean FL_REVERSED = true;
     public static final boolean FR_REVERSED = false;
     public static final boolean BL_REVERSED = true;
@@ -29,12 +30,5 @@ public class RobotSettings {
 
 
     //SHOOTER
-    public static final String SHOOTER1_NAME = "shooter1";
-    public static final boolean SHOOTER1_REVERSED = false;
-    public static final String SHOOTER2_NAME = "shooter2";
-    public static final boolean SHOOTER2_REVERSED = true;
-    public static final String SHOOTER1_SERVO_NAME = "shooter1Servo";
-    public static final String SHOOTER2_SERVO_NAME = "shooter2Servo";
-    public static final String PADDLE1_NAME = "paddle1";
-    public static final String PADDLE2_NAME = "paddle2";
+
 }

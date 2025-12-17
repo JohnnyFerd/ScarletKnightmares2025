@@ -11,7 +11,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.teamcode.settings.RobotSettings;
 import org.firstinspires.ftc.teamcode.subsystems.JVBoysSoccerRobot;
 import org.firstinspires.ftc.teamcode.subsystems.AprilTag;
-import org.firstinspires.ftc.teamcode.subsystems.Shooter;
+import org.firstinspires.ftc.teamcode.subsystems.Spindexer;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 
 @Config
@@ -34,7 +34,7 @@ public class OpModeBlue extends LinearOpMode {
     // === Subsystems ===
     private JVBoysSoccerRobot robot;
     private AprilTag aprilTag;
-
+    private Spindexer spindexer;
     // === Gamepad State ===
     private final Gamepad currentGamepad1 = new Gamepad();
     private final Gamepad previousGamepad1 = new Gamepad();
@@ -75,6 +75,7 @@ public class OpModeBlue extends LinearOpMode {
 
         robot = new JVBoysSoccerRobot(hardwareMap, telemetry);
         aprilTag = robot.aprilTag;
+        spindexer = robot.spindexer;
 
         telemetry.addLine("Initialized - Ready to Start");
         telemetry.update();
@@ -85,7 +86,9 @@ public class OpModeBlue extends LinearOpMode {
 
         while (opModeIsActive()) {
             updateGamepadStates();
-
+            if(currentGamepad1.a && !previousGamepad1.a) {
+                spindexer.rotateByFraction(1/3);
+            }
             handleAprilTagCorrection();
             handleDrivetrainControls();
             handleShooterControls();
@@ -101,14 +104,14 @@ public class OpModeBlue extends LinearOpMode {
             return;
         }
 
-        if (robot.shooterSubsystem.getVelocity() == Shooter.CloseShotVelo)
-        {
-            TARGET_DISTANCE = CLOSE_TARGET_DISTANCE;
-        }
-        else
-        {
-            TARGET_DISTANCE = MEDIUM_TARGET_DISTANCE;
-        }
+//        if (robot.shooterSubsystem.getVelocity() == Shooter.CloseShotVelo)
+//        {
+//            TARGET_DISTANCE = CLOSE_TARGET_DISTANCE;
+//        }
+//        else
+//        {
+//            TARGET_DISTANCE = MEDIUM_TARGET_DISTANCE;
+//        }
 
         AprilTagDetection detection = aprilTag.getLatestTag();
 
@@ -196,15 +199,15 @@ public class OpModeBlue extends LinearOpMode {
             sequenceActive = false;
             sequenceStep = 0;
             sequenceTimer = 0;
-            robot.shooterSubsystem.paddleDown();
+            //robot.shooterSubsystem.paddleDown();
         }
         if (currentGamepad1.dpad_up && !previousGamepad1.dpad_up)
         {
-            Shooter.angle += .025;
+            //Shooter.angle += .025;
         }
         if (currentGamepad1.dpad_up && !previousGamepad1.dpad_up)
         {
-            Shooter.angle -= .025;
+            //Shooter.angle -= .025;
         }
 
         // Paddle Sequence (hold A)
@@ -224,12 +227,12 @@ public class OpModeBlue extends LinearOpMode {
             if (sequenceTimer >= currentDelay) {
                 sequenceTimer = 0;
                 switch (sequenceStep) {
-                    case 0: robot.shooterSubsystem.paddleUp(); break;
-                    case 1: robot.shooterSubsystem.paddleDown(); break;
-                    case 2: robot.shooterSubsystem.paddleUp(); break;
-                    case 3: robot.shooterSubsystem.paddleDown(); break;
-                    case 4: robot.shooterSubsystem.paddleUpLast(); break;
-                    case 5: robot.shooterSubsystem.paddleDown(); break;
+//                    case 0: robot.shooterSubsystem.paddleUp(); break;
+//                    case 1: robot.shooterSubsystem.paddleDown(); break;
+//                    case 2: robot.shooterSubsystem.paddleUp(); break;
+//                    case 3: robot.shooterSubsystem.paddleDown(); break;
+//                    case 4: robot.shooterSubsystem.paddleUpLast(); break;
+//                    case 5: robot.shooterSubsystem.paddleDown(); break;
                 }
                 sequenceStep = (sequenceStep + 1) % 6;
             }
@@ -237,38 +240,7 @@ public class OpModeBlue extends LinearOpMode {
             sequenceActive = false;
         }
 
-        // Manual Paddle
-        if (currentGamepad1.b && !previousGamepad1.b)
-            robot.shooterSubsystem.paddleUp();
 
-        // Toggle Shooter Flywheel
-        if (currentGamepad1.right_bumper && !previousGamepad1.right_bumper) {
-            if (shooterActive && robot.shooterSubsystem.getVelocity() == Shooter.MediumShotVelo) {
-                shooterActive = false;
-                robot.shooterSubsystem.setVelocity(0);
-            } else {
-                shooterActive = true;
-                robot.shooterSubsystem.setVelocity(Shooter.MediumShotVelo);
-            }
-        }
-
-        else if (currentGamepad1.right_trigger > 0.1 && previousGamepad1.right_trigger <= 0.1) {
-            if (shooterActive && robot.shooterSubsystem.getVelocity() == Shooter.CloseShotVelo) {
-                shooterActive = false;
-                robot.shooterSubsystem.setVelocity(0);
-            } else {
-                shooterActive = true;
-                robot.shooterSubsystem.setVelocity(Shooter.CloseShotVelo);
-            }
-        }
-        else if (currentGamepad1.left_trigger > .1 && previousGamepad1.left_trigger <= .1)
-            if (shooterActive && robot.shooterSubsystem.getVelocity() == Shooter.FarShotVelo) {
-                shooterActive = false;
-                robot.shooterSubsystem.setVelocity(0);
-            } else {
-                shooterActive = true;
-                robot.shooterSubsystem.setVelocity(Shooter.FarShotVelo);
-            }
 
     }
 

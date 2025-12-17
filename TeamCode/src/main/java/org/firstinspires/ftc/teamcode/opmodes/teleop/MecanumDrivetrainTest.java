@@ -11,6 +11,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.settings.RobotSettings;
 import org.firstinspires.ftc.teamcode.subsystems.JVBoysSoccerRobot;
+import org.firstinspires.ftc.teamcode.subsystems.Spindexer;
 
 @TeleOp(name = "Mecanum Drivetrain Test", group = "Testing")
 public class MecanumDrivetrainTest extends LinearOpMode {
@@ -18,6 +19,7 @@ public class MecanumDrivetrainTest extends LinearOpMode {
     private HardwareMap hwMap;
     private Telemetry telem;
     private JVBoysSoccerRobot robot;
+
 
     private double previousX = 5, previousY = 5, previousR = 5;
     private Gamepad currentGamepad1;
@@ -59,6 +61,7 @@ public class MecanumDrivetrainTest extends LinearOpMode {
                 if (currentGamepad1.dpad_down && !previousGamepad1.dpad_down) {
                     robot.drivetrainSubsystem.resetInitYaw();
                 }
+
 
                 drivetrainControls();
 

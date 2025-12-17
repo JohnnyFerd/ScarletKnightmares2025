@@ -53,6 +53,7 @@ public class AprilTag extends Subsystem {
         visionPortal = new VisionPortal.Builder()
                 .setCamera(hwMap.get(WebcamName.class, "Webcam 1"))
                 .setCameraResolution(cameraResolution)
+
                 .addProcessor(processor)
                 .build();
 
