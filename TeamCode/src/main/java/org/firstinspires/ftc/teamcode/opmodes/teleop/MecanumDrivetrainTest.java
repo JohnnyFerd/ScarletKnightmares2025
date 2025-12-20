@@ -64,7 +64,6 @@ public class MecanumDrivetrainTest extends LinearOpMode {
 
 
                 drivetrainControls();
-
                 robot.addTelemetry();
                 telemetry.update();
 //                robot.BR.readAll();

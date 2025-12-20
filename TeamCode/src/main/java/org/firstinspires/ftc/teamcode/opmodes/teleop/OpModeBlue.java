@@ -35,6 +35,7 @@ public class OpModeBlue extends LinearOpMode {
     private JVBoysSoccerRobot robot;
     private AprilTag aprilTag;
     private Spindexer spindexer;
+
     // === Gamepad State ===
     private final Gamepad currentGamepad1 = new Gamepad();
     private final Gamepad previousGamepad1 = new Gamepad();
@@ -74,8 +75,9 @@ public class OpModeBlue extends LinearOpMode {
         telemetry = new MultipleTelemetry(telemetry, dashboard.getTelemetry());
 
         robot = new JVBoysSoccerRobot(hardwareMap, telemetry);
+        spindexer = new Spindexer("spindexer", "colorsensor", hardwareMap, telemetry);
         aprilTag = robot.aprilTag;
-        spindexer = robot.spindexer;
+
 
         telemetry.addLine("Initialized - Ready to Start");
         telemetry.update();
@@ -86,15 +88,23 @@ public class OpModeBlue extends LinearOpMode {
 
         while (opModeIsActive()) {
             updateGamepadStates();
-            if(currentGamepad1.a && !previousGamepad1.a) {
-                spindexer.rotateByFraction(1/3);
-            }
+
             handleAprilTagCorrection();
             handleDrivetrainControls();
             handleShooterControls();
 
             robot.update(true, true);
             telemetry.update();
+            telemetry.addLine("Spindexer Color Sensor");
+            telemetry.addData("Red", spindexer.getRed());
+            telemetry.addData("Green", spindexer.getGreen());
+            telemetry.addData("Blue", spindexer.getBlue());
+
+            telemetry.addData("Hue", spindexer.getHSV()[0]);
+            telemetry.addData("Hue", spindexer.getHSV()[1]);
+            telemetry.addData("Hue", spindexer.getHSV()[2]);
+            spindexer.update();
+
         }
     }
 
@@ -194,13 +204,6 @@ public class OpModeBlue extends LinearOpMode {
 
     // === Shooter Controls ===
     private void handleShooterControls() {
-        // Reset sequence on X press
-        if (currentGamepad1.x && !previousGamepad1.x) {
-            sequenceActive = false;
-            sequenceStep = 0;
-            sequenceTimer = 0;
-            //robot.shooterSubsystem.paddleDown();
-        }
         if (currentGamepad1.dpad_up && !previousGamepad1.dpad_up)
         {
             //Shooter.angle += .025;
@@ -209,36 +212,18 @@ public class OpModeBlue extends LinearOpMode {
         {
             //Shooter.angle -= .025;
         }
+        if(currentGamepad1.a && !previousGamepad1.a){
+            spindexer.rotateUntilGreen();
+        }
+        if(currentGamepad1.x && !previousGamepad1.x){
+            spindexer.rotateUntilPurple();
+            }
+        if(currentGamepad1.b){
+            spindexer.rotateByFraction(.3333);
+        }
 
         // Paddle Sequence (hold A)
-        if (currentGamepad1.a) {
-            if (!sequenceActive) {
-                sequenceActive = true;
-                sequenceStep = 0;
-                sequenceTimer = 0;
-            }
 
-            double dt = timer.seconds();
-            timer.reset();
-            sequenceTimer += dt;
-
-            double currentDelay = getCurrentStepDelay();
-
-            if (sequenceTimer >= currentDelay) {
-                sequenceTimer = 0;
-                switch (sequenceStep) {
-//                    case 0: robot.shooterSubsystem.paddleUp(); break;
-//                    case 1: robot.shooterSubsystem.paddleDown(); break;
-//                    case 2: robot.shooterSubsystem.paddleUp(); break;
-//                    case 3: robot.shooterSubsystem.paddleDown(); break;
-//                    case 4: robot.shooterSubsystem.paddleUpLast(); break;
-//                    case 5: robot.shooterSubsystem.paddleDown(); break;
-                }
-                sequenceStep = (sequenceStep + 1) % 6;
-            }
-        } else {
-            sequenceActive = false;
-        }
 
 
 

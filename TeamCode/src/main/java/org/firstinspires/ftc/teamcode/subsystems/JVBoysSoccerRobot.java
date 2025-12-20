@@ -94,6 +94,7 @@ public class JVBoysSoccerRobot {
             }
 
             aprilTag = new AprilTag(hwMap, telemetry);
+            spindexer = new Spindexer("spindexer", "colorsensor", hwMap, telemetry);
 
             initIMU();
             initHardware();
