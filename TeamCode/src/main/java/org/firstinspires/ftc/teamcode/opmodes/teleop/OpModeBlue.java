@@ -12,6 +12,7 @@ import org.firstinspires.ftc.teamcode.settings.RobotSettings;
 import org.firstinspires.ftc.teamcode.subsystems.JVBoysSoccerRobot;
 import org.firstinspires.ftc.teamcode.subsystems.AprilTag;
 import org.firstinspires.ftc.teamcode.subsystems.Spindexer;
+import org.firstinspires.ftc.teamcode.subsystems.outake;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 
 @Config
@@ -35,6 +36,7 @@ public class OpModeBlue extends LinearOpMode {
     private JVBoysSoccerRobot robot;
     private AprilTag aprilTag;
     private Spindexer spindexer;
+    private outake outake;
 
 
     // === Gamepad State ===
@@ -79,6 +81,7 @@ public class OpModeBlue extends LinearOpMode {
 
         aprilTag = robot.aprilTag;
         spindexer=robot.spindexer;
+        outake=robot.outake;
 
         telemetry.addLine("Initialized - Ready to Start");
         telemetry.update();
@@ -213,16 +216,27 @@ public class OpModeBlue extends LinearOpMode {
         {
             robot.intake.intakeReverse();
         }
-
+        if (currentGamepad1.dpad_right && !previousGamepad1.dpad_right)
+        {
+            robot.outake.intakeOn();
+        }
+        if (currentGamepad1.dpad_left && !previousGamepad1.dpad_left)
+        {
+            robot.outake.intakeReverse();
+        }
         if(currentGamepad1.a && !previousGamepad1.a){
             spindexer.rotateUntilGreen();
         }
         if(currentGamepad1.x && !previousGamepad1.x){
             spindexer.rotateUntilPurple();
             }
-        if(currentGamepad1.b){
-            spindexer.rotateByFraction(.3333);
+        if(currentGamepad1.b && !previousGamepad1.b){
+            spindexer.rotateByFraction(.05);
         }
+        if(currentGamepad1.y  && !previousGamepad1.y){
+            spindexer.rotateByFraction(-.05);
+        }
+
 
         // Paddle Sequence (hold A)
 

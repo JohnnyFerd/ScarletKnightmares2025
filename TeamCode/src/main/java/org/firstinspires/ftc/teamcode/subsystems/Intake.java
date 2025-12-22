@@ -28,7 +28,7 @@ public class Intake extends Subsystem {
         this.telemetry = telemetry;
 
         motor = hwMap.get(DcMotorEx.class, motorName);
-        motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
         motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     }
 

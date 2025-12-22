@@ -7,6 +7,8 @@ import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.DigitalChannel;
+
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
@@ -17,9 +19,14 @@ public class Spindexer extends Subsystem {
     private final ColorSensor colorSensor;
     private final Telemetry telemetry;
 
+
+    /* ===== Hall Effect State ===== */
+    private boolean lastHallState = false;
+
+
     /* ===== Motor Tunables ===== */
     public static double SPIN_POWER = 0.4;
-    public static int TICKS_PER_REV = 1440;
+    public static int TICKS_PER_REV = 1240;
 
     /* ===== HSV Tunables (based on your measured data) ===== */
 
@@ -59,6 +66,7 @@ public class Spindexer extends Subsystem {
             Telemetry telemetry
     ) {
         this.telemetry = telemetry;
+
 
         motor = hwMap.get(DcMotorEx.class, motorName);
         colorSensor = hwMap.get(ColorSensor.class, colorSensorName);

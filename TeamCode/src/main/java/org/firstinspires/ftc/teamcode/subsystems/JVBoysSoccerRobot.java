@@ -41,6 +41,7 @@ public class JVBoysSoccerRobot {
     public AprilTag aprilTag;
     public Spindexer spindexer;
     public Intake intake;
+    public outake outake;
 
 
     // Hardware
@@ -68,7 +69,7 @@ public class JVBoysSoccerRobot {
         drivetrainSubsystem = new Drivetrain(hwMap, telemetry, this);
         intake = new Intake("intake", hwMap, telemetry);
         spindexer = new Spindexer("spindexer", "colorsensor", hwMap, telemetry);
-
+        outake = new outake(hwMap, telemetry);
 
 
         if (RobotSettings.STORE_POSE) {
@@ -79,7 +80,7 @@ public class JVBoysSoccerRobot {
         }
         telemetry.addData("INIT YAW: ", drivetrainSubsystem.initYaw);
 
-        subsystems = Arrays.asList(drivetrainSubsystem, aprilTag,  spindexer, intake);
+        subsystems = Arrays.asList(drivetrainSubsystem, aprilTag,  spindexer, intake, outake);
         BR = new BulkReading(this);
 
     }
@@ -101,13 +102,12 @@ public class JVBoysSoccerRobot {
             aprilTag = new AprilTag(hwMap, telemetry);
             spindexer = new Spindexer("spindexer", "colorsensor", hwMap, telemetry);
             intake = new Intake("intake", hwMap, telemetry);
-
-
+            outake = new outake(hwMap, telemetry);
             initIMU();
             initHardware();
             drivetrainSubsystem = new Drivetrain(hwMap, telemetry, this);
 
-            subsystems = Arrays.asList(drivetrainSubsystem, aprilTag, spindexer, intake);
+            subsystems = Arrays.asList(drivetrainSubsystem, aprilTag, spindexer, intake, outake);
 
             RobotSettings.POSE_STORAGE = imu.getRobotOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle;
             telemetry.addData("PoseStorage: ", RobotSettings.POSE_STORAGE);
