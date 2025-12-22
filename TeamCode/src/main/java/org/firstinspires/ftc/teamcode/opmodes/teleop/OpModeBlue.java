@@ -36,6 +36,7 @@ public class OpModeBlue extends LinearOpMode {
     private AprilTag aprilTag;
     private Spindexer spindexer;
 
+
     // === Gamepad State ===
     private final Gamepad currentGamepad1 = new Gamepad();
     private final Gamepad previousGamepad1 = new Gamepad();
@@ -75,9 +76,9 @@ public class OpModeBlue extends LinearOpMode {
         telemetry = new MultipleTelemetry(telemetry, dashboard.getTelemetry());
 
         robot = new JVBoysSoccerRobot(hardwareMap, telemetry);
-        spindexer = new Spindexer("spindexer", "colorsensor", hardwareMap, telemetry);
-        aprilTag = robot.aprilTag;
 
+        aprilTag = robot.aprilTag;
+        spindexer=robot.spindexer;
 
         telemetry.addLine("Initialized - Ready to Start");
         telemetry.update();
@@ -206,12 +207,13 @@ public class OpModeBlue extends LinearOpMode {
     private void handleShooterControls() {
         if (currentGamepad1.dpad_up && !previousGamepad1.dpad_up)
         {
-            //Shooter.angle += .025;
+            robot.intake.intakeOn();
         }
-        if (currentGamepad1.dpad_up && !previousGamepad1.dpad_up)
+         if (currentGamepad1.dpad_down && !previousGamepad1.dpad_down)
         {
-            //Shooter.angle -= .025;
+            robot.intake.intakeReverse();
         }
+
         if(currentGamepad1.a && !previousGamepad1.a){
             spindexer.rotateUntilGreen();
         }
