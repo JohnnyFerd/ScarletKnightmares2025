@@ -48,6 +48,7 @@ public class outake extends Subsystem {
     }
 
     public void intakeReverse() {
+
         mode = Mode.REVERSE;
     }
 
@@ -66,12 +67,12 @@ public class outake extends Subsystem {
 
         switch (mode) {
             case ON:
-                leader.setVelocity(targetVelocity);
-                follower.setVelocity(targetVelocity);
+                follower.setPower(1);
+                leader.setPower(1);
                 break;
             case REVERSE:
-                leader.setVelocity(-targetVelocity);
-                follower.setVelocity(-targetVelocity);
+                follower.setPower(-1);
+                leader.setPower(-1);
                 break;
             case OFF:
             default:
@@ -104,7 +105,7 @@ public class outake extends Subsystem {
         telemetry.addData("Mode", mode);
         telemetry.addData("Target RPM", currentVelo);
         telemetry.addData("Actual RPM", getRPM());
-        telemetry.addData("Leader Velocity", leader.getVelocity());
-        telemetry.addData("Follower Velocity", follower.getVelocity());
+        telemetry.addData("Leader Velocity", leader.getPower());
+        telemetry.addData("Follower Velocity", follower.getPower());
     }
 }
