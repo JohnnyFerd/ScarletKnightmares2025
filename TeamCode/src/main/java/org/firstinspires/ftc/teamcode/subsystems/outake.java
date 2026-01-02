@@ -25,7 +25,6 @@ public class outake extends Subsystem {
 
     private enum Mode {
         ON,
-        REVERSE,
         OFF
     }
 
@@ -47,10 +46,7 @@ public class outake extends Subsystem {
         mode = Mode.ON;
     }
 
-    public void intakeReverse() {
 
-        mode = Mode.REVERSE;
-    }
 
     public void intakeOff() {
         stop();
@@ -70,10 +66,7 @@ public class outake extends Subsystem {
                 follower.setPower(1);
                 leader.setPower(1);
                 break;
-            case REVERSE:
-                follower.setPower(-1);
-                leader.setPower(-1);
-                break;
+
             case OFF:
             default:
                 stop();

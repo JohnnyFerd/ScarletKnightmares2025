@@ -226,14 +226,9 @@ public class OpModeBlue extends LinearOpMode {
         }
         if (currentGamepad1.dpad_left && !previousGamepad1.dpad_left)
         {
-            robot.outake.intakeReverse();
+            robot.outake.intakeOff();
         }
-        if(currentGamepad1.a && !previousGamepad1.a){
-            spindexer.rotateUntilGreen();
-        }
-        if(currentGamepad1.x && !previousGamepad1.x){
-            spindexer.rotateUntilPurple();
-            }
+
         if(currentGamepad1.b && !previousGamepad1.b){
             spindexer.rotateByFraction(fractionToRotate);
         }
