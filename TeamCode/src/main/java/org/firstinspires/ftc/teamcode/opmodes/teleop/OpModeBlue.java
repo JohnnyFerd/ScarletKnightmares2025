@@ -65,6 +65,7 @@ public class OpModeBlue extends LinearOpMode {
     public static double DELAY_3_DOWN_TO_UP = 0.6;
     public static double DELAY_4_UPLAST_TO_DOWN = 0.8;
     public static double DELAY_5_DOWN_TO_START = 0.5;
+    public static double fractionToRotate = .333333333;
 
     // === AprilTag Handling ===
     private AprilTagDetection lastDetection = null;
@@ -93,7 +94,12 @@ public class OpModeBlue extends LinearOpMode {
         while (opModeIsActive()) {
             updateGamepadStates();
 
-            handleAprilTagCorrection();
+            if (currentGamepad1.left_bumper && !previousGamepad1.left_bumper) {
+                handleAprilTagCorrection();
+            } else {
+                usingAprilTagAlignment = false;
+            }
+
             handleDrivetrainControls();
             handleShooterControls();
 
@@ -107,16 +113,13 @@ public class OpModeBlue extends LinearOpMode {
             telemetry.addData("Hue", spindexer.getHSV()[0]);
             telemetry.addData("Hue", spindexer.getHSV()[1]);
             telemetry.addData("Hue", spindexer.getHSV()[2]);
-            spindexer.update();
+
 
         }
     }
 
     private void handleAprilTagCorrection() {
-        if (!currentGamepad1.left_bumper) {
-            usingAprilTagAlignment = false;
-            return;
-        }
+
 
 //        if (robot.shooterSubsystem.getVelocity() == Shooter.CloseShotVelo)
 //        {
@@ -131,6 +134,7 @@ public class OpModeBlue extends LinearOpMode {
 
         if (detection != null && detection.id == TARGET_TAG_ID) {
             lastDetection = detection;
+
             lastDetectionTimer.reset();
         } else if (lastDetection != null && lastDetection.id == TARGET_TAG_ID && lastDetectionTimer.seconds() < TAG_HOLD_TIME) {
             detection = lastDetection;
@@ -173,7 +177,7 @@ public class OpModeBlue extends LinearOpMode {
         rotateCorrection = clamp(rotateCorrection, -MAX_ROTATE_SPEED, MAX_ROTATE_SPEED);
         forwardCorrection = clamp(forwardCorrection, -MAX_DRIVE_SPEED, MAX_DRIVE_SPEED);
 
-        robot.drivetrainSubsystem.moveXYR(0, forwardCorrection, rotateCorrection);
+        robot.drivetrainSubsystem.moveXYR(0, -forwardCorrection, rotateCorrection);
 
         telemetry.addData("Tracking Tag", TARGET_TAG_ID);
         telemetry.addData("Detected Tag ID", detection.id);
@@ -203,7 +207,7 @@ public class OpModeBlue extends LinearOpMode {
         y *= speedScale;
         r *= speedScale;
 
-        robot.drivetrainSubsystem.moveXYR(x, y, r);
+        robot.drivetrainSubsystem.moveXYR(x, -y, r);
     }
 
     // === Shooter Controls ===
@@ -214,7 +218,7 @@ public class OpModeBlue extends LinearOpMode {
         }
          if (currentGamepad1.dpad_down && !previousGamepad1.dpad_down)
         {
-            robot.intake.intakeReverse();
+            robot.intake.intakeOff();
         }
         if (currentGamepad1.dpad_right && !previousGamepad1.dpad_right)
         {
@@ -231,10 +235,10 @@ public class OpModeBlue extends LinearOpMode {
             spindexer.rotateUntilPurple();
             }
         if(currentGamepad1.b && !previousGamepad1.b){
-            spindexer.rotateByFraction(.05);
+            spindexer.rotateByFraction(fractionToRotate);
         }
         if(currentGamepad1.y  && !previousGamepad1.y){
-            spindexer.rotateByFraction(-.05);
+            spindexer.rotateByFraction(-fractionToRotate);
         }
 
 

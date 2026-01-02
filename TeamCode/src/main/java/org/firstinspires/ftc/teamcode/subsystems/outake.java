@@ -63,22 +63,22 @@ public class outake extends Subsystem {
         switch (mode) {
             case ON: {
                 double velocity = rpmToTicksPerSec(TARGET_RPM);
-                leader.setVelocity(velocity);
-                follower.setPower(leader.getPower());
+
+                follower.setPower(velocity); //here
                 break;
             }
 
             case REVERSE: {
                 double velocity = rpmToTicksPerSec(-TARGET_RPM);
-                leader.setVelocity(velocity);
-                follower.setPower(leader.getPower());
+
+                follower.setPower(-velocity); //here
                 break;
             }
 
             case OFF:
             default:
-                leader.setPower(0);
-                follower.setPower(0);
+                leader.setPower(-0);
+                follower.setPower(-0);
                 break;
         }
     }
@@ -108,5 +108,6 @@ public class outake extends Subsystem {
         telemetry.addData("Target RPM", TARGET_RPM);
         telemetry.addData("Actual RPM", getRPM());
         telemetry.addData("Leader Power", leader.getPower());
+        telemetry.addData("follower Power", follower.getPower());
     }
 }

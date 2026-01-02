@@ -18,6 +18,8 @@ public class Spindexer extends Subsystem {
     private final DcMotorEx motor;
     private final ColorSensor colorSensor;
     private final Telemetry telemetry;
+    private final DigitalChannel hallSensor;
+
 
 
     /* ===== Hall Effect State ===== */
@@ -26,7 +28,7 @@ public class Spindexer extends Subsystem {
 
     /* ===== Motor Tunables ===== */
     public static double SPIN_POWER = 0.4;
-    public static int TICKS_PER_REV = 1240;
+    public static int TICKS_PER_REV = 1700;
 
     /* ===== HSV Tunables (based on your measured data) ===== */
 
@@ -62,6 +64,7 @@ public class Spindexer extends Subsystem {
     public Spindexer(
             String motorName,
             String colorSensorName,
+            String hallSensorName,
             HardwareMap hwMap,
             Telemetry telemetry
     ) {
@@ -70,7 +73,8 @@ public class Spindexer extends Subsystem {
 
         motor = hwMap.get(DcMotorEx.class, motorName);
         colorSensor = hwMap.get(ColorSensor.class, colorSensorName);
-
+        hallSensor = hwMap.get(DigitalChannel.class, hallSensorName);
+        hallSensor.setMode(DigitalChannel.Mode.INPUT);
         motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -81,6 +85,9 @@ public class Spindexer extends Subsystem {
     public void rotateUntilGreen() {
         motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         mode = Mode.TO_GREEN;
+    }
+    public boolean isHallTriggered() {
+        return !hallSensor.getState();
     }
 
     public void rotateUntilPurple() {
@@ -169,6 +176,11 @@ public class Spindexer extends Subsystem {
                 motor.setPower(0);
                 break;
         }
+
+
+        lastHallState = isHallTriggered();
+
+
     }
 
     /* ===== Telemetry ===== */
@@ -178,7 +190,7 @@ public class Spindexer extends Subsystem {
         telemetry.addLine("Spindexer");
         telemetry.addData("Mode", mode);
         telemetry.addData("Encoder", motor.getCurrentPosition());
-
+        telemetry.addData("HALL SENSOR", isHallTriggered());
         telemetry.addData("R", colorSensor.red());
         telemetry.addData("G", colorSensor.green());
         telemetry.addData("B", colorSensor.blue());

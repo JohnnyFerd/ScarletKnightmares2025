@@ -13,7 +13,7 @@ public class Intake extends Subsystem {
     private final Telemetry telemetry;
 
     /* ===== Tunables ===== */
-    public static double INTAKE_POWER = 1;
+    public static double INTAKE_POWER = .75;
 
     /* ===== State ===== */
     private Mode mode = Mode.OFF;
