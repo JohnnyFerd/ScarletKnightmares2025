@@ -51,7 +51,7 @@ public class Spindexer extends Subsystem {
     private Mode mode = Mode.IDLE;
     private int targetPosition = 0;
 
-    private enum Mode {
+    public enum Mode {
         IDLE,
         TO_GREEN,
         TO_PURPLE,
@@ -94,6 +94,9 @@ public class Spindexer extends Subsystem {
         motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         mode = Mode.TO_PURPLE;
     }
+ public boolean IsIdle(){
+     return mode == Mode.IDLE;
+ }
 
     public void rotateByFraction(double fraction) {
         int ticks = (int) (TICKS_PER_REV * fraction);
