@@ -14,19 +14,14 @@ public class outake extends Subsystem {
     private final Telemetry telemetry;
 
     /* ===== Preset Velocities (RPM) ===== */
-    public static int FarShotVelo = 1850;
-    public static int MediumShotVelo = 1680;
-    public static int CloseShotVelo = 1450;
-    public static int AutoFarShotVelo = 1650;
+    public static int CloseShotVelo = 1680; // close shot RPM
+    public static int MaxRPM = 5300;        // REV Core Hex max RPM (used for FarShot)
 
     /* ===== State ===== */
     private Mode mode = Mode.OFF;
-    private int currentVelo = FarShotVelo; // default preset
+    private int currentVelo = MaxRPM; // default FarShot
 
-    private enum Mode {
-        ON,
-        OFF
-    }
+    private enum Mode { ON, OFF }
 
     public outake(HardwareMap hwMap, Telemetry telemetry) {
         this.telemetry = telemetry;
@@ -35,36 +30,31 @@ public class outake extends Subsystem {
         follower = hwMap.get(DcMotorEx.class, "launchertop");
 
         leader.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
-        follower.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
+        follower.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
 
         leader.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.FLOAT);
         follower.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.FLOAT);
+
+        // Reverse one motor if needed for proper rotation
+        follower.setDirection(DcMotorEx.Direction.REVERSE);
     }
 
     /* ===== Commands ===== */
-    public void intakeOn() {
-        mode = Mode.ON;
-    }
+    public void outakeOn() { mode = Mode.ON; }
+    public void outakeOff() { stop(); }
 
-
-
-    public void intakeOff() {
-        stop();
-    }
-
-    public void setPresetVelocity(int presetRPM) {
-        currentVelo = presetRPM;
-    }
+    public void setFarShot() { currentVelo = MaxRPM; }    // Far shot uses max motor velocity
+    public void setCloseShot() { currentVelo = CloseShotVelo; }
 
     /* ===== Update Loop ===== */
     @Override
     public void update() {
-        double targetVelocity = rpmToTicksPerSec(currentVelo);
+        double targetTicksPerSec = rpmToTicksPerSec(currentVelo);
 
         switch (mode) {
             case ON:
-                follower.setPower(1);
-                leader.setPower(1);
+                leader.setVelocity(targetTicksPerSec);
+                follower.setVelocity(targetTicksPerSec);
                 break;
 
             case OFF:
@@ -77,14 +67,14 @@ public class outake extends Subsystem {
     /* ===== Stop Method ===== */
     @Override
     public void stop() {
-        leader.setPower(0);
-        follower.setPower(0);
+        leader.setVelocity(0);
+        follower.setVelocity(0);
         mode = Mode.OFF;
     }
 
     /* ===== Helpers ===== */
     private double rpmToTicksPerSec(double rpm) {
-        return rpm * 28 / 60.0; // TICKS_PER_REV = 28
+        return rpm * 28 / 60.0; // REV Core Hex = 28 ticks/rev
     }
 
     private double getRPM() {
@@ -98,7 +88,5 @@ public class outake extends Subsystem {
         telemetry.addData("Mode", mode);
         telemetry.addData("Target RPM", currentVelo);
         telemetry.addData("Actual RPM", getRPM());
-        telemetry.addData("Leader Velocity", leader.getPower());
-        telemetry.addData("Follower Velocity", follower.getPower());
     }
 }

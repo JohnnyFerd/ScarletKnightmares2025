@@ -49,20 +49,20 @@ public class PlanA_BLUE extends AutoBase {
         }
 
         // ===== Shoot 3 balls at the start safely =====
-        robot.outake.intakeOn();          // spin up flywheel
+        robot.outake.outakeOn();          // spin up flywheel
         sleep(300);                        // short spin-up delay
 
         for (int i = 0; i < 3; i++) {
             robot.spindexer.rotateByFraction(-1.0 / 3.0); // positive fraction
 
-            while (!robot.spindexer.IsIdle() && opModeIsActive()) {
+            while (!robot.spindexer.isIdle() && opModeIsActive()) {
                 robot.spindexer.update();
                 robot.outake.update();
 
             }
         }
 
-        robot.outake.intakeOff();         // stop flywheel
+        robot.outake.outakeOff();         // stop flywheel
 
         // ===== Move Back Before First Shot =====
         Actions.runBlocking(

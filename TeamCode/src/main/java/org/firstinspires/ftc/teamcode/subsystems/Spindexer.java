@@ -1,112 +1,106 @@
 package org.firstinspires.ftc.teamcode.subsystems;
 
 import android.graphics.Color;
-
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.hardware.DigitalChannel;
-
-
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 @Config
 public class Spindexer extends Subsystem {
 
+    /* ===== Hardware ===== */
     private final DcMotorEx motor;
     private final ColorSensor colorSensor;
     private final Telemetry telemetry;
-    private final DigitalChannel hallSensor;
-
-
-
-    /* ===== Hall Effect State ===== */
-    private boolean lastHallState = false;
-
 
     /* ===== Motor Tunables ===== */
-    public static double SPIN_POWER = 0.4;
+    public static double SPIN_POWER = 0.6;   // higher to overcome friction
     public static int TICKS_PER_REV = 1700;
 
-    /* ===== HSV Tunables (based on your measured data) ===== */
-
-    // Green ≈ Hue 159, Sat ≈ 0.69
+    /* ===== HSV Tunables ===== */
     public static double GREEN_H_MIN = 133;
     public static double GREEN_H_MAX = 170;
-    public static double GREEN_S_MIN = 0.5;
-
-    // Purple ≈ Hue 230, Sat ≈ 0.43
-    public static double PURPLE_H_MIN = 170.9;
+    public static double PURPLE_H_MIN = 171;
     public static double PURPLE_H_MAX = 220;
-    public static double PURPLE_S_MIN = 0.35;
-
-    // White / Black (optional, now valid since RGB is normalized)
-    public static double WHITE_S_MAX = 0.25;
-    public static double WHITE_V_MIN = 0.8;
-    public static double BLACK_V_MAX = 0.2;
 
     /* ===== State ===== */
     private Mode mode = Mode.IDLE;
     private int targetPosition = 0;
 
+    private final float[] hsv = new float[3];
+
+    /* ===== Ball Storage (FIFO) ===== */
+    public enum BallColor { GREEN, PURPLE }
+    private final BallColor[] balls = new BallColor[3];
+    private int ballCount = 0;
+
     public enum Mode {
         IDLE,
-        TO_GREEN,
-        TO_PURPLE,
         TO_ENCODER
     }
 
-    /* ===== HSV Cache ===== */
-    private final float[] hsv = new float[3];
-
-    public Spindexer(
-            String motorName,
-            String colorSensorName,
-            String hallSensorName,
-            HardwareMap hwMap,
-            Telemetry telemetry
-    ) {
+    public Spindexer(String motorName, String colorSensorName, HardwareMap hwMap, Telemetry telemetry) {
         this.telemetry = telemetry;
-
-
         motor = hwMap.get(DcMotorEx.class, motorName);
         colorSensor = hwMap.get(ColorSensor.class, colorSensorName);
-        hallSensor = hwMap.get(DigitalChannel.class, hallSensorName);
-        hallSensor.setMode(DigitalChannel.Mode.INPUT);
+
         motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     }
 
-    /* ===== Commands ===== */
-
-    public void rotateUntilGreen() {
-        motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        mode = Mode.TO_GREEN;
-    }
-    public boolean isHallTriggered() {
-        return !hallSensor.getState();
+    /* ===== Intake / Record ===== */
+    public void recordBall() {
+        if (ballCount >= 3) return;
+        updateHSV();
+        if (seesGreen()) balls[ballCount++] = BallColor.GREEN;
+        else if (seesPurple()) balls[ballCount++] = BallColor.PURPLE;
     }
 
-    public void rotateUntilPurple() {
-        motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        mode = Mode.TO_PURPLE;
-    }
- public boolean IsIdle(){
-     return mode == Mode.IDLE;
- }
+    /* ===== Rotate / Index ===== */
+    // ================= Ball Shooting & Cataloguing =================
 
+    // Shoot first ball (CW rotation), remove from queue if it exists
+    public void shoot() {
+        rotateByFraction(-1.0 / 3.0); // CW
+        if (ballCount > 0) shiftLeft();
+    }
+
+    // Shoot green only if first ball is green
+    public void shootGreen() {
+        if (ballCount > 0 && balls[0] == BallColor.GREEN) shoot();
+    }
+
+    // Shoot purple only if first ball is purple
+    public void shootPurple() {
+        if (ballCount > 0 && balls[0] == BallColor.PURPLE) shoot();
+    }
+
+    // Catalogue a ball (rotate CCW), do NOT record anything — color is already stored at intake
+    public void catalogue() {
+        rotateByFraction(1.0 / 3.0); // CCW rotation
+    }
+
+    /* ===== Encoder Motion ===== */
     public void rotateByFraction(double fraction) {
-        int ticks = (int) (TICKS_PER_REV * fraction);
+        if (fraction == 0) return;
+
+        int ticks = (int)(TICKS_PER_REV * fraction);
         targetPosition = motor.getCurrentPosition() + ticks;
 
         motor.setTargetPosition(targetPosition);
         motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         motor.setPower(SPIN_POWER);
-
         mode = Mode.TO_ENCODER;
+
+        telemetry.addData("Rotate Fraction", fraction);
+        telemetry.addData("Target Pos", targetPosition);
+        telemetry.addData("Current Pos", motor.getCurrentPosition());
+        telemetry.addData("SPIN POWER", SPIN_POWER);
+        telemetry.update();
     }
 
     public void stop() {
@@ -115,97 +109,38 @@ public class Spindexer extends Subsystem {
         mode = Mode.IDLE;
     }
 
-    /* ===== HSV Utilities ===== */
+    private void shiftLeft() {
+        for (int i = 0; i < ballCount - 1; i++) balls[i] = balls[i+1];
+        balls[--ballCount] = null;
+    }
 
+    /* ===== Color Detection ===== */
     private void updateHSV() {
-        // Normalize sensor values to 0–255 (FTC sensors exceed this)
         int r = Math.min(colorSensor.red(), 255);
         int g = Math.min(colorSensor.green(), 255);
         int b = Math.min(colorSensor.blue(), 255);
-
         Color.RGBToHSV(r, g, b, hsv);
     }
 
-    public float[] getHSV() {
-        updateHSV();
-        return hsv;
-    }
-
-    /* ===== Color Checks ===== */
-
-    private boolean seesGreen() {
-        return hsv[0] > GREEN_H_MIN
-                && hsv[0] < GREEN_H_MAX;
-    }
-
-    private boolean seesPurple() {
-        return hsv[0] > PURPLE_H_MIN
-                && hsv[0] < PURPLE_H_MAX;
-    }
-
-    private boolean seesWhite() {
-        return hsv[1] < WHITE_S_MAX
-                && hsv[2] > WHITE_V_MIN;
-    }
-
-    private boolean seesBlack() {
-        return hsv[2] < BLACK_V_MAX;
-    }
+    private boolean seesGreen() { return hsv[0] > GREEN_H_MIN && hsv[0] < GREEN_H_MAX; }
+    private boolean seesPurple() { return hsv[0] > PURPLE_H_MIN && hsv[0] < PURPLE_H_MAX; }
 
     /* ===== Update Loop ===== */
-
     @Override
     public void update() {
-        updateHSV();
-
-        switch (mode) {
-
-            case TO_GREEN:
-                if (seesGreen()) stop();
-                else motor.setPower(SPIN_POWER);
-                break;
-
-            case TO_PURPLE:
-                if (seesPurple()) stop();
-                else motor.setPower(SPIN_POWER);
-                break;
-
-            case TO_ENCODER:
-                if (!motor.isBusy()) stop();
-                break;
-
-            case IDLE:
-            default:
-                motor.setPower(0);
-                break;
-        }
-
-
-        lastHallState = isHallTriggered();
-
-
+        if (mode == Mode.TO_ENCODER && !motor.isBusy()) stop();
     }
+
+    public boolean isIdle() { return mode == Mode.IDLE; }
 
     /* ===== Telemetry ===== */
-
     @Override
     public void addTelemetry() {
-        telemetry.addLine("Spindexer");
+        telemetry.addData("Ball Count", ballCount);
+        telemetry.addData("Ball 0", ballCount>0 ? balls[0] : "EMPTY");
+        telemetry.addData("Ball 1", ballCount>1 ? balls[1] : "EMPTY");
+        telemetry.addData("Ball 2", ballCount>2 ? balls[2] : "EMPTY");
+        telemetry.addData("Motor Pos", motor.getCurrentPosition());
         telemetry.addData("Mode", mode);
-        telemetry.addData("Encoder", motor.getCurrentPosition());
-        telemetry.addData("HALL SENSOR", isHallTriggered());
-        telemetry.addData("R", colorSensor.red());
-        telemetry.addData("G", colorSensor.green());
-        telemetry.addData("B", colorSensor.blue());
-
-        telemetry.addData("Hue", "%.1f", hsv[0]);
-        telemetry.addData("Sat", "%.2f", hsv[1]);
-        telemetry.addData("Val", "%.2f", hsv[2]);
     }
-
-    /* ===== Raw Accessors ===== */
-
-    public int getRed() { return colorSensor.red(); }
-    public int getGreen() { return colorSensor.green(); }
-    public int getBlue() { return colorSensor.blue(); }
 }
